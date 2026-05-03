@@ -1,0 +1,33 @@
+﻿Read 3287 lines.
+Backup: E:\¦NÌAAT METRAJ PRO\yeni_proje\app\ui\gantt_window.py.bak
+Pass 1: 2517 shifts
+  error:   File "E:\¦NÌAAT METRAJ PRO\yeni_proje\app\ui\gantt_window.py", line 204
+    elif gun.weekday() >= 5:
+    ^^^^
+SyntaxError: invalid syntax
+
+  === Lines 200 to 206 ===
+     200: '  rect.setPen(QPen(Qt.PenStyle.NoPen))'
+     201: '  self.scene.addItem(rect)'
+     202: ''
+     203: '  # Hafta sonu arkaplan²'
+     204: '  elif gun.weekday() >= 5:'
+     205: '   rect = QGraphicsRectItem(x, self.header_height, self.day_width,'
+     206: '  toplam_gorev * self.row_height)'
+Pass 2: 0 shifts
+  error:   File "E:\¦NÌAAT METRAJ PRO\yeni_proje\app\ui\gantt_window.py", line 204
+    elif gun.weekday() >= 5:
+    ^^^^
+SyntaxError: invalid syntax
+
+  === Lines 200 to 206 ===
+     200: '  rect.setPen(QPen(Qt.PenStyle.NoPen))'
+     201: '  self.scene.addItem(rect)'
+     202: ''
+     203: '  # Hafta sonu arkaplan²'
+     204: '  elif gun.weekday() >= 5:'
+     205: '   rect = QGraphicsRectItem(x, self.header_height, self.day_width,'
+     206: '  toplam_gorev * self.row_height)'
+Stable ù giving up.
+FAILED ù restoring backup.
+Log -> E:\¦NÌAAT METRAJ PRO\fix_indent_log.txt

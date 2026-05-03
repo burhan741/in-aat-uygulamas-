@@ -1,0 +1,3 @@
+IMPORT_OK
+MetrajAnalizWindow: True
+AUTOCAD_AVAILABLE: False

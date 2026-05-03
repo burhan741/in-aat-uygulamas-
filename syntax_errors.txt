@@ -1,0 +1,62 @@
+Toplam hata: 20
+
+L5184: invalid syntax
+  -> '    else:'
+
+L5258: unexpected indent
+  -> '                    n = adet'
+
+L5259: unexpected indent
+  -> '                    beton = b * e * y * n'
+
+L5261: unexpected indent
+  -> '                    if eleman == "Kolon":'
+
+L5262: unexpected indent
+  -> '                        kalip = 2 * (b + e) * y * n'
+
+L5263: invalid syntax
+  -> '    elif eleman == "Kiriş":'
+
+L5265: invalid syntax
+  -> '    elif eleman == "Döşeme":'
+
+L5267: invalid syntax
+  -> '    elif eleman == "Temel":'
+
+L5269: invalid syntax
+  -> '    elif eleman == "Perde Duvar":'
+
+L5271: invalid syntax
+  -> '    else:'
+
+L5417: expected 'except' or 'finally' block
+  -> '    except Exception as e:'
+
+L5417: expected 'except' or 'finally' block
+  -> '    except Exception as e:'
+
+L5417: expected 'except' or 'finally' block
+  -> '    except Exception as e:'
+
+L5417: expected 'except' or 'finally' block
+  -> '    except Exception as e:'
+
+L5417: expected 'except' or 'finally' block
+  -> '    except Exception as e:'
+
+L5417: expected 'except' or 'finally' block
+  -> '    except Exception as e:'
+
+L5417: expected 'except' or 'finally' block
+  -> '    except Exception as e:'
+
+L5417: expected 'except' or 'finally' block
+  -> '    except Exception as e:'
+
+L5417: expected 'except' or 'finally' block
+  -> '    except Exception as e:'
+
+L5417: expected 'except' or 'finally' block
+  -> '    except Exception as e:'
+

@@ -1,0 +1,4 @@
+QOpenGLWidget: OK
+OpenGL.GL: OK
+OpenGL.GLU: OK
+COMBINED: OK -> OPENGL_OK = True

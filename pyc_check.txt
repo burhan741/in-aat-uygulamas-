@@ -1,0 +1,7 @@
+Source mtime: 1772361005 (Sun Mar  1 13:30:04 2026)
+Source size : 81150 bytes
+PYC mtime  : 1772289058 (Sat Feb 28 17:30:58 2026)
+PYC size   : 80625 bytes
+Match mtime: False
+Match size : False
+Flags      : 0 (0=timestamp, 2=hash)

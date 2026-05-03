@@ -1,0 +1,2 @@
+LOAD OK
+LOAD FAILED: AttributeError: module 'autocad_connector' has no attribute '_DEMIR_PATTERN'

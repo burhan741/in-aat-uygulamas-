@@ -1,0 +1,4 @@
+[OK] PyOpenGL + QOpenGLWidget import basarili
+[OK] InceIsler3DWidget import basarili, OPENGL_OK=True
+[OK] Room3DBuilder import basarili
+[OK] malzeme_renkleri import basarili (6 renk)

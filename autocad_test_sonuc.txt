@@ -1,0 +1,21 @@
+AutoCAD Bağlantı Test Raporu
+==================================================
+
+Python: E:\İNŞAAT METRAJ PRO\.venv\Scripts\python.exe
+Versiyon: 3.11.9 (tags/v3.11.9:de54cf5, Apr  2 2024, 10:12:12) [MSC v.1938 64 bit (AMD64)]
+
+[OK] win32com.client import edildi
+
+AutoCAD aranıyor...
+--------------------------------------------------
+
+[1] GetActiveObject yöntemi:
+    AutoCAD.Application.24: BULUNDU!
+    Versiyon: 24.3s (LMS Tech)
+    Çizim: Yasar Ekersular Statik.dwg
+
+==================================================
+SONUÇ: BAŞARILI - AutoCAD bağlantısı kuruldu!
+==================================================
+
+Bu rapor kaydedildi: E:\İNŞAAT METRAJ PRO\autocad_test_sonuc.txt

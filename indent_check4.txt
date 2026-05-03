@@ -1,0 +1,60 @@
+L201 i=1:  self.data_ready.emit({
+L202 i=1:  'ok': False,
+L203 i=1:  'error': str(e),
+L204 i=1:  'traceback': traceback.format_exc(),
+L205 i=1:  })
+L208 i=0: class MainWindow(QMainWindow):
+L209 i=1:  """Ana uygulama penceresi"""
+L211 i=1:  def __init__(
+L212 i=1:  self,
+L213 i=1:  db: Optional[DatabaseManager] = None,
+L214 i=1:  splash: Optional[Any] = None,
+L215 i=1:  # — Yeni paket tabanlı parametreler —
+L216 i=1:  selected_package: str = 'kurumsal',
+L217 i=1:  enabled_modules: Optional[list] = None,
+L218 i=1:  # — Geriye dönük uyumluluk (kullanılmıyor, kaldırılaca
+L219 i=1:  user_type: str = 'muteahhit',
+L220 i=1:  ) -> None:
+L221 i=1:  """Ana pencereyi başlat"""
+L222 i=1:  super().__init__()
+L224 i=1:  self.splash = splash
+L226 i=1:  # Lisans paketi bilgileri
+L227 i=1:  self.selected_package: str = selected_package
+L228 i=1:  self.enabled_modules: list = enabled_modules or [
+L229 i=1:  'metraj_temel', 'metraj_gelismis', 'maliyet', 'demir',
+L230 i=1:  'cad_3d', 'teklif_fatura', 'gantt', 'serbest_piyasa',
+L231 i=1:  'devlet_ihalesi', 'saha_puantaj', 'analitik', 'crm_tam
+L232 i=1:  ]
+L234 i=1:  # Geriye dönük user_type — eski kodu kırmamak için tut
+L235 i=1:  self.user_type = user_type
+L237 i=1:  # Core modüller (hafif olanlar hemen yükle)
+L238 i=1:  # Eğer dışarıdan bir DatabaseManager verildiyse kullan
+L239 i=1:  self.db = db if db is not None else DatabaseManager()
+L240 i=1:  self.calculator = Calculator()
+L242 i=1:  # Ağır modüller lazy loading ile (sadece gerektiğinde
+L243 i=1:  self._material_calculator = None
+L244 i=1:  self._export_manager = None
+L246 i=1:  # UI durumu
+L247 i=1:  self.current_project_id: Optional[int] = None
+L248 i=1:  self.current_materials: List[Dict[str, Any]] = [] # He
+L250 i=1:  # Sekme lazy loading için
+L251 i=1:  self._tabs_created = {
+L252 i=1:  'metraj': False,
+L253 i=1:  'ozet': False,
+L254 i=1:  'taseron': False,
+L255 i=1:  'malzeme': False,
+L256 i=1:  'sablonlar': False,
+L257 i=1:  'birim_fiyat': False,
+L258 i=1:  'ihale': False,
+L259 i=1:  'devlet_ihalesi': False
+L260 i=1:  }
+L262 i=1:  # Arayüzü oluştur
+L263 i=1:  if self.splash:
+L264 i=1:  self.splash.showMessage(
+L265 i=1:  "Arayüz oluşturuluyor...",
+L266 i=1:  Qt.AlignmentFlag.AlignCenter | Qt.AlignmentFlag.AlignB
+L267 i=1:  Qt.GlobalColor.white
+L268 i=1:  )
+L269 i=1:  from PyQt6.QtWidgets import QApplication
+L270 i=1:  QApplication.processEvents()
+L272 i=1:  # Kullanıcı tipine göre arayüz oluştur

@@ -1,0 +1,5 @@
+fatal: your current branch 'master' does not have any commits yet
+
+
+PYC DOSYA SAYISI: 97
+ORNEK PYC: ['puantaj_api.cpython-311.pyc', '__init__.cpython-311.pyc', 'autocad_connector.cpython-311.pyc', 'beton_kurleme_engine.cpython-311.pyc', 'birim_fiyat_analiz_engine.cpython-311.pyc', 'bi_engine.cpython-311.pyc', 'calculator.cpython-311.pyc', 'database.cpython-311.pyc', 'demir_engine.cpython-311.pyc', 'doseme_demiri_engine.cpython-311.pyc']

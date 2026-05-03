@@ -1,0 +1,135 @@
+=== LINE_MIN_COL DEBUG (lines 760-779) ===
+
+L760: min_col=8 -> rounded=8 | self._btn_mod_kamu = QPushButton(" Kamu Ýhalesi")
+       col=  8  LOAD_DEREF                     [create_metraj_tab]
+       col=  8  STORE_ATTR                     [create_metraj_tab]
+       col= 29  LOAD_GLOBAL                    [create_metraj_tab]
+       col= 29  PRECALL                        [create_metraj_tab]
+       col= 29  CALL                           [create_metraj_tab]
+       col= 41  LOAD_CONST                     [create_metraj_tab]
+
+L761: min_col=8 -> rounded=8 | self._btn_mod_kamu.setCheckable(True)
+       col=  8  LOAD_DEREF                     [create_metraj_tab]
+       col=  8  LOAD_ATTR                      [create_metraj_tab]
+       col=  8  LOAD_METHOD                    [create_metraj_tab]
+       col=  8  PRECALL                        [create_metraj_tab]
+       col=  8  CALL                           [create_metraj_tab]
+       col=  8  POP_TOP                        [create_metraj_tab]
+
+L762: min_col=8 -> rounded=8 | self._btn_mod_kamu.setChecked(True)
+       col=  8  LOAD_DEREF                     [create_metraj_tab]
+       col=  8  LOAD_ATTR                      [create_metraj_tab]
+       col=  8  LOAD_METHOD                    [create_metraj_tab]
+       col=  8  PRECALL                        [create_metraj_tab]
+       col=  8  CALL                           [create_metraj_tab]
+       col=  8  POP_TOP                        [create_metraj_tab]
+
+L763: min_col=8 -> rounded=8 | self._btn_mod_kamu.setSizePolicy(
+       col=  8  LOAD_DEREF                     [create_metraj_tab]
+       col=  8  LOAD_ATTR                      [create_metraj_tab]
+       col=  8  LOAD_METHOD                    [create_metraj_tab]
+       col=  8  PRECALL                        [create_metraj_tab]
+       col=  8  CALL                           [create_metraj_tab]
+       col=  8  POP_TOP                        [create_metraj_tab]
+
+L764: min_col=12 -> rounded=12 | self._btn_mod_kamu.sizePolicy().horizontalPolicy(),
+       col= 12  LOAD_DEREF                     [create_metraj_tab]
+       col= 12  LOAD_ATTR                      [create_metraj_tab]
+       col= 12  LOAD_METHOD                    [create_metraj_tab]
+       col= 12  PRECALL                        [create_metraj_tab]
+       col= 12  CALL                           [create_metraj_tab]
+       col= 12  LOAD_METHOD                    [create_metraj_tab]
+
+L765: min_col=12 -> rounded=12 | self._btn_mod_kamu.sizePolicy().verticalPolicy()
+       col= 12  LOAD_DEREF                     [create_metraj_tab]
+       col= 12  LOAD_ATTR                      [create_metraj_tab]
+       col= 12  LOAD_METHOD                    [create_metraj_tab]
+       col= 12  PRECALL                        [create_metraj_tab]
+       col= 12  CALL                           [create_metraj_tab]
+       col= 12  LOAD_METHOD                    [create_metraj_tab]
+
+L766: NO INSTRUCTIONS | )
+
+L767: min_col=8 -> rounded=8 | self._btn_mod_kamu.setStyleSheet(_STYLE_KAMU)
+       col=  8  LOAD_DEREF                     [create_metraj_tab]
+       col=  8  LOAD_ATTR                      [create_metraj_tab]
+       col=  8  LOAD_METHOD                    [create_metraj_tab]
+       col=  8  PRECALL                        [create_metraj_tab]
+       col=  8  CALL                           [create_metraj_tab]
+       col=  8  POP_TOP                        [create_metraj_tab]
+
+L768: min_col=0 -> rounded=0 | self._btn_mod_kamu.clicked.connect(lambda: self._metraj_modu_degi
+       col=  0  RETURN_VALUE                   [<lambda>]
+       col=  8  LOAD_DEREF                     [create_metraj_tab]
+       col=  8  LOAD_ATTR                      [create_metraj_tab]
+       col=  8  LOAD_ATTR                      [create_metraj_tab]
+       col=  8  LOAD_METHOD                    [create_metraj_tab]
+       col=  8  PRECALL                        [create_metraj_tab]
+
+L769: min_col=8 -> rounded=8 | mod_layout.addWidget(self._btn_mod_kamu)
+       col=  8  LOAD_FAST                      [create_metraj_tab]
+       col=  8  LOAD_METHOD                    [create_metraj_tab]
+       col=  8  PRECALL                        [create_metraj_tab]
+       col=  8  CALL                           [create_metraj_tab]
+       col=  8  POP_TOP                        [create_metraj_tab]
+       col= 29  LOAD_DEREF                     [create_metraj_tab]
+
+L770: NO INSTRUCTIONS | 
+
+L771: min_col=8 -> rounded=8 | self._btn_mod_serbest = QPushButton(" Serbest Piyasa")
+       col=  8  LOAD_DEREF                     [create_metraj_tab]
+       col=  8  STORE_ATTR                     [create_metraj_tab]
+       col= 32  LOAD_GLOBAL                    [create_metraj_tab]
+       col= 32  PRECALL                        [create_metraj_tab]
+       col= 32  CALL                           [create_metraj_tab]
+       col= 44  LOAD_CONST                     [create_metraj_tab]
+
+L772: min_col=8 -> rounded=8 | self._btn_mod_serbest.setCheckable(True)
+       col=  8  LOAD_DEREF                     [create_metraj_tab]
+       col=  8  LOAD_ATTR                      [create_metraj_tab]
+       col=  8  LOAD_METHOD                    [create_metraj_tab]
+       col=  8  PRECALL                        [create_metraj_tab]
+       col=  8  CALL                           [create_metraj_tab]
+       col=  8  POP_TOP                        [create_metraj_tab]
+
+L773: min_col=8 -> rounded=8 | self._btn_mod_serbest.setChecked(False)
+       col=  8  LOAD_DEREF                     [create_metraj_tab]
+       col=  8  LOAD_ATTR                      [create_metraj_tab]
+       col=  8  LOAD_METHOD                    [create_metraj_tab]
+       col=  8  PRECALL                        [create_metraj_tab]
+       col=  8  CALL                           [create_metraj_tab]
+       col=  8  POP_TOP                        [create_metraj_tab]
+
+L774: min_col=8 -> rounded=8 | self._btn_mod_serbest.setStyleSheet(_STYLE_PASIF)
+       col=  8  LOAD_DEREF                     [create_metraj_tab]
+       col=  8  LOAD_ATTR                      [create_metraj_tab]
+       col=  8  LOAD_METHOD                    [create_metraj_tab]
+       col=  8  PRECALL                        [create_metraj_tab]
+       col=  8  CALL                           [create_metraj_tab]
+       col=  8  POP_TOP                        [create_metraj_tab]
+
+L775: min_col=0 -> rounded=0 | self._btn_mod_serbest.clicked.connect(lambda: self._metraj_modu_d
+       col=  0  RETURN_VALUE                   [<lambda>]
+       col=  8  LOAD_DEREF                     [create_metraj_tab]
+       col=  8  LOAD_ATTR                      [create_metraj_tab]
+       col=  8  LOAD_ATTR                      [create_metraj_tab]
+       col=  8  LOAD_METHOD                    [create_metraj_tab]
+       col=  8  PRECALL                        [create_metraj_tab]
+
+L776: min_col=8 -> rounded=8 | mod_layout.addWidget(self._btn_mod_serbest)
+       col=  8  LOAD_FAST                      [create_metraj_tab]
+       col=  8  LOAD_METHOD                    [create_metraj_tab]
+       col=  8  PRECALL                        [create_metraj_tab]
+       col=  8  CALL                           [create_metraj_tab]
+       col=  8  POP_TOP                        [create_metraj_tab]
+       col= 29  LOAD_DEREF                     [create_metraj_tab]
+
+L777: NO INSTRUCTIONS | 
+
+L778: NO INSTRUCTIONS | # Stilleri sonradan eriþebilmek için sakla
+
+L779: min_col=8 -> rounded=8 | self._metraj_style_kamu = _STYLE_KAMU
+       col=  8  LOAD_DEREF                     [create_metraj_tab]
+       col=  8  STORE_ATTR                     [create_metraj_tab]
+       col= 37  LOAD_FAST                      [create_metraj_tab]
+

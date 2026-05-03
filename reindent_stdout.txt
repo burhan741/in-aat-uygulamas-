@@ -1,0 +1,26 @@
+ADIM 1: .pyc yukleniyor
+  OK
+ADIM 2: Bytecode pozisyonlari okunuyor
+  6796 satir haritada
+ADIM 3: def/class depth haritasi
+  249 def/class satiri
+ADIM 4: Kaynak okunuyor
+  10233 satir
+  Bilinen: 6796/10233 satirlar (%66)
+ADIM 5: Indent atama gecisi
+ADIM 6: Dosya yaziliyor
+  Yazildi: E:\ÝNÞAAT METRAJ PRO\main_window_fixed.py (475771 bytes)
+ADIM 7: Syntax dogrulamasi
+SYNTAX HATASI:   File "E:\ÝNÞAAT METRAJ PRO\main_window_fixed.py", line 73
+    except Exception as e:
+SyntaxError: expected 'except' or 'finally' block
+
+  Hata satiri 73 civari:
+    L70: "                    result['formuller_loaded'] = material_result['formuller']['success'] >"
+    L71: "                    result['malzeme_count'] = material_result['malzemeler']['success']\n"
+    L72: "                    result['formul_count'] = material_result['formuller']['success']\n"
+    L73: '        except Exception as e:\n' <<<<
+    L74: '                    print(f"Malzeme yükleme hatasý: {e}")\n'
+    L75: '            else:\n'
+    L76: '                # Zaten yüklü, sayýlarý al\n'
+    L77: '                try:\n'

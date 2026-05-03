@@ -1,0 +1,85 @@
+Toplam kod satiri (yorum haric): 8070
+Kapsanan satir (min_col var): 6796 (%84)
+Haritadaki toplam satir: 6797
+
+L#   | mevcut_indent | pyc_min_col | kaynak
+--------------------------------------------------------------------------------
+L  42 | 0             | 0           | class DataLoaderThread(QThread):
+L  43 | 1             | 4           | """Arka planda veri yükleme thread'i""" <<<
+L  44 | 1             | 4           | data_loaded = pyqtSignal(dict) <<<
+L  45 | 1             | 4           | poz_question_needed = pyqtSignal() <<<
+L  46 | 2             | None        | 
+L  47 | 1             | 0           | def __init__(self, db: DatabaseManager) -> None: <<<
+L  48 | 1             | 8           | super().__init__() <<<
+L  49 | 1             | 8           | self.db = db <<<
+L  50 | 2             | None        | 
+L  51 | 1             | 0           | def run(self) -> None: <<<
+L  52 | 1             | None        | """Thread çalıştığında"""
+L  53 | 1             | 8           | result = { <<<
+L  54 | 1             | 33          | 'malzemeler_loaded': False, <<<
+L  55 | 1             | 32          | 'formuller_loaded': False, <<<
+L  56 | 1             | 29          | 'malzeme_count': 0, <<<
+L  57 | 1             | 28          | 'formul_count': 0 <<<
+L  58 | 1             | None        | }
+L  59 | 2             | None        | 
+L  60 | 1             | None        | # Pozları kontrol et
+L  61 | 1             | 8           | if not check_pozlar_loaded(self.db): <<<
+L  62 | 1             | None        | # Poz yükleme sorusu için sinyal gönder
+L  63 | 1             | 12          | self.poz_question_needed.emit() <<<
+L  64 | 1             | None        | else:
+L  65 | 1             | None        | # Malzeme ve formülleri kontrol et ve yükle
+L  66 | 1             | 12          | if not check_malzemeler_loaded(self.db) or not check_formull <<<
+L  67 | 1             | 16          | try: <<<
+L  68 | 1             | 20          | material_result = initialize_material_data(self.db, force_re <<<
+L  69 | 1             | 20          | result['malzemeler_loaded'] = material_result['malzemeler'][ <<<
+L  70 | 1             | 20          | result['formuller_loaded'] = material_result['formuller']['s <<<
+L  71 | 1             | 20          | result['malzeme_count'] = material_result['malzemeler']['suc <<<
+L  72 | 1             | 20          | result['formul_count'] = material_result['formuller']['succe <<<
+L  73 | 1             | 16          | except Exception as e: <<<
+L  74 | 1             | 20          | print(f"Malzeme yükleme hatası: {e}") <<<
+L  75 | 1             | None        | else:
+L  76 | 1             | None        | # Zaten yüklü, sayıları al
+L  77 | 1             | 16          | try: <<<
+L  78 | 1             | 20          | with self.db.get_connection() as conn: <<<
+L  79 | 1             | 24          | cursor = conn.cursor() <<<
+L  80 | 1             | 24          | cursor.execute("SELECT COUNT(*) as count FROM malzemeler") <<<
+L  81 | 1             | 24          | result['malzeme_count'] = cursor.fetchone()['count'] <<<
+L  82 | 1             | 24          | cursor.execute("SELECT COUNT(*) as count FROM malzeme_formul <<<
+L  83 | 1             | 24          | result['formul_count'] = cursor.fetchone()['count'] <<<
+L  84 | 1             | 16          | except Exception as e: <<<
+L  85 | 1             | 20          | print(f"Sayım hatası: {e}") <<<
+L  86 | 2             | None        | 
+L  87 | 1             | None        | # Sonucu gönder
+L  88 | 1             | 8           | self.data_loaded.emit(result) <<<
+L  89 | 1             | None        | 
+L  90 | 1             | None        | 
+L  91 | 0             | 0           | class InitialDataLoaderThread(QThread):
+L  92 | 1             | 4           | """İlk açılışta proje ve diğer verileri yükleyen thread""" <<<
+L  93 | 1             | 4           | projects_loaded = pyqtSignal(list) <<<
+L  94 | 2             | None        | 
+L  95 | 1             | 0           | def __init__(self, db: DatabaseManager) -> None: <<<
+L  96 | 1             | 8           | super().__init__() <<<
+L  97 | 1             | 8           | self.db = db <<<
+L  98 | 2             | None        | 
+L  99 | 1             | 0           | def run(self) -> None: <<<
+L 100 | 1             | None        | """Thread çalıştığında"""
+L 101 | 1             | 8           | try: <<<
+L 102 | 1             | None        | # Projeleri yükle
+L 103 | 1             | 12          | projects = self.db.get_all_projects() <<<
+L 104 | 1             | 12          | self.projects_loaded.emit(projects) <<<
+L 105 | 1             | 8           | except Exception as e: <<<
+L 106 | 1             | 12          | print(f"Proje yükleme hatası: {e}") <<<
+L 107 | 1             | 12          | self.projects_loaded.emit([]) <<<
+L 108 | 1             | None        | 
+L 109 | 1             | None        | 
+L 110 | 0             | 0           | class OzetDataThread(QThread):
+L 111 | 1             | 4           | """Proje Özeti sekmesi için arka planda veri hazırlayan thre <<<
+L 112 | 1             | None        | DB sorguları + tüm hesaplamaları ana thread'i bloke etmeden 
+L 113 | 1             | None        | """
+L 114 | 1             | 4           | data_ready = pyqtSignal(dict) <<<
+L 115 | 1             | None        | 
+L 116 | 1             | 0           | def __init__(self, db: 'DatabaseManager', proje_id: int, <<<
+L 117 | 1             | None        | kdv_rate: float, current_materials: list) -> None:
+L 118 | 1             | 8           | super().__init__() <<<
+L 119 | 1             | 8           | self.db = db <<<
+L 120 | 1             | 8           | self.proje_id = proje_id <<<

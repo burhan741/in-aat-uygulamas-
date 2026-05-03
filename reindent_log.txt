@@ -1,0 +1,23 @@
+ADIM 1: .pyc yukleniyor
+  OK
+ADIM 2: Bytecode pozisyonlari okunuyor
+  6796 satir haritada
+ADIM 3: def/class depth haritasi
+  249 def/class satiri
+ADIM 4: Kaynak okunuyor
+  10233 satir
+  Bilinen: 6756/10233 satirlar (%66)
+ADIM 5: Indent atama gecisi
+ADIM 6: Dosya yaziliyor
+  Yazildi: E:\İNŞAAT METRAJ PRO\main_window_fixed.py (477115 bytes)
+ADIM 7: Syntax dogrulamasi
+SYNTAX HATASI: Sorry: IndentationError: unindent does not match any outer indentation level (main_window_fixed.py, line 3977)
+  Hata satiri 3977 civari:
+    L3974: "        if 'bims' in cins_lower:\n"
+    L3975: '            if 15 <= kalinlik <= 25:\n'
+    L3976: "                    return ('Bims', 12.5) # 20cm varsayılan (standart bims tuğla)\n"
+    L3977: '                elif kalinlik > 25:\n' <<<<
+    L3978: "                    return ('Bims', 10.0) # 25cm varsayılan\n"
+    L3979: '\n'
+    L3980: "        if 'gazbeton' in cins_lower:\n"
+    L3981: '            if 15 <= kalinlik <= 25:\n'

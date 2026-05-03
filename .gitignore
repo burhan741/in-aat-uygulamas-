@@ -1,0 +1,47 @@
+# Windows reserved device names (git add -A hatası önlenir)
+nul
+NUL
+
+# Virtual environment
+.venv/
+
+# Build artifacts
+dist/
+build/
+*.exe
+
+# Python cache
+__pycache__/
+*.py[cod]
+
+# Logs
+*.log
+error_log.txt
+
+# Claude Code temp files
+claude-*-cwd
+
+# Test / debug / geçici dosyalar
+test_*.py
+test_*.bat
+test_*.txt
+check_*.py
+verify_*.py
+verify_*.txt
+validate_*.py
+validate_*.txt
+temizle_*.py
+temp_*.py
+try_decompile*.py
+cleanup_*.py
+cleanup_*.txt
+tool_check.txt
+tools_result.txt
+*_result.txt
+*_BACKUP_*.py
+pyrightconfig.json
+anthropic_check.txt
+syntax_check_result.txt
+main_check_result.txt
+olustur_tanitim_pdf.py
+font_utils.py

@@ -1,0 +1,43 @@
+=== 0 SPACE LINES (first 30) ===
+L   1: '# -*- coding: utf-8 -*-'
+L   2: '"""'
+L   3: 'AutoCAD Canlý Baðlantý Modülü (COM Automation)'
+L   4: '=============================================='
+L   5: 'Profesyonel metraj yazýlýmlarý gibi AutoCAD ile canlý baðlantý kurar.'
+L   6: 'win32com.client kullanarak ActiveX/COM üzerinden iletiþim saðlar.'
+L   8: 'Yazar: ÝNÞAAT METRAJ PRO'
+L   9: 'Tarih: 2026'
+L  10: '"""'
+L  12: 'import logging'
+L  13: 'import re'
+L  14: 'import time'
+L  15: 'import math'
+L  16: 'from typing import Optional, List, Dict, Any, Tuple'
+L  17: 'from dataclasses import dataclass, field'
+L  18: 'from enum import IntEnum'
+L  20: 'logger = logging.getLogger(__name__)'
+L  22: '# win32com opsiyonel import'
+L  23: 'try:'
+L  28: 'except ImportError:'
+L  32: '# win32gui opsiyonel import (pencere yönetimi için)'
+L  33: 'try:'
+L  37: 'except ImportError:'
+L  41: 'class AcadColor(IntEnum):'
+L  54: 'class AcadEntityType:'
+L  71: '@dataclass'
+L  72: 'class MetrajObjesi:'
+L  91: '@dataclass'
+L  92: 'class DemirBilgisi:'
+L 107: '# Demir çap -> kg/m tablosu (nervürlü)'
+=== 2 SPACE LINES ===
+L 764: "  'entity': entity,"
+L 765: "  'object_name': obj_name,"
+L 766: "  'handle': None,"
+L 767: "  'text': None,"
+L 768: "  'layer': '',"
+L 769: "  'color': 256,"
+L 782: '  text = str(t)'
+L1373: '  metin_props_listesi.append(props)'
+L1375: '  logger.debug(f"Metin objesi okunamadý, atlanýyor (index: {i})")'
+L1423: '  f"Metin kontrol ediliyor: \'{text_content}\' "'
+L1424: '  f"(hex: {text_content.encode(\'utf-8\').hex()})"'

@@ -1,0 +1,4 @@
+  0 space:   61 lines
+  1 space: 2263 lines
+  2 space:   11 lines
+Total non-empty: 2335

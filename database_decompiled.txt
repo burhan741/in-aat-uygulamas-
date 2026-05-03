@@ -1,0 +1,16 @@
+E:\ÝNÞAAT METRAJ PRO\.venv\Lib\site-packages\click\core.py:1223: UserWarning: The parameter --version is used more than once. Remove its duplicate as parameters should be unique.
+  parser = self.make_parser(ctx)
+E:\ÝNÞAAT METRAJ PRO\.venv\Lib\site-packages\click\core.py:1216: UserWarning: The parameter --version is used more than once. Remove its duplicate as parameters should be unique.
+  self.parse_args(ctx, args)
+
+# Unsupported bytecode in file E:\ÝNÞAAT METRAJ PRO\yeni_proje\app\core\__pycache__\database.cpython-311.pyc
+# Unsupported Python version, 3.11, for decompilation
+# decompyle3 version 3.9.3
+# Python bytecode version base 3.11 (3495)
+# Decompiled from: Python 3.11.9 (tags/v3.11.9:de54cf5, Apr  2 2024, 10:12:12) [MSC v.1938 64 bit (AMD64)]
+# Embedded file name: E:\ÝNÞAAT METRAJ PRO\yeni_proje\app\core\database.py
+# Compiled at: 2026-02-21 20:22:43
+# Size of source mod 2**32: 137280 bytes
+
+Unsupported Python version, 3.11, for decompilation
+

@@ -1,0 +1,8 @@
+Satir sayisi: 1042
+SYNTAX_ERROR L92: expected an indented block after function definition on line 91
+  90: ' @property\n'
+  91: ' def toplam_basamak_sayisi(self) -> int:\n'
+  92: ' """Toplam basamak adedi"""\n'
+  93: ' return self.kat_sayisi * self.kat_basi_basamak_sayisi\n'
+  94: '\n'
+  95: ' @property\n'

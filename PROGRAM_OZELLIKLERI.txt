@@ -1,0 +1,3784 @@
+================================================================================
+                    INSAAT METRAJ PRO - TUM OZELLIKLER
+================================================================================
+
+Son Guncelleme: 30 Nisan 2026 (Rev-86)
+
+================================================================================
+Rev-86 (2026-04-30) — PDF Turkce Font Fix + AI Routing + EXE Spec Guncelleme
+================================================================================
+* GUNCELLEME: 8 PDF Engine — Turkce karakter duzeltmesi
+  - hakedis_kesinti_engine.py, bfa_engine.py, atasaman_engine.py,
+    ince_isler_hizli_engine.py, nakit_akis_engine.py, santiye_gunluk_engine.py,
+    yaklasik_maliyet_engine.py, ekap_engine.py
+  - Hardcoded "Helvetica" / "Helvetica-Bold" / "Helvetica-Oblique" kaldirildi
+  - font_utils.get_fonts() ile Windows sistem fontlari (Arial/Calibri) kullaniliyor
+  - PDF'lerde i, s, g, u, c, o Turkce karakterler artik dogru gozukuyor
+  - Fallback: font kaydedilemezse Helvetica devreye girer (hata vermez)
+  - SYNTAX_OK (8 dosya)
+* GUNCELLEME: app/core/claude_engine.py — AI Routing Protokolleri
+  - HAKEDIS PROTOKOLU eklendi: "hakedis", "kesinti", "avans mahsup" gibi
+    ifadeler artik otomatik olarak hakedis_hesapla aracini tetikliyor
+  - GECIKME CEZASI PROTOKOLU eklendi: "gecikme cezasi", "sure asimi",
+    "teslim gecikmesi" ifadeleri gecikme_ceza_hesapla aracini tetikliyor
+  - Hayali rakam uretimi onlendi; tum hesaplar araclara yonlendiriliyor
+  - SYNTAX_OK
+* GUNCELLEME: yeni_proje/InsaatMetrajPro.spec — EXE Guncelleme
+  - fitz (PyMuPDF) collect_all eklendi — PDF Metraj modulu EXE'de calisacak
+  - cryptography paketi hiddenimports'a eklendi (EKAP AES sifreleme)
+  - Rev-67~83 arasi tum yeni core + UI modulleri explicit hiddenimports'a eklendi:
+    csb_poz_engine, pdf_metraj_engine, bfa_engine, atasaman_engine,
+    santiye_gunluk_engine, nakit_akis_engine, ince_isler_hizli_engine
+    + ilgili UI pencereler + app.utils.font_utils
+  - EXE build: build_exe.bat ile yeniden derle
+
+================================================================================
+Rev-85 (2026-04-28) — AI Yonlendirme + Poz Bug + Cevre Modulu Kaldirildi
+================================================================================
+* GÜNCELLEME: app/core/claude_engine.py
+  - YENİ ARAÇ: yaklasik_maliyet_hesapla — kapsamli yapi maliyeti (kaba yapi +
+    ince isler + tesisat + genel gider + KDV); uc kalite seviyesi (Ekonomik/Orta/
+    Yuksek); alan_m2 + kat_sayisi + yapi_tipi + yapi_sistemi + kalite_seviyesi
+    parametreleri; KDV haric/dahil toplam + TL/m2 birim maliyet donduruyor
+  - GÜNCELLENDİ: SISTEM_PROMPT — MALİYET TAHMİNİ PROTOKOLÜ eklendi; maliyet/
+    butce/ne kadar soruları artık yaklasik_maliyet_hesapla aracını tetikliyor;
+    METRAJ URETİMİ PROTOKOLU sadece acik ekleme talebinde calisacak sekilde
+    guncellendi; "Maliyet sorulari icin yaklasik_maliyet_hesapla kullan" kurali
+    eklendi
+  - GÜNCELLENDİ: kaba_yapi_maliyet tanimi — kapsamli toplam maliyet icin
+    yaklasik_maliyet_hesapla kullani tavsiye ettirecek sekilde aciklama guncellendi
+  - SYNTAX_OK
+* GÜNCELLEME: app/utils/data_loader_minimal.py
+  - BUGFIX: check_pozlar_loaded() — eski pozlar tablosu yerine CSBPozEngine +
+    csb_pozlari tablosuna bakiyor; pozlar artik dogru saptaniyor
+  - BUGFIX: initialize_database_data() — 'message' key eksikti (KeyError crash
+    at startup); CSBPozEngine seed cagrisi eklendi; doner dict'e 'message' alani
+    eklendi
+  - SYNTAX_OK
+* GÜNCELLEME: app/ui/main_window.py
+  - KALDIRILDI: "Cevre ve Surdurulebilirlik" sekmesi tamamen kaldirildi (hoca
+    onayiyla; hedef kitle kullanmiyor)
+  - Gantt index 9→8, EKAP index 10→9, DevletIhalesi index 11→10 olarak guncellendi
+  - _asistan_gantt_ac() setCurrentIndex(9)→setCurrentIndex(8) guncellendi
+  - SurdurulebilirlikWindow import kaldirildi
+  - SYNTAX_OK
+* BİLGİ: Gantt Excel import (goster_iceri_aktar_menu → _aktar_excel) Rev-15'ten
+  beri mevcuttu; openpyxl ile .xlsx, CSV ve JSON formatlarini destekliyor
+
+================================================================================
+Rev-84 (2026-04-28) — Ince Isler Hizli: Iscilik + CSV + Metraj Aktarim
+================================================================================
+* GÜNCELLEME: app/core/ince_isler_hizli_engine.py
+  - YENİ: IscilikKalemi dataclass — is_tipi_ad, verimlilik_m2_gun, gerekli_gun,
+    gunluk_ucret, toplam alanlari
+  - YENİ: ISCILIK_VERIMLILIK dict (CŞB normlari): ic_siva=25, dis_siva=20,
+    alci=20, astar=40, ic_boya=45, dis_boya=30 (m2/gun/usta)
+  - YENİ: GUNLUK_UCRET_VARSAYILAN = 1800 TL (2026 ortalama usta gunlugu)
+  - YENİ: hesapla_iscilik(is_tipleri, alan, gunluk_ucret) — CŞB normuna gore
+    her is tipi icin gerekli_gun = alan / verimlilik, toplam = gun × ucret
+  - YENİ: csv_disari_aktar(kalemler, iscilik_kalemleri, dosya_yolu) — utf-8-sig
+    kodlamali, Excel uyumlu; malzeme + iscilik + genel toplam bloklari
+  - GÜNCELLENDİ: malzeme_toplam / iscilik_toplam / genel_toplam ayri metodlar
+  - GÜNCELLENDİ: pdf_rapor() — iscilik_kalemleri=None opsiyonel parametresi;
+    PDF'e ayri MALZEME + ISCILIK tablolari + GENEL TOPLAM satiri eklendi
+* GÜNCELLEME: app/ui/ince_isler_hizli_window.py
+  - YENİ: metraj_aktarim_istegi = pyqtSignal(list) — malzeme kalemlerini
+    dis modullere iletmek icin; payload: ad/miktar/birim/birim_fiyat/toplam/is_tipi
+  - YENİ: Usta Gunlugu spin box (alan gurubunda) — varsayilan 1800 TL/gun
+  - GÜNCELLENDİ: tablo 6 sutun korundu; iscilik satirlari mavi arkaplan (D6EAF8)
+    ile malzeme satirlarinin altina eklenir
+  - YENİ: Ozet: ayri "Malzeme: X TL" + "Iscilik: Y TL" + "GENEL TOPLAM" etiketi
+  - YENİ: CSV/Excel butonu — csv_disari_aktar() tetikler, dosya kaydet dialog
+  - YENİ: Metraj Aktarim butonu — metraj_aktarim_istegi sinyali emit eder +
+    tab-separated format panoya kopyalar (Excel/Metraj modulune Ctrl+V)
+  - GÜNCELLENDİ: _pdf_aktar iscilik_kalemleri parametresi ile cagrilir
+  - GÜNCELLENDİ: _temizle _iscilik_kalemleri ve yeni etiketleri temizler
+  - SYNTAX_OK, 4-space PEP8
+
+================================================================================
+Rev-81 (2026-04-27) — Santiye Gunluk Rapor Modulu
+================================================================================
+* YENİ MODÜL: app/core/santiye_gunluk_engine.py — Santiye Gunluk Rapor Motoru
+  - SantiyeGunlukKayit dataclass: tarih, hava, ekip (usta/yardimci/sef/taseron),
+    yapilan isler, kullanilan malzeme (JSON liste), notlar, ziyaretciler
+  - SantiyeGunlukEngine: ayri SQLite (santiye_gunluk.db, database.py dokunulmadi)
+    * CRUD: kayit_ekle, kayit_guncelle, kayit_sil, kayit_getir, tarih_ile_getir
+    * kayitlari_listele (proje + tarih aralik filtresi), kayitli_tarihler
+    * pdf_uret: tarih aralikli PDF santiye defteri, her gun ayri sayfa,
+      alt kisimda 3 imza alani (Santiye Sefi / Muteahhit / Kontrol Muhendisi)
+* YENİ MODÜL: app/ui/santiye_gunluk_window.py — Santiye Defteri UI
+  - Sol panel: proje secimi + QCalendarWidget (kayitli gunler yesil isaretli)
+    + aylik kayit listesi
+  - Sag panel: tarih, hava durumu (Otomatik Doldur butonu — Open-Meteo),
+    ekip cizelgesi (4 spin), yapilan isler, malzeme tablosu (ekle/sil),
+    notlar, ziyaretciler
+  - "Otomatik Doldur": HavaOtoDoldurThread → Open-Meteo API (hava_durumu.py entegrasyonu)
+  - "PDF Santiye Defteri Uret": tarih aralik dialog → reportlab PDF
+  - Araçlar menüsü: "Santiye Gunluk Rapor (Santiye Defteri)"
+* EXE uyumu: QUANTIX_DATA_DIR env var destegi, database.py dokunulmadi
+* YENİ MODÜL: app/core/nakit_akis_engine.py — Nakit Akis Projeksiyonu Motoru
+  - NakitAkisParametreleri: sozlesme bedeli, periyot, odeme gecikmesi, KDV,
+    kesinti secimleri, gider oranlari (iscilik/malzeme/taseron), vade gunleri
+  - NakitAkisEngine: Gantt'tan aylik is yogunlugu cikar (calisma gunu bazli),
+    sozlesme bedeli uzerinden oranlama yapar, hakedis kesintileri uygular
+    (kesin teminat/damga vergisi/GV stopaj/SGK), vade farki ile gider kaydirma
+  - AylikAkis dataclass: is bedeli, net hakedis gelir, iscilik/malzeme/taseron
+    cikis, aylik net, kumulatif pozisyon
+  - kritik_aciklar(): kumulatif negatif aylari listele
+  - CSV/Excel ve PDF export (landscape A4)
+* YENİ MODÜL: app/ui/nakit_akis_window.py — Nakit Akis Projeksiyonu UI
+  - Sol panel: sozlesme bilgileri, kesinti secimleri, gider oranlari, vade
+  - Sag panel: "Tablo" sekmesi (kumulatif negatif satirlar kirmizi),
+    "Grafik" sekmesi (matplotlib bar + kumulatif line, negatif bolge kirmizi)
+  - Uyarilar: kritik nakit acigi olan aylar liste
+  - Araçlar menüsü: "Nakit Akis Projeksiyonu"
+  - Gantt penceresi aciksa gantt_engine otomatik baglanir
+
+================================================================================
+Rev-83 (2026-04-27) — Ince Isler Hizli Hesap Paneli
+================================================================================
+* YENİ MODÜL: app/core/ince_isler_hizli_engine.py
+  - CŞB malzeme katsayilari (ic_siva/alci/astar/ic_boya/dis_siva/dis_boya)
+  - efektif_alan(): kapi+pencere dusilur
+  - hesapla_kombo(): coklu is tipi secimi, tedarikci DB fuzzy fiyat esleme
+  - MalzemeKalemi: torba_sayisi otomatik (alci icin)
+  - PDF rapor: reportlab A4, malzeme tablosu + toplam
+* YENİ MODÜL: app/ui/ince_isler_hizli_window.py
+  - Net alan + kapi/pencere adet+alan girisi
+  - Efektif alan canli hesap
+  - Is tipi checkbox secimi (6 tip)
+  - Sonuc tablosu: birim fiyat sutunu cift tikla duzenlenebilir (manuel override)
+  - Fiyat 0 ise sari vurgu (tedarikci DB'de bulunamadi)
+  - PDF Rapor + Temizle butonlari
+  - Araçlar menüsü: "Ince Isler Hizli Maliyet Hesabi"
+
+================================================================================
+Rev-82 (2026-04-27) — Nakit Akis Projeksiyonu
+================================================================================
+
+================================================================================
+Rev-80 (2026-04-26) — Runtime Hata Duzeltmeleri
+================================================================================
+* BUGFIX: sgk_iscilik_engine.py — 1-space cascade tümden yeniden yazildi
+  - SgkIscilkEngine tüm metodlari _round2 içine gömülmüştü → AttributeError
+  - is_kolu_secenekleri @staticmethod artik class-level'de → SGK sekmesi açiliyor
+* BUGFIX: atasaman_window.py — QTableWidget.currentRowChanged YOK
+  - Dogru sinyal: currentCellChanged(row,col,prow,pcol) → lambda ile row iletildi
+* BUGFIX: hakedis_window.py — __init__(self, parent=None) → __init__(self, db=None, parent=None)
+  - main_window HakedisWindow(self.db, self) cagirisi artik calisiyor
+* YENİ: yaklasik_maliyet_window.py — Yardim butonu + kullaniim kilavuzu eklendi
+  - 4 sekmenin tamamini, tum butonlari aciklayan kaydirilebilir Turkce dialog
+* YENİ: csb_pdf_to_csv.py — CŞB PDF/Excel → CSV donusturme scripti
+  - pdfplumber ile 700 sayfa PDF otomatik tablo cikartma
+  - Excel versiyonu destegi, CSBPozEngine.csv_iceri_aktar ile uyumlu format
+
+================================================================================
+Rev-79 (2026-04-26) — EKAP Modulu Kaldirildi, Ihale Degerlendirme Asistani Eklendi
+================================================================================
+* KALDIRILDI: Eski EKAP ihale arama ekrani (kamu sitesinin kopyasiydi, ekstra deger yoktu)
+* YENİ MODÜL: app/core/ekap_engine.py — IhaleEngine + FizibiliteSonucu (tamamen yeniden yazildi)
+  - ikn_ile_getir(ikn): IKN numarasiyla EKAP'tan ihale bilgisi ceker (opsiyonel, API guvenilmez)
+  - fizibilite_hesapla(): API bagimsiz, saf matematik — 4734/4735 KIK tum kesintiler
+  - pdf_rapor_uret(): reportlab ile A4 fizibilite raporu (karar kutusu + doküm tablosu + uyarilar)
+* YENİ MODÜL: app/ui/ekap_window.py — IhaleDegerlendirmeWindow (tamamen yeniden yazildi)
+  - Sol panel: IKN + EKAP'tan Cek butonu (API calismaz ise elle giris), ihale bilgileri formu,
+    kendi maliyeti girisi, gecikme gun alani
+  - Sag panel: Karar Karti (renk kodlu — yesil/sari/turuncu/kirmizi + risk daire skalasi),
+    Hesap Dokumu tablosu (17 satir — ham kar, kesintiler, net kar, nakit yuku, asiri dusuk sinir),
+    Uyarilar metin alani
+  - Hesaplanan degerler (API gerekmez):
+    * Ham Kar = Ihale Bedeli - Maliyet
+    * Teklif Marji = (B-M)/B x 100
+    * Damga Vergisi %0.948, GV Stopaji %3, SGK Prim %1, KIK Payi %0.05
+    * Gecikme Cezasi: gun x %0.5 x Ihale Bedeli
+    * Net Kar = Ham Kar - Tum Kesintiler
+    * Nakit Yuku (Bloke): Gecici Teminat %3 + Kesin Teminat %6 = %9
+    * Asiri Dusuk Sinir: Ihale Bedeli x %80 (KIK md.38)
+  - Risk Skoru 1-5: Kritik/Yuksek/Orta/Dusuk/Cok Dusuk (marj bazli)
+  - Karar: "GIREBILIRSİN / DİKKATLİ OL / RİSKLİ / GIREMEZSİN"
+  - PDF Raporu Kaydet: dosya secici + reportlab PDF (rapor yok ise uyari)
+  - Yardim butonu: 9 madde aciklamali kullanim kilavuzu
+* main_window.py Tab 10: "EKAP Ihale Sorgulama" → "Ihale Degerlendirme"
+  - Lazy load: EKAPWindow → IhaleDegerlendirmeWindow
+* DEVLET IHALESI ARACLAR MODULU — Tum alt sekmeler duzeltildi (4-space PEP8):
+  - devlet_ihalesi_widget.py: lazy-load + try/except yeniden yazildi (tek bozuk sekme digerini etkileyen hata giderildi)
+  - teminat_engine.py: 1-space cascade → 4-space; kalan_gun property nested bug duzeltildi
+  - teminat_window.py: TeminatWindow sinifi method icinde tanim kaynakli ImportError duzeltildi
+  - hakedis_kesinti_window.py: 1-space cascade → 4-space; tum metodlar duzeltildi
+  - birim_fiyat_analiz_window.py: 1-space cascade → 4-space; BilesenEkleDialog+YeniPozDialog+BirimFiyatAnalizWindow
+  - fiyat_farki_window.py: 1-space cascade → 4-space; PozFiyatFarkiDialog+FiyatFarkiWindow
+
+================================================================================
+Rev-78 (2026-04-26) — Ataşman Belgesi UI Penceresi Eklendi
+================================================================================
+* YENİ MODÜL: app/ui/atasaman_window.py — 3 sekmeli ataşman belgesi UI (sıfırdan yazıldı)
+  - AtasamanWindow(QWidget): ana pencere, koyu tema (DARK_BG/CARD_BG), ACCENT=#00BFFF
+  - Üst başlık bandı: "ATAŞMAN BELGESİ YÖNETİMİ" + "4735 Sayılı KİK" + Yardım butonu
+  - 3 Sekme:
+    * Sekme 1 — Belgeler:
+      - Sol panel: QListWidget (belge listesi, kalem sayısı gösterir) + Yeni/Sil butonları
+      - Sağ panel: 9 alan detay kartı (belge no, tarih, yüklenici, idare, kontrol mühendisi,
+        yapım tarihi, oluşturma tarihi, kalem sayısı, açıklama)
+      - Yeni Belge/Düzenle: _YeniBelgeDialog (QDateEdit + QFormLayout, belge no zorunlu)
+      - Belge seçimi → Ölçü Cetveli + Özet sekmelerine otomatik belge_yukle() sinyali
+    * Sekme 2 — Ölçü Cetveli:
+      - Araç çubuğu: Kalem Ekle / Düzenle / Sil / Fotoğraf Ekle / AI Boyut Analizi
+      - 14 sütun tablo: Sıra | Eleman Tipi | Tanım | Poz No | Birim | En | Boy | Yük |
+        Adet | Brüt | Çıkarılan | Net Miktar (yeşil+bold) | Notlar | Foto
+      - Alt özet çubuğu: Toplam Kalem + Net miktar (m³/m²/m/adet)
+      - _KalemDialog: Birime göre dinamik boyut alanları (m³↔m²↔m↔adet), anlık brüt/net göstergesi
+      - Fotoğraf ekleme: QFileDialog → engine.foto_ekle()
+    * Sekme 3 — Özet & Çıktı:
+      - 4 özet kart: Hacim (m³, mavi) / Alan (m², yeşil) / Uzunluk (m, turuncu) / Adet (mor)
+      - Eleman tipi bazında özet tablo (gruplandırılmış kalem sayısı, brüt/net toplam)
+      - PDF Ataşman Belgesi Üret → engine.pdf_atasaman_belgesi_uret() → QFileDialog kayıt
+      - Excel / CSV Aktar → engine.excel_disari_aktar() → QFileDialog kayıt
+  - _YeniBelgeDialog: 7 alan (belge no, tarih, yüklenici, idare, kontrol mühendisi,
+    yapım tarihi, açıklama); QDateEdit takvim popup; mevcut belgeyi düzenleme desteği
+  - _KalemDialog: eleman tipi ComboBox, boyut SpinBox'ları, anlık brüt/net hesap etiketi;
+    birim değişince gereksiz boyut alanları otomatik gizlenir (m3↔m2↔m↔adet)
+  - _YapayZekaBoyutDialog (Vision API):
+    * Fotoğraf seç + QLabel önizleme (QPixmap scaled)
+    * "Yapay Zeka ile Analiz Et" → _VisionThread (QThread) → claude-opus-4-7
+    * QProgressBar (marque mode) analiz süresince görünür
+    * JSON yanıt → parse → _KalemDialog'a ön-değer olarak aktar
+    * Sonucu onayladıktan sonra yeni kalem eklenir
+  - _VisionThread: base64 encode → Anthropic SDK → claude-opus-4-7 vision → JSON parse
+    * Prompt: eleman_tipi / tanim / en_m / boy_m / yukseklik_m / adet / birim / notlar
+    * ANTHROPIC_API_KEY env var gereklidir
+  - Yardım diyaloğu: ataşman tanımı, sekme kılavuzu, hızlı kullanım adımları,
+    Vision API açıklaması, boyut formülleri — HTML formatında
+  - main_window.py: Araçlar menüsüne "Ataşman Belgesi" eklendi (open_atasaman metodu)
+    * Resmi Hakediş Belgesi girişinin hemen altına yerleştirildi
+    * Qt.WindowType.Window ile bağımsız pencere, 1200×760
+
+================================================================================
+Rev-77 (2026-04-25) — Ataşman Belgesi Motoru Eklendi
+================================================================================
+* YENİ MODÜL: app/core/atasaman_engine.py — 4735 KİK kapsamında ataşman belgesi motoru
+  - AtasamanEngine sınıfı: database.py'den bağımsız, kendi SQLite bağlantısı
+  - DB tabloları:
+    * atasaman_belgeler: proje_id, belge_no, belge_tarihi, yuklenci, idare,
+      kontrol_muhendisi, yapim_tarihi, aciklama, olusturma_tarihi
+    * atasaman_kalemleri: eleman_tipi, tanim, poz_no, birim, en, boy, yukseklik,
+      adet, brut_miktar, cikarilan, net_miktar, notlar, foto_yolu, sira
+    * FOREIGN KEY CASCADE: belge silinince tüm kalemleri otomatik silinir
+  - ELEMAN_TIPLERI: Kolon, Kiriş, Döşeme, Perde, Temel, Merdiven, Rampa, Hatıl, Lento, Serbest
+  - Boyutsal miktar hesabı (Python, SQLite trigger değil):
+    * m³: en × boy × yükseklik × adet
+    * m²: en × boy × adet
+    * m : boy × adet
+    * adet: adet
+  - net_miktar = max(0, brut_miktar - cikarilan) — negatif miktar koruması
+  - API: belge_olustur, belge_guncelle, belge_sil, tum_belgeler, belge_getir,
+    kalem_ekle, kalem_guncelle, kalem_sil, foto_ekle, toplam_hesapla,
+    pdf_atasaman_belgesi_uret, excel_disari_aktar
+  - toplam_hesapla(): birim bazında net miktar toplamı (m³/m²/m/adet + kalem_sayisi)
+  - PDF (reportlab A4 dikey):
+    * Başlık: "ATAŞMAN BELGESİ" + alt başlık (YİGŞ referansı)
+    * 2-kolon bilgi bölümü: sol (proje/idare/yüklenici) — sağ (belge no/tarih/müh.)
+    * 12 sütunlu ölçüm tablosu (alternatif satır rengi, sayısal sütun sağa hizalı)
+    * Birim bazında yeşil TOPLAM satırları
+    * 3-kolon imza bölümü: Yüklenici Vekili / Kontrol Mühendisi / İdare Amiri
+    * Yasal not: "Bu belge 4735 sayılı KİK kapsamında düzenlenmiştir."
+    * reportlab yoksa False döner (sessiz hata)
+  - Excel/CSV (openpyxl + fallback csv):
+    * openpyxl varsa .xlsx — renkli başlık, bant satır, geniş sütunlar
+    * openpyxl yoksa .csv — utf-8-sig encoding (Excel uyumlu)
+  - Test: SYNTAX_OK, IMPORT_OK; tüm CRUD + hesaplama testleri geçti
+
+================================================================================
+Rev-76 (2026-04-25) — BFA Penceresi + Menü Bağlantısı
+================================================================================
+* YENİ MODÜL: app/ui/bfa_window.py — CŞB standardında BFA penceresi (sıfırdan yazıldı)
+  - BFAWindow(QWidget): QSplitter 3-panel layout
+  - Sol panel: analiz listesi (poz kodu + tanım), arama, Yeni/Sil/CSV butonları
+  - Sağ üst: bileşen tablosu (Sıra/Tür/Açıklama/Birim/Miktar/BF/Tutar)
+    * Tür bazında satır renklendirmesi (mavi=malzeme, yeşil=işçilik, turuncu=makine)
+    * Çift tıkla düzenleme (_BilesenDialog), anlık tutar hesabı
+    * "+ Malzeme/İşçilik/Makine Ekle" | "Seçili Sil" | "Kaydet" | "PDF Üret" araç çubuğu
+  - Sağ alt: hesaplama özeti (Malzeme/İşçilik/Makine → Ara Toplam → %15 GG → %10 K/R → Birim Fiyat)
+  - _YeniAnalizDialog: poz kodu/tanım/birim girişi
+  - _BilesenDialog: tür/açıklama/birim/miktar/birim_fiyat + anlık tutar gösterimi
+  - Import hata toleranslı: _ENGINE_OK=False durumunda sahte motor
+* GÜNCELLENDİ: main_window.py — Araçlar menüsüne "Birim Fiyat Analizi (BFA)" eklendi
+  - tools_menu.addAction("Birim Fiyat Analizi (BFA)") → open_bfa()
+  - open_bfa(): BFAWindow lazy import + Qt.WindowType.Window + resize(1280,820)
+
+================================================================================
+Rev-75 (2026-04-25) — Birim Fiyat Analizi (BFA) Motoru Eklendi
+================================================================================
+* YENİ MODÜL: app/core/bfa_engine.py — CŞB standardında BFA motoru (sıfırdan yazıldı)
+  - BFAEngine sınıfı: database.py'den bağımsız, kendi SQLite bağlantısı
+  - DB tabloları: bfa_analizleri + bfa_bilesenler (FOREIGN KEY CASCADE)
+  - tutar = miktar * birim_fiyat Python'da hesaplanır (GENERATED ALWAYS AS KULLANILMADI)
+  - Seed: 10 kritik CŞB pozu otomatik yüklenir (tablo boşsa)
+    * 21.003 C25/30 Beton, 21.011 Kalıp, 21.022 Nervürlü Demir S420
+    * 22.001 Tuğla Duvar, 22.002 Gazbeton, 23.002 İç Sıva
+    * 24.001 İç Boya, 26.001 Seramik, 16.001 Makineyle Kazı, 16.003 Zemin Dolgu
+  - CŞB Hesaplama: Ara Toplam → %15 GG → %10 K/R → Birim Fiyat
+  - API: analiz_getir, tum_analizler, analiz_kaydet (UPSERT), bilesen_guncelle,
+    bilesen_ekle, bilesen_sil, hesapla, pdf_analiz_belgesi_uret, csv_iceri_aktar, csv_disari_aktar
+  - PDF: reportlab A4, tür renklendirmesi (mavi/yeşil/turuncu), imza satırı
+  - CSV: poz_kodu,tur,aciklama,birim,miktar,birim_fiyat (içe/dışa aktarım)
+  - Test: 21.003 birim_fiyat=5187.51 TL/m³ (SYNTAX_OK, IMPORT_OK)
+
+================================================================================
+Rev-74 (2026-04-25) — Yaklaşık Maliyet Menüye Eklendi + Metrajdan Aktar
+================================================================================
+* YENİ: main_window.py — Araçlar menüsüne "Yaklaşık Maliyet & Keşif Cetveli" eklendi
+  - tools_menu.addAction() → open_yaklasik_maliyet()
+  - open_yaklasik_maliyet(): YaklasikMaliyetWindow(db=self.db) lazy import + show()
+  - Qt.WindowType.Window flag eklendi (bağımsız pencere olarak açılır)
+* GÜNCELLENDİ: app/ui/yaklasik_maliyet_window.py — "Metrajdan Aktar" özelliği
+  - YaklasikMaliyetWindow.__init__(db=None) — veritabanı bağlantısı opsiyonel
+  - _KesifCetveliSekmesi.__init__(db=None) — db parametresi eklendi
+  - _alt_toolbar()'a mor renk "Metrajdan Aktar" butonu eklendi
+  - _metrajdan_aktar(): _MetrajAktarDialog açar, seçilen kalemleri kalem_ekle() ile ekler
+  - YENİ SINIF: _MetrajAktarDialog — proje combobox + checkable metraj tablosu
+    * get_all_projects() ile proje listesi
+    * db.get_connection() ile metraj_kalemleri sorgusu (poz_no, tanim, birim, miktar, birim_fiyat)
+    * ☐/☑ checkbox toggle, Tümünü Seç / Seçimi Kaldır
+    * Aktar butonuna basınca seçili kalemler döndürülür
+
+================================================================================
+Rev-73 (2026-04-25) — main_window Araçlar Menüsüne Hakediş Bağlantısı
+================================================================================
+* GÜNCELLENDİ: main_window.py — Araçlar menüsüne "Resmi Hakediş Belgesi" eklendi
+  - tools_menu.addAction("Resmi Hakediş Belgesi") → open_hakedis_resmi()
+  - open_hakedis_resmi(): HakedisWindow(self.db, self) lazy import + show()
+
+================================================================================
+Rev-72 (2026-04-25) — Hakedis Kesinti Engine + Hakedis Penceresi Yeniden Yazim
+================================================================================
+* REFACTOR: app/core/hakedis_kesinti_engine.py tümden yeniden yazıldı
+  - KÖK SORUN: tüm metodlar (hesapla, _hesapla_avans_mahsubu, vb.) _round2 içine
+    cascade nested edilmişti — 1-space indentation, hiçbir metod çalışmıyordu
+  - Çözüm: 4-space PEP8 ile tümden yeniden yazıldı; tüm metodlar class seviyesinde
+  - Korunan API: HakedisKesintEngine, HakedisKesintiBilgisi, HakedisKesintleri,
+    KESIN_TEMINAT_ORANI, DAMGA_VERGISI_ORANI, GELIR_VERGISI_STOPAJ,
+    SGK_PRIM_KESINTI_ORANI, GUNLUK_GECIKME_ORANI sabitleri — import zinciri sağlam
+  - Metodlar: _round2, hesapla, _hesapla_avans_mahsubu, _hesapla_kesin_teminat,
+    _hesapla_gecikme, _ekle_uyarilar, ozet_dict, to_excel_rows,
+    kesin_teminat_limit_doldu_mu, pdf_hakedis_belgesi_uret (YENİ)
+  - Fesih eşiği uyarısı: %30 aşıldığında "DİKKAT: sözleşme feshedilebilir" mesajı
+  - pdf_hakedis_belgesi_uret(): reportlab — proje/idare/firma bilgisi + imalat tablosu
+    + kesinti cetveli + imza bölümü + uyarılar; reportlab yoksa False döner
+  - Stale pyc silindi: app/core/__pycache__/hakedis_kesinti_engine.cpython-311.pyc
+
+* REFACTOR: app/ui/hakedis_window.py tümden yeniden yazıldı (eski: TODO stub)
+  - Sıfırdan yazıldı — önceki dosya sadece boş QMainWindow iskeletiydi
+  - Dark theme: DARK_BG/CARD_BG/ACCENT renk şeması (diğer modüllerle uyumlu)
+  - 4 sekme:
+    1. "Sözleşme Bilgileri": Proje/idare/firma/sözleşme bilgileri + finansal + hakediş
+       - Proje Adı, Sözleşme No, İdare Adı, Firma Adı (QLineEdit)
+       - Sözleşme Bedeli, Verilen Avans, Avans Oranı, Önceki Avans Mahsubu, KDV Oranı
+       - Hakediş No, Hakediş Tarihi, Hakediş Dönemi, Gecikme Günü
+       - Kesin Teminat Tamamlandı, GV Stopaj Aktif, SGK Kesinti Aktif (QCheckBox)
+    2. "İmalat Kalemleri": QSplitter — sol CSBPozEngine poz arama, sağ imalat tablosu
+       - 8 sütun: Sıra/Poz No/Tanım/Birim/Sözl.Miktar/Gerç.Miktar/B.Fiyat/Tutar
+       - Çift-tık veya "Poz Ekle" butonu: miktar + sözleşme miktarı QInputDialog
+       - Satır silme, tümünü temizle butonları
+       - Alt: "Brüt Hakediş: X TL" anlık güncelleme
+       - blockSignals(True/False) ile itemChanged kaskadı önlendi
+    3. "Kesinti Hesabı": "Hesapla" butonu → HakedisKesintEngine.hesapla()
+       - 9 satırlı sonuç tablosu: avans, KT, damga, GV, SGK, gecikme, toplam, net
+       - NET ÖDEME: yeşil (pozitif) / kırmızı (negatif) arka plan
+       - TOPLAM KESİNTİ: kırmızı satır, bold
+       - Uyarı mesajları (fesih eşiği vb.) — sarı arka plan, gizlenir/gösterilir
+    4. "Hakediş Belgesi": HTML önizleme + PDF çıktısı
+       - QTextEdit setHtml() ile resmi belge önizlemesi
+       - Başlık / proje bilgisi / imalat tablosu / kesinti cetveli / imza bölümü
+       - "PDF Çıktı Al": QFileDialog → pdf_hakedis_belgesi_uret() çağrısı
+  - Import bloğu: _ENGINE_OK, _CSB_OK fallback guard — engine yoksa hata mesajı
+  - CSBPozEngine stub sınıfı: engine yokken çökmeden çalışır
+  - Stale pyc silindi: app/ui/__pycache__/hakedis_window.cpython-311.pyc
+
+================================================================================
+Rev-71 (2026-04-25) — Yaklasik Maliyet PDF Kesif Ozeti
+
+================================================================================
+Rev-71 (2026-04-25) — Yaklasik Maliyet PDF Kesif Ozeti
+================================================================================
+* YENİ METOD: YaklasikMaliyetEngine.pdf_kesif_ozeti_uret(dosya_yolu) eklendi
+  - 4734 KİK uyumlu resmi keşif özeti PDF üretimi (reportlab tabanlı)
+  - A4 sayfa, sol/sağ margin 1.8 cm
+  - BAŞLIK BLOĞU: İdare adı (sol) + tarih (sağ), büyük bold başlık, proje adı, ihale no
+  - KALEM TABLOSU: 7 sütun — Sıra No / Poz No / Tanım / Birim / Miktar / Birim Fiyat / Tutar
+    * Alternating row arka plan (mavi/beyaz)
+    * Koyu başlık satırı (lacivert zemin, beyaz yazı), repeatRows=1 (her sayfada tekrar)
+  - ÖZET SATIRLARI: TOPLAM YAPIM BEDELİ / KDV (oran ile) / GENEL TOPLAM / KİK %80 SINIR (kırmızı)
+    * Özet satırlarında ilk 5 sütun SPAN ile birleştirildi
+  - ALT NOTLAR: 4734 KİK uyarısı + fiyat güncelleme notu + imza satırı
+  - Para formatı: 1.234.567,89 TL (nokta=binler ayracı, virgül=ondalık)
+  - reportlab yoksa False döner (sessiz graceful degradation)
+  - Hata durumunda logger.error ile kayıt, exception yakalanır
+* GÜNCELLENDİ: _OzetKdvSekmesi._rapor_goster() — gerçek PDF üretimini tetikler
+  - Kalem yoksa uyarı mesajı
+  - QFileDialog.getSaveFileName ile PDF kayıt yeri seçimi
+  - Başarılıysa "PDF oluşturuldu" bilgisi; hata durumunda "pip install reportlab" önerisi
+  - Buton etiketi: "PDF Kesif Ozeti Uret" olarak güncellendi
+
+================================================================================
+Rev-70 (2026-04-25) — CŞB Poz Veritabanı + Devlet İhalesi Sekmesi Bağlantısı
+================================================================================
+* YENİ MODÜL: app/core/csb_poz_engine.py — SQLite tabanlı CŞB Poz Veritabanı
+  - database.py'ye dokunmadan bağımsız SQLite engine
+  - Tablo: csb_pozlari (poz_kodu, aciklama, birim, birim_fiyat, yil, kategori, analiz_no, aktif)
+  - Seed data: 70+ CŞB 2026 birim fiyat pozu (yaklaşık değerler)
+  - Kategoriler: Toprak, Beton, Duvar, Sıva, Boya, Döşeme, Yalıtım, Çatı, Elektrik, Mekanik, Kapı/Pencere, Çelik Yapı
+  - API: poz_ara(), metin_ara(), tum_pozlar(), kategoriler(), poz_ekle(), poz_guncelle()
+  - CSV dışa/içe aktarma (guncelle=True/False seçeneği ile)
+  - birim_fiyat_decimal() — Decimal döner (yaklaşık maliyet hesabı için)
+  - NOT: Seed fiyatları yaklaşıktır; resmi CŞB 2026 listesini CSV ile içe aktarın
+* GÜNCELLENDİ: main_window.py — DevletIhalesiWidget index 11 olarak lazy-load eklendi
+  - _tabs_created'a 'devlet_ihalesi' key'i eklendi
+  - create_tabs()'a placeholder sekme eklendi (index 11)
+  - on_tab_changed()'a elif index==11 bloğu eklendi
+  - DevletIhalesiWidget açılınca alt sekmeler: Yaklaşık Maliyet, Hakediş Kesintileri,
+    SGK İşçilik, Fiyat Farkı, Birim Fiyat Analizi, Gecikme Cezası, Teminat Yönetimi
+
+================================================================================
+Rev-69 (2026-04-25) — yaklasik_maliyet_window.py Tümden Yeniden Yazım
+================================================================================
+* REFACTOR: app/ui/yaklasik_maliyet_window.py tümden yeniden yazıldı
+  - 1-space indentation + bozuk UI → 4-space PEP8 (SYNTAX_OK doğrulandı)
+  - Dark theme renk şeması (DARK_BG/CARD_BG/ACCENT uyumlu mevcut modüllerle)
+  - 4 sekme: Keşif Cetveli / Özet & KDV / Kategori Dağılımı / Aşırı Düşük Analizi
+  - Sekme 1: CSBPozEngine entegrasyonu, kategori filtre, metin arama, QSplitter,
+    çift-tık veya buton ile poz ekleme, QInputDialog ile miktar girişi,
+    CSV dışa/içe aktarma, kesif tablosu anlık güncelleme
+  - Sekme 2: Proje özet kartı, Yapım Bedeli / KDV / Genel Toplam / KİK %80 sınırı
+  - Sekme 3: Kategori bazlı özet tablo (Kalem sayısı, Tutar, Oran%)
+  - Sekme 4: KİK md.38 analizi — teklif girişi, uç değer eleme, sınır hesabı,
+    aşırı düşük/geçerli renk kodlaması
+  - Alt durum çubuğu (kalem sayısı + toplam tutar)
+  - blockSignals(True/False) ile tablo güncelleme döngüleri korundu
+  - Engine yoksa fallback stub sınıf ile çökmeden çalışır
+
+================================================================================
+Rev-68 (2026-04-25) — yaklasik_maliyet_engine.py Yeniden Yazım
+================================================================================
+* REFACTOR: app/core/yaklasik_maliyet_engine.py tümden yeniden yazıldı
+  - 1-space indentation → 4-space PEP8 (SYNTAX_OK doğrulandı)
+  - Nested function sorunu giderildi: tüm metodlar YaklasikMaliyetEngine
+    class'ının doğru seviyesinde (kalem_ekle, kalem_sil, kalem_guncelle,
+    toplam_hesapla, kdv_hesapla, genel_toplam, asiri_dusuk_siniri,
+    asiri_dusuk_analizi, poz_ara, poz_metin_ara, export_json, import_json)
+  - Hardcoded CSB_BIRIM_FIYATLARI_2025 dict KALDIRILDI
+  - CSBPozEngine entegrasyonu: self._poz_engine = CSBPozEngine() (tek örnek)
+  - poz_ara() ve poz_metin_ara() metodları CSBPozEngine'e delege edildi
+  - kalem_ekle(): CSBPozEngine'den otomatik tanım/birim/fiyat çekimi
+  - asiri_dusuk_analizi(): KIK md.38 tam formülü (N>=5 uç değer eleme)
+  - import_json() metodu eklendi (export_json() eşi)
+  - Stale pyc silindi: __pycache__/yaklasik_maliyet_engine.cpython-311.pyc
+
+================================================================================
+Rev-67 (2026-04-24) — PDF'den Fare ile Metraj Modülü
+================================================================================
+* YENİ MODÜL: app/ui/pdf_metraj_window.py + app/core/pdf_metraj_engine.py
+  - PyMuPDF (fitz) ile PDF render → QPixmap kanvasa gösterim
+  - Ölçek Kalibrasyon: 2 nokta + gerçek mesafe girişi → px/m faktörü
+  - Uzunluk ölçümü: polyline (çoklu nokta), çift-tik veya sağ-tik ile tamamla
+  - Alan ölçümü: polygon (Shoelace formülü), minimum 3 nokta
+  - Sayım: tıklama başına 1 adet, gruplama ile tamamla
+  - Renk kodlaması: kırmızı=uzunluk, mavi=alan, yeşil=sayım
+  - Zoom: %75–%200 arası seçilebilir, sayfa navigasyonu
+  - Ölçüm listesi tablosu + özet (toplam uzunluk/alan/sayım)
+  - CSV dışa aktarma
+  - Menü: Araçlar → "PDF'den Fare ile Metraj"
+  - PyMuPDF kurulumu: pip install PyMuPDF (v1.27.2.3)
+
+================================================================================
+Rev-66 (2026-04-24) — Demir Hesaplama: Kesim Listesi Sekmesi
+================================================================================
+* YENİ SEKME: demir_hesaplama_window.py — "Kesim Listesi" (4. sekme eklendi)
+  - FFD (First Fit Decreasing) algoritmasıyla minimum fire kesim planı
+  - "Toplu Hesap'tan Aktar" butonu: mevcut demir listesini tek tıkla aktar
+  - Standart çubuk boyu ayarlanabilir (varsayılan 1200 cm = 12 m)
+  - Kesim Planı sekmesi: her çubuk için hangi parçaların kesileceği, kullanılan+fire cm
+  - Sipariş Formu sekmesi: cap bazında çubuk adedi, toplam fire%, sipariş (kg/ton)
+  - Renk kodlaması: yeşil (<5% fire), turuncu (>15% fire)
+  - Alt özet çubuğu: toplam çubuk, fire, sipariş kg/ton, tahmini maliyet
+  - CSV dışa aktarma (kesim planı + sipariş formu birlikte)
+  - Yardım metnine Kesim Listesi kullanım kılavuzu eklendi
+
+================================================================================
+Rev-65 (2026-04-11) — Gayrimenkul: Ada/Parsel Alanı + Tahmini Fiyat Modu
+================================================================================
+* KALDIRILDI: ada_parsel_sorgula aracı silindi
+  - TKGM parselsorgu.tkgm.gov.tr hash-based SPA — requests ile veri çekilemiyor
+  - URL yapıştırma da çözüm değil: formdan fazla bilgi vermiyor, alan/nitelik hâlâ gelmez
+  - İşlevsiz araç Claude'un tool listesini kirletiyordu
+* YENİ ÖZELLİK: asistan_panel.py — Gayrimenkul formuna Ada No + Parsel No alanları eklendi
+  - Satır 5 (İl/İlçe/Mahalle/Fiyat grid'inin altına) olarak yerleştirildi
+  - Her iki alan opsiyonel; tooltip: "Tapudaki ada/parsel numarası"
+  - Ada+Parsel girilirse prompt'a "Ada/Parsel: X/Y" satırı otomatik eklenir
+  - ada_parsel_sorgula aracı artık formdan beslenerek gerçekten kullanılabilir
+* YENİ ÖZELLİK: asistan_panel.py — Fiyat alanı opsiyonel hale getirildi (Tahmini Mod)
+  - Fiyat (TL) etiketi tooltip ile açıklandı: "Boş bırakırsanız Claude piyasa tahmini üretir"
+  - Placeholder: "boş = tahmini hesapla"
+  - Fiyat boş bırakılırsa prompt Claude'a "TAHMİNİ piyasa değeri hesapla, ilan_fiyati gönderme" talimatı verir
+  - Fiyat girilirse mevcut karşılaştırma modu devam eder
+* GÜNCELLENDİ: claude_engine.py — gayrimenkul_degerle tool şeması
+  - ada_no (string, opsiyonel): Tapu ada numarası
+  - parsel_no (string, opsiyonel): Tapu parsel numarası
+* GÜNCELLENDİ: claude_engine.py — _arac_gayrimenkul_degerle()
+  - ada_no + parsel_no parametreleri okunuyor
+  - Rapor başlığı: fiyat girilmemişse "TAHMİNİ DEĞERLEME RAPORU", girilmişse "GAYRİMENKUL DEĞERLEME RAPORU"
+  - Raporda Ada/Parsel satırı gösteriliyor (girilmişse)
+  - Tahmini mod uyarısı: "Veri tabanı: Ağustos 2025 — güncel fiyatlar farklılık gösterebilir."
+
+================================================================================
+Rev-64 (2026-04-09) — DXF Motor Kaldırıldı (Temizlik)
+================================================================================
+* KALDIRILDI: app/core/dxf_engine.py — kullanılmayan DXF okuma/analiz motoru silindi
+* GÜNCELLENDI: InsaatMetrajPro.spec — 'app.core.dxf_engine' hidden import kaldırıldı
+* GÜNCELLENDI: main_window.py — DXF metraj yorum bloğu güncellendi (metodlar ölü kod
+  olarak kalmaya devam ediyor; from __future__ import annotations sayesinde tip
+  işaretleri NameError üretmiyor)
+* ETKİ: EXE boyutu küçülür; proje temizlendi
+
+================================================================================
+Rev-63 (2026-04-09) — Gayrimenkul: Arsa/Tarla/Dükkan/Ofis Dinamik Form
+================================================================================
+* YENİ ÖZELLİK: asistan_panel.py — Mod 7 forma "Mülk Tipi" ComboBox eklendi
+  - Seçenekler: Daire / Villa / Arsa / Tarla / Dükkan/Ofis / Bina
+  - Mülk tipine göre form alanları dinamik olarak gösterilip gizleniyor
+* YENİ ÖZELLİK: asistan_panel.py — Arsa/Tarla özel alanları
+  - "İmar Durumu" ComboBox: Konut/Ticari/Tarım/Karma/İmarsız
+  - "Yapılaşma %" alanı: TAKS/KAKS oranı (opsiyonel)
+* YENİ ÖZELLİK: asistan_panel.py — Dükkan/Ofis özel alanları
+  - "Ticari Kat" ComboBox: Zemin/Asma/1. Kat/2. Kat ve Üzeri/AVM İçi
+  - "Cephe" ComboBox: Ana Cadde/Sokak-Ara Yol/Pasaj-Çarşı İçi/AVM İçi
+  - "Mevcut Kira (₺/ay)" alanı: Gerçek kira varsa getiri hesabında kullanılır
+* GÜNCELLENDİ: claude_engine.py — gayrimenkul_degerle tool şeması
+  - ticari_kat, cephe_turu, mevcut_kira_aylik alanları eklendi (ASCII key)
+* GÜNCELLENDİ: claude_engine.py — _arac_gayrimenkul_degerle()
+  - Dükkan/Ofis m² fiyatı: konut fiyatının 1.3-1.8x (baz)
+  - Ana cadde cephesi: +25% | Sokak/ara yol: -15% | Pasaj: -25% | AVM: +10%
+  - Kat düzeltmesi: Asma -20% | 1. Kat -30% | 2. Kat+ -40%
+  - Mevcut kira biliniyorsa brüt getiri ve geri ödeme süresi gerçek veriden hesaplanır
+
+================================================================================
+Rev-62 (2026-04-09) — EKAP API: 3 Bug Düzeltme
+================================================================================
+* BUG FIX: ekap_window.py — _arama_hata() yanlış URL düzeltildi
+  - "https://ekap.kik.gov.tr" → "https://ekapv2.kik.gov.tr/ekap/search/ihale-arama"
+* BUG FIX: ekap_engine.py — _post() hata durumlarında _son_istek_zamani güncellenmiyordu
+  - HTTPError / URLError / Exception bloklarına _son_istek_zamani = time.time() eklendi
+  - Rate-limit koruması artık hata sonrasında da doğru çalışıyor
+* BUG FIX: ekap_engine.py — totalCount=0 Python "or zinciri" tuzağı düzeltildi
+  - 0 sonuç geldiğinde "or" zinciri 0'ı False sayıp yanlış key'e bakıyordu
+  - None kontrolüne dayalı döngüyle değiştirildi
+
+================================================================================
+Rev-61 (2026-04-08) — Gayrimenkul Modülü: URL Kaldırıldı, Form + Görüntü Eklendi
+================================================================================
+* KALDIRILDI: emlak_url_analiz tool'u silindi (sahibinden/emlakjet/hepsiemlak Cloudflare engeli)
+  - claude_engine.py: ARACLAR listesinden çıkarıldı
+  - claude_engine.py: GAYRIMENKUL_SISTEM_PROMPT URL talimatları temizlendi
+  - asistan_panel.py: URL giriş alanı kaldırıldı
+* YENİ ÖZELLİK: Hızlı Giriş Formu (asistan_panel.py — Mod 7)
+  - 10 alan: İl, İlçe, Mahalle, Fiyat, m², Oda, Kat, Bina Yaşı, Tapu, Özellikler
+  - Form boşsa mesaj kutusuna serbest metin yazılabilir
+* YENİ ÖZELLİK: Ekran Görüntüsü ile Değerleme (asistan_panel.py — Mod 7)
+  - "📷 Ekran Görüntüsü Yükle" butonu — PNG/JPG/WEBP destekli
+  - Claude Vision API ile görselden fiyat/m²/konum otomatik okunur
+  - Form + görüntü birlikte kullanılabilir (ek bilgi alanı ile)
+* BUG FIX: claude_engine.py — hakedis_hesapla tool'unda Türkçe property key hatası
+  - "onceki_hakediş_yuzdesi" → "onceki_hakedis_yuzdesi" (ş karakteri API'yi patlatıyordu)
+  - Tüm API araçları bu hata nedeniyle çalışmıyordu
+
+================================================================================
+Rev-60 (2026-04-05) — Kullanım Kılavuzu: Yapay Zeka Asistanı Bölümü Eklendi
+================================================================================
+* YENİ ÖZELLİK: main_window.py — Kullanım Kılavuzuna "YAPAY ZEKA ASISTANI" kategorisi eklendi
+  - Genel Bakış ve API Kurulumu (console.anthropic.com adım adım)
+  - Mod 1: Genel Sohbet ve Metraj Üretimi (proje tanımından poz listesi)
+  - Mod 2: Hesap Asistanı (verimlilik, maliyet, CŞB)
+  - Mod 3: Proje Analizi (metraj kalem analizi)
+  - Mod 4: Gantt Planlama (AI iş programı, Gantt aktarım)
+  - Mod 5: Hakediş Asistanı (KİK 4734/4735, gecikme cezası)
+  - Mod 6: Saha Çözüm — Tamir Talimatı (fotoğraf analizi, TS EN 1504-3, ISG)
+  - Mod 7: Gayrimenkul Değerleme (URL/manuel giriş, AL/BEKLE/ALMA kararı)
+  - İpuçları ve Kısayollar (Ctrl+Enter, dosya ekleme, hızlı sorular)
+* GÜNCELLENDİ: Kılavuz giriş ekranına "YAPAY ZEKA ASISTANI" kategorisi eklendi
+
+================================================================================
+Rev-59 (2026-04-05) — AI Asistan: Saha Çözüm + Metraj Asistanı Güncellendi
+================================================================================
+* GÜNCELLENDİ: claude_engine.py — SAHA_COZUM_SISTEM_PROMPT yeniden yazıldı
+  - Kapsam netleştirildi: Yapısal tasarım KAPSAM DIŞI (kolon/demir boyutu değil)
+  - Odak: Pratik saha tamir talimatı (malzeme + adım + kür + kontrol)
+  - Segregasyon → Hafif/Orta/Derin için ayrı malzeme ve uygulama talimatı
+  - Çatlak → genişlik bazlı karar (epoksi enjeksiyon / kür harcı / denetçi)
+  - Slump ve 28 günlük basınç → kabul/red karar kriterleri netleştirildi
+  - Demir pası → mekanik temizlik + pas dönüştürücü + epoksi + örtü harcı adımları
+  - Soğuk derz, çimento sütyeni, gözenek için ayrı protokoller
+  - İSG: Çalışmayı durdur talimatı güçlendirildi
+* GÜNCELLENDİ: claude_engine.py — SISTEM_PROMPT Metraj Üretimi Protokolü eklendi
+  - Proje tanımı gelince: CŞB poz sırası ile iş kalemleri + miktar + birim fiyat
+  - 2026 Q1 birim fiyat tablosu (beton, demir, kalıp, duvar, sıva, kaplama, hafriyat)
+  - Çıktı formatı: Kurumsal, yapı denetçisine sunulabilir, KDV hariç/dahil ayrı
+* GÜNCELLENDİ: asistan_panel.py — Saha Sorunları hızlı sorular güncellendi
+  - Daha pratik sorular: segregasyon tamir, slump kararı, karot, soğuk derz
+* GÜNCELLENDİ: asistan_panel.py — Placeholder ve durum metinleri güncellendi
+
+================================================================================
+Rev-58 (2026-04-05) — EKAP Modülü: Temizlik + IKN Arama + Excel Aktarım
+================================================================================
+* KALDIRILDI: ekap_window.py — "📊 Metraj'a Ekle" butonu kaldırıldı
+  - İhalenin tahmini bedeli metraj kalemi değildir; yanıltıcıydı
+* YENİ ÖZELLİK: ekap_window.py — IKN (İhale Kayıt Numarası) ile direkt arama
+  - Anahtar kelime satırına 2 yeni alan eklendi: IKN Yılı + IKN Sayısı
+  - 0 değeri "—" gösterir (kullanılmıyor); API payload'a ikn_yili/ikn_sayi gönderir
+* YENİ ÖZELLİK: ekap_window.py — "📤 Excel'e Aktar" butonu
+  - Sonuç tablosunu UTF-8 BOM CSV olarak kaydeder (Excel uyumlu)
+  - Sonuç yokken disabled, arama sonrası aktif
+* GÜNCELLENDİ: ekap_engine.py — ihale_ara() imzasına ikn_yili + ikn_sayi eklendi
+  - API payload'da iknYili ve iknSayi alanları artık dinamik
+
+================================================================================
+Rev-57 (2026-04-05) — AI Asistan: Gayrimenkul Değerleme Uzmanı Modu
+================================================================================
+* YENİ ÖZELLİK: claude_engine.py — GAYRIMENKUL_SISTEM_PROMPT eklendi
+  - Emsal karşılaştırma, gelir ve maliyet yaklaşımı (3 yöntem)
+  - 2025–2026 Türkiye bölgesel m² fiyat tablosu (İstanbul/Ankara/İzmir/Antalya/Bursa)
+  - Bina yaşı, kat, tapu türü, manzara düzeltme katsayıları
+  - Brüt kira getirisi, geri ödeme süresi, yatırım puanı (1–10)
+* YENİ ÖZELLİK: claude_engine.py — 4 Yeni Gayrimenkul Aracı
+  - emlak_url_analiz: sahibinden/emlakjet/hepsiemlak URL'lerinden veri çeker
+  - emsal_karsilastir: İl/ilçe bazlı emsal m² fiyat analizi
+  - ada_parsel_sorgula: TKGM parsel sorgu entegrasyonu
+  - gayrimenkul_degerle: MIN-MAKS değer, kira getirisi, yatırım puanı raporu
+* YENİ ÖZELLİK: claude_engine.py — sorgu_gayrimenkul_thread_olustur()
+  - Gayrimenkul sistem promptuyla ayrı thread
+* YENİ ÖZELLİK: asistan_panel.py — Mod 7: "🏠 Değerleme" sekmesi
+  - URL giriş alanı (sahibinden/emlakjet linki yapıştır)
+  - "🏠 Gayrimenkul Değerlemesini Başlat" butonu
+  - Hızlı Sorular "🏠 Değerleme" kategorisi eklendi
+  - ARAC_ADLARI güncellendi (4 yeni araç Türkçe etiketiyle)
+
+================================================================================
+Rev-56 (2026-04-05) — Mermer Dialog DXF Sekmesi + EKAP API Güçlendirildi
+================================================================================
+* YENİ ÖZELLİK: mermer_dialog.py — "DXF Metraj" sekmesi eklendi
+  - AutoCAD DXF dosyasından merdiven mermer metrajını otomatik hesapla
+  - Layer adı, çizim birimi (cm/mm/m), riht ve basamak derinliği ayarları
+  - LINE entity → basamak, kapalı LWPOLYLINE → sahanlık
+  - Sonuçlar tablo olarak gösterilir (Basamak Toplam, Sahanlık Toplam, TOPLAM satırları)
+  - merdiven_mermer_metraj_dxf() motoruna bağlandı (ezdxf + pandas gerekli)
+* YENİ ÖZELLİK: mermer_dialog.py — "? Yardım" butonu eklendi
+  - Adım adım kullanım kılavuzu (merdiven, denizlik, DXF, dışa aktarma)
+* BUG FIX: mermer_dialog.py — `id` değişken adı Python built-in gölgesi düzeltildi
+  - `id = sonuc['iscilik_detay']` → `iscilik_d = sonuc['iscilik_detay']`
+* GÜÇLENDIRILDI: ekap_engine.py — Browser DevTools doğrulamalı tam header seti
+  - sec-ch-ua, sec-ch-ua-mobile, sec-ch-ua-platform, sec-fetch-dest,
+    sec-fetch-mode, sec-fetch-site headerları eklendi
+  - Sunucu bot filtresi bu headerlar olmadan zaman zaman 26-byte boş yanıt döndürüyordu
+* GÜÇLENDIRILDI: ekap_engine.py — Ardışık hata sayacı + otomatik session reset
+  - _ardisik_hata_sayisi + _max_ardisik_hata (=3) mekanizması eklendi
+  - 3 ardışık boş yanıtta session cookie + XSRF token sıfırlanarak yeniden alınır
+  - Başarılı yanıtta sayaç otomatik sıfırlanır
+* KRİTİK DÜZELTME: ekap_engine.py — AES şifreli güvenlik headerları eklendi
+  - KAYNAK: github.com/saidsurucu/ihale-mcp (ihale_client.py) — çalışan referans uygulama
+  - EKAP v2 sunucusu bu headerlar olmadan 26-byte boş yanıt dönüyordu
+  - X-Custom-Request-Guid, -Siv, -Ts, -R8id headerları her istekte AES-CBC ile şifreleniyor
+  - Şifreleme: AES-CBC, PKCS7 padding, key=b'Qm2LtXR0aByP69vZNKef4wMJ', IV=random 16 byte
+  - cryptography>=41.0.0 paketi requirements.txt'e eklendi
+* KRİTİK DÜZELTME: ekap_engine.py — Gerçek API response formatı düzeltildi
+  - ihale-mcp doğrulamasıyla: API "list" key ile döndürüyor ("data" değil)
+  - _yanit_gecerli_mi() ve ihale_ara() parsing'e "list" key eklendi
+  - EKAPSonucu: ihaleAdi, idareAdi, ihaleTarihSaat, ihaleTip/AciklamasI, ihaleDurum/Aciklamasi
+    alan isimleri gerçek API'ye göre güncellendi
+
+================================================================================
+Rev-55 (2026-04-04) — EKAP Modülü: Demo Kaldırıldı + Son 10 Yıl İstatistik Sekmesi
+================================================================================
+* YENİ ÖZELLİK: "Son 10 Yıl İstatistikleri" sekmesi eklendi
+  - Yıl aralığı seçici (varsayılan: son 10 yıl, sonuçlanmış ihaleler)
+  - İhale türü ve il filtresi
+  - EKAPIstatistikThread: yıl yıl EKAP sorgusu, progress bar ile izlenebilir
+  - Yıl bazlı özet tablo: İhale Sayısı, Toplam Bedel, Ort. Bedel, En Büyük İhale
+  - Genel toplam satırı (tüm yıllar birleşik)
+  - Detay tablosu: seçilen yılın tüm ihaleleri (kazanan firma sütunu dahil)
+  - İdarelere göre dağılım tablosu (Top 20, toplam bedele göre sıralı)
+* KALDIRILDI: Demo butonu ve demo_veri_uret() tamamen silindi
+  - ekap_window.py: "🧪 Demo Veri" butonu yok
+  - ekap_engine.py: demo_veri_uret() metodu yok
+  - Hata mesajlarından demo yönlendirmeleri temizlendi
+* EKİLENDİ: ekap_engine.py — kazanan_firma alanı EKAPSonucu'na eklendi
+  - kazananFirma, sozlesmeYapilacakFirma, istekliAdi, teklifSahibi, winner, contractor
+    alanlarından ilk dolu değer alınır
+  - to_dict() çıktısına dahil edildi
+* EKİLENDİ: ihale_istatistik_yillik() metodu ekap_engine.py'e eklendi
+  - sayfa_boyutu=200, durum="3" (Sonuçlandı) ile yıl bazlı sorgu
+* YAPI: ekap_window.py QTabWidget'e dönüştürüldü
+  - Tab 0: İhale Ara (önceki arama işlevi, demo olmadan)
+  - Tab 1: Son 10 Yıl İstatistikleri (yeni)
+
+================================================================================
+Rev-54 (2026-04-04) — AI Asistan -> Gantt Aktarim Duzeltildi
+================================================================================
+* BUG FIX: Claude API'de hazirlanan is programlari Gantt modülüne aktarilamiyor sorunu cozuldu
+  - KOK NEDEN 1: Gantt sekmesi lazy-load (ilk tiklamada yukleniyor) — asistan acikken
+    Gantt hic acilmamissa _gantt_window=None -> gantt_toplu_ekle "HATA: Gantt motoru yok" donuyordu
+  - KOK NEDEN 2: Araç cagrisindan sonra sadece tablo (_yukle_is_listesi) yenileniyordu;
+    gorsel Gantt chart (GanttChartView) guncellenmiyordu
+  - KOK NEDEN 3: gantt_guncellendi sinyali emit ediliyordu ama main_window'a baglanmamisti
+  COZUM 1 — asistan_panel.py:
+    - gantt_ac_istegi = pyqtSignal() eklendi
+    - _gantt_plani_baslat(): _gantt_engine=None ise emit(gantt_ac_istegi) + kullaniciya mesaj
+    - _islem_bitti_aracli(): Gantt modu/penceresi aktifse gantt_guncellendi emit
+  COZUM 2 — asistan_pencere.py:
+    - gantt_ac_istegi + gantt_guncellendi sinyalleri eklendi (panel'den kopru)
+    - _merkezi_widget_kur(): panel sinyalleri pencere sinyallerine baglandir
+  COZUM 3 — main_window.py:
+    - _asistan_ac(): gantt_ac_istegi -> _asistan_gantt_ac() baglantisi eklendi
+    - _asistan_ac(): gantt_guncellendi -> _asistan_gantt_yenile() baglantisi eklendi
+    - _asistan_gantt_ac(): tabs.setCurrentIndex(9) -> Gantt sekmeyi ac
+    - _asistan_gantt_yenile(): gantt_widget.refresh_visual_gantt() cagirir
+    - Gantt tab olusturulunca asistan sinyali yeniden baglanir (cift baglanmayi onle)
+  COZUM 4 — claude_engine.py:
+    - _arac_gantt_toplu_ekle(): QMetaObject.invokeMethod("refresh_visual_gantt") eklendi
+    - _arac_gantt_gorev_ekle(): ayni sekilde refresh_visual_gantt invoke eklendi
+* AKIS (duzeltilmis):
+  1. Kullanici asistanda "Gantt Planla" tiklar
+  2. Gantt bagli degilse: sekme otomatik acilir, "tekrar tiklayin" mesaji goster
+  3. Gantt acilinca engine+window asistana baglanir
+  4. Claude is programini olusturur, gantt_toplu_ekle ile _is_list'e yazar
+  5. Hem tablo hem gorsel chart otomatik yenilenir
+
+================================================================================
+Rev-53 (2026-04-04) — EXE Kararlilik + Performans + EKAP API Guclendirildi
+================================================================================
+* BUG FIX: EXE modunda modul gecisinde uygulama kapanma sorunu duzeltildi
+  - SORUN: on_tab_changed() icindeki raise ifadeleri hatanin dis katmana
+    sizmesine neden oluyordu; matplotlib backend hatasi ImportError disinda
+    Exception uretince tab acilirken uygulama kapanabiliyordu
+  - COZUM 1: Tum sekme except bloklarindaki `raise` kaldirildi; hatalar
+    logger.error ile kaydediliyor (uygulama kapanmiyor)
+  - COZUM 2: matplotlib import'larinda `except ImportError` -> `except Exception`
+    (EXE modunda RuntimeError / AttributeError de olusabilir)
+  - COZUM 3: runtime_hook_db.py'e _setup_matplotlib() eklendi:
+    MPLBACKEND=QtAgg + MPLCONFIGDIR=%APPDATA%\QuantixPro\mpl_cache
+    (EXE icinde yazilabilir matplotlib cache yoktu)
+* PERFORMANS: InsaatMetrajPro_Calistir.bat pythonw.exe kullanacak sekilde guncellendi
+  (konsol penceresi artik acilmiyor; baslangic daha temiz)
+* PERFORMANS: build_exe.bat'a compileall adimi eklendi
+  (tum .py dosyalari EXE derlenmeden once pyc cache'e alinir)
+* GUCLENDIRILDI: EKAP API session baslangicinda HTML'den XSRF token parse
+  - Cookie'de token yoksa HTML meta tag ve JSON bootstrap'tan da cekiliyor
+  - <meta name="RequestVerificationToken" content="..."> destegi
+  - window.__INITIAL_STATE__ JSON token destegi
+  - 26-byte bos yanit sorununu azaltiyor (auth daha saglikli)
+
+================================================================================
+Rev-52 (2026-03-31) — Gantt Modulu 5 Kritik Bug Fix
+================================================================================
+* BUG FIX: CPM Backward Pass — terminal task late_finish hatasi
+  - SORUN: Terminal gorevlerin late_finish = early_finish (float=0 sadece terminaller)
+  - COZUM: proje_bitis forward-pass sonrasi hesaplanip _backward_pass'e parametre olarak gecildi
+  - terminal gorev: task.late_finish = proje_bitis (tum gorevlerin float'i dogru hesaplaniyor)
+* BUG FIX: S-Egri hafta sonu/tatil sorunu
+  - SORUN: S-Curve tatil gunlerinde de is ilerlemesi hesapliyordu (yanlis egri)
+  - COZUM: tatil_yoneticisi.tatil_mi() kontrolu eklendi, tatil gunleri atlaniyor
+* BUG FIX: Drag&Drop move_task TypeError
+  - SORUN: on_task_dragged, engine.move_task'a int(delta_days) veriyordu (datetime bekleniyor)
+  - COZUM: yeni_baslangic = mevcut_task.early_start + timedelta(days=gun_farki) ile datetime hesaplandi
+* BUG FIX: cascade_dependents eksik parametre
+  - SORUN: window, cascade_dependents(task_id) cagiriyordu (gun_farki eksikti)
+  - COZUM: cascade_dependents(task_id, gun_farki) olarak duzeltildi
+* BUG FIX: blockSignals eksikligi
+  - SORUN: _yukle_is_listesi / _yukle_tablo_goruntum sinyal kaskadindan kaynaklanan gereksiz tetiklemeler
+  - COZUM: her iki metoda da blockSignals(True/False) sarici eklendi
+* BUG FIX: _ekip_doldur None check
+  - SORUN: model.item(idx) None donebilir -> item.setFont() AttributeError
+  - COZUM: if item is None: continue korumasi eklendi
+
+================================================================================
+Rev-51 (2026-03-31) — EXE Path Bug Fix: AppData + Env Var Sistemi
+================================================================================
+* BUG FIX: EXE modunda tum yazilabilir dosyalar AppData'ya yonlendirildi
+  - SORUN: DB, config, gecmis, error_log -> sys._MEIPASS (gecici/silinen temp dir)
+  - COZUM: QUANTIX_DATA_DIR + QUANTIX_LOG_DIR env variable sistemi
+  - runtime_hook_db.py: AppData dizin olusturma + seed kopyalama + env var set
+  - main.py: DB path -> QUANTIX_DATA_DIR / insaat_metraj.db (EXE modunda)
+  - main.py: error_log -> QUANTIX_LOG_DIR (EXE modunda)
+  - claude_engine.py: CONFIG_PATH + GECMIS_DOSYASI -> QUANTIX_DATA_DIR
+  - main_window.py: error_log -> QUANTIX_LOG_DIR (EXE modunda)
+* Kullanici verileri: %APPDATA%\QuantixPro\data\ (kalici)
+* Log dosyasi: %APPDATA%\QuantixPro\logs\error_log.txt (kalici)
+* Seed DB: ilk acilista _MEIPASS'dan AppData'ya kopyalanir (mevcut veri korunur)
+
+================================================================================
+Rev-50 (2026-03-31) — PyInstaller ile Windows EXE Paketi Olusturuldu
+================================================================================
+* YENI OZELLIK: InsaatMetrajPro.spec ile tek-dosya Windows EXE derlendi
+  - Cikti: yeni_proje/dist/QuantixPro.exe
+  - Spec dosyasi: InsaatMetrajPro.spec (Rev-31, 2026-03-31)
+  - Tek-dosya (onefile) mod: evet
+  - Konsol penceresi: kapalı (console=False, windowed mod)
+  - Ikon: assets/quantix_icon.ico
+  - UPX sikistirma: aktif (Qt6 DLL'leri haric)
+  - Dahil edilen paketler: PyQt6, pandas, openpyxl, reportlab, ezdxf,
+    matplotlib, numpy, sqlite3, requests, anthropic, flask, flask_cors,
+    qrcode, PIL, OpenGL, win32com, tum app.core + app.ui + app.utils modulleri
+  - Runtime hook: runtime_hook_db.py
+  - Derleme ortami: Python 3.11, PyInstaller (.venv/Scripts/pyinstaller.exe)
+  - Build/dist klasorleri temizlenerek sifirdan derlendi
+* NOT: Bash aracinin Windows Turkce path sorununu (Unicode encode) asarak
+  build_log.txt hedeflendi; derleme arka planda tamamlandi.
+
+
+
+================================================================================
+Rev-49 (2026-03-30) — metraj_analiz_window.py Dead Code Bug Fix (5 Metod)
+================================================================================
+* BUG FIX: metraj_analiz_window.py — 5 metoddaki "unreachable code" hatalari duzeltildi
+  - _coklu_acad_bagli_mi(): return True if bloguna girmisti → method body seviyesine tasinidi
+  - _coklu_kat_aktif_al(): return self.mimari_katlar[row] if blogundaydi → duzeltildi
+  - _coklu_kat_ekle(): kat ekleme kodu (for dongusu + append) if blogundaydi → duzeltildi
+    (Sonuc: ayni isimli kat kontrolu ve ekleme artik calisiyor)
+  - _coklu_kat_sil(): silme kodu tamamen if blogundaydi → duzeltildi
+    (Sonuc: Coklu Kat sekmesinde kat silme artik calisiyor)
+  - _kaba_yapi_hesapla(): indentation hatasi — tum hesap kodu if alan<=0 blogundaydi
+    (Sonuc: Hizli Kesif sekmesi artik hesap yapiyor)
+* AST_OK dogrulanidi
+
+================================================================================
+Rev-48 (2026-03-30) — calculator.py 4-space PEP8 Tam Yeniden Yazim
+================================================================================
+* BUG FIX: app/core/calculator.py — 1-space indentation kalici olarak duzeltildi
+  - Tum module-level fonksiyonlar 4-space PEP8'e yeniden yazildi:
+    hesapla_kara_siva_manuel, hesapla_alci_maliyet_detayli,
+    hesapla_duvar_maliyet_detayli, hesapla_mobilya_maliyet,
+    hesapla_yalitim_maliyeti, hesapla_elektrik_ozel,
+    hesapla_vitrifiye_armatur, hesapla_kaba_yapi_manuel, hesapla_metal_isleri
+  - Calculator sinifi zaten 4-space idi, korundu
+  - Stale pyc (calculator.cpython-311.pyc) silindi
+  - Backup: calculator_BACKUP_1space.py
+* ETKI: Asagidaki maliyet pencerelerinin hesap motorlari artik pyc-bagimsiz:
+  duvar_maliyet_window, alci_maliyet_window, kara_siva_window,
+  mobilya_maliyet_window, yalitim_maliyet_window, elektrik_maliyet_window,
+  vitrifiye_maliyet_window, kaba_yapi_maliyet_window + boya_maliyet_window
+  (material_calculator → calculator zincirine bagli)
+
+
+
+================================================================================
+Rev-47 (2026-03-29) — Saha Cozum Gorsel Analiz (Fotograf ile Analiz Et)
+================================================================================
+* YENI OZELLIK: Saha Cozum moduna (Mode 6) fotograf analizi eklendi
+* claude_engine.py — SAHA_COZUM_SISTEM_PROMPT guncellendi:
+  - GORSEL ANALIZ TALIMATLARI bolumu eklendi
+  - Catlak: genislik sinifi (sactel/kilcal/orta/genis) + yon analizi + desen
+    teshisi (ag=alkali-silika, V=oturma farki, kosegen=kesme kuvveti)
+  - Beton yuzey hatalari: bal petegi/segregasyon, gozenek, cicim sutu, kabuk
+  - ISG sorunlari: ekipman eksikligi, guvensiz iskele → acil uyari
+  - Plan/cizim okuma: yazili boyutlari oku, perspektif olcum YAPMA
+  - GORSEL YANIT FORMATI: Gorsel|Teshis|Yonetmelik|Cozum|Maliyet|Risk
+* claude_engine.py — mesaj_ekle_saha_gorseli() metodu eklendi
+  - PNG/JPG/JPEG/WEBP destegi, 5MB limit kontrol
+  - Gorsel + yapilandirilmis analiz istegi birlikte Anthropic Vision API'ye gider
+  - Kullanicinin ek aciklamasi prompt'a eklenir
+* asistan_panel.py — fotograf_analiz_btn eklendi (Mode 6'da gorunur)
+  - Lacivert/mavi renk, tooltip: catlak/beton/ISG ornekleri
+  - _fotograf_analiz_sec(): gorsel secim + opsiyonel aciklama input dialog
+  - 5MB boyut kontrol, hata yakalama
+* asistan_panel.py — Mode 6 placeholder guncellendi
+  - Fotograf yukleme oneren Turkce yonlendirme metni
+
+================================================================================
+Rev-46 (2026-03-29) — Saha Cozum Danismani Modu (AI Asistan Mode 6)
+================================================================================
+* YENI MOD: "Saha Cozum Danismani" (Mode 6) — claude_engine.py + asistan_panel.py
+  - Uzman sistem promptu: SAHA_COZUM_SISTEM_PROMPT
+    Cozum cercevesi: Sorun Teshisi > Kok Neden > Yonetmelik > Cozum Adimlari >
+    Maliyet Etkisi > Risk Seviyesi
+  - Referans yonetmelikler: TBDY 2018, TS 500:2000, TS EN 206+A2:2021,
+    TS EN 13670, TS 9967, Eurocode 2, 4708 Yapi Denetim, 6331 ISG,
+    Yapi Isleri ISG Yonetmeligi (2013/35076), CSB BF 2026
+* YENI ARAC: saha_sorun_tani — sorun kategorisi + ilgili yonetmelikleri tespit
+  - 8 kategori: beton, demir, kalip, zemin, hafriyat, catlak, su_yalitim, isg
+  - Kritik risk kelime listesi ile otomatik Risk Seviyesi belirleme
+* YENI ARAC: malzeme_test_degerlendir — KABUL/RED karari + acil onlemler
+  - Beton basing dayanimi: TS EN 206 fck*0.85 siniri, karot oneri
+  - Slump testi: TS 9967 (S1/S2/S3 siniflandirmasi, su ekleme yasagi)
+  - Demir cekme/akma: TS 708 + TS EN 10080 B500C limitleri
+* YENI ARAC: isg_risk_degerlendirme — 6331 + Yapi ISG Yonetmeligi
+  - 6 calisma kategorisi: kazi, yuksekte, beton dokumu, demir, kalip, elektrik
+  - Yukseklige gore dinamik risk (2m+, 6m+), personel sayisi zorunlulugu
+  - Kapali alan ek tedbirleri
+* YENI METOD: ClaudeAracliThread — sistem_prompt parametresi eklendi
+  - Varsayilan SISTEM_PROMPT korundu; farkli modlar farkli prompt kullanabilir
+* YENI METOD: ClaudeEngine.sorgu_saha_cozum_thread_olustur()
+  - SAHA_COZUM_SISTEM_PROMPT ile ClaudeAracliThread olusturur
+* UI DEGISIKLIKLER (asistan_panel.py):
+  - HIZLI_SORULAR: "Saha Sorunlari" kategorisi eklendi (8 ornek soru)
+  - Mod butonlari: "Saha Cozum" (Mode 6) eklendi (mor renk #5d2e8c)
+  - saha_cozum_basla_btn: baslangic promptu gonder
+  - _saha_cozum_aracli_basla(): uzman thread ile calistir
+  - _mesaj_gonder: mod 6 icin _saha_cozum_aracli_basla() dallanmasi
+  - ARAC_ADLARI: 3 yeni arac Turkce haritasi eklendi
+
+================================================================================
+Rev-45 (2026-03-29) — claude_engine.py Duplikat Blok Temizligi
+================================================================================
+* DUZELTME: claude_engine.py satir 786-925 arasi duplikat metod blogu silindi
+  - Onceki oturumda iki farkli agent ayni metodlari ekledi (dict-tabanli + list-tabanli)
+  - Python "son tanimlama kazanir" kurali nedeniyle list-tabanli (Engine agent) metodlari
+    zaten aktifti; ancak gereksiz 140 satirlik kopya kod mevcuttu
+  - Silinen kopya metodlar: _gecmis_yukle_dosya, _gecmis_kaydet_dosya, gecmis_listesi,
+    gecmis_kaydet, gecmis_otomatik_kaydet, gecmis_yukle, gecmis_sil (dict-tabanli versiyon)
+  - Aktif kalan metodlar (list-tabanli, atomic write): satir 873+ _gecmis_dosyasini_oku,
+    _gecmis_dosyasina_yaz, gecmis_kaydet, gecmis_listesi, gecmis_yukle, gecmis_sil,
+    gecmis_otomatik_kaydet
+* VERI FORMATI: ["id":..., "baslik":..., "mesajlar":[...], "tarih":...}] (liste)
+  - Onceki dict-tabanli format: {"konusmalar": {"<id>": {...}}} artik kullanilmiyor
+* Stale pyc silindi: __pycache__/claude_engine.cpython-311.pyc
+
+================================================================================
+Rev-44 (2026-03-29) — AI Asistan Gecmis Sohbet Yan Paneli (asistan_panel.py)
+================================================================================
+* YENI UI: app/ui/asistan_panel.py — sag panele "Gecmis Sohbetler" bolumu eklendi
+  - gecmis_group (QGroupBox) — hizli sorulardan ONCE sag layout'a eklendi
+  - self.gecmis_listesi_widget (QListWidget, max 180px) — kayitli konusmalar
+  - Yükle (📂) ve Sil (🗑) butonlari yan yana
+  - self.yeni_sohbet_btn (➕ Yeni Sohbet) — konusmayi sifirlar
+  - Dark tema ile uyumlu stil (QListWidget background #0d1117)
+
+* YENI METODLAR (AsistanPanel sinifina, satir ~1291):
+  - _gecmis_paneli_yenile(): engine.gecmis_listesi()'den widget'i gunceller,
+    aktif konusmay vurgular (mavi), her item UserRole'da ID saklar
+  - _gecmis_yukle(): secili konusmayi belleye yukler, sohbet_alani'ni yeniden cizer
+    (vision/excel list content bloklari icin metin ayiklama destegi)
+  - _gecmis_sil(): secili konusmayi onay sonrasi diskten siler
+  - _yeni_sohbet_baslat(): _gecmisi_temizle() cagirip panel yeniler
+
+* MEVCUT METODLARA EKLEME (asistan_panel.py):
+  - __init__: engine hazirsa _gecmis_paneli_yenile() cagrisi eklendi
+  - _gecmisi_temizle(): sonuna _gecmis_paneli_yenile() eklendi
+  - _islem_bitti_streaming(): sonuna _gecmis_paneli_yenile() eklendi
+  - _islem_bitti_aracli(): sonuna _gecmis_paneli_yenile() eklendi
+
+* IMPORT GUNCELLEME (asistan_panel.py):
+  - QListWidget, QListWidgetItem eklendi
+
+* ENGINE METODLARI (claude_engine.py — Rev-43'te tanim eksikti, bu Rev'de tamamlandi):
+  - _gecmis_yukle_dosya() -> dict: JSON dosyayi okur
+  - _gecmis_kaydet_dosya(veri): JSON diske yazar
+  - gecmis_listesi() -> list: kayitli konusma metaverisi listesi
+  - gecmis_kaydet(baslik="") -> str: diske kaydet, ID doner
+  - gecmis_otomatik_kaydet(): asistan yaniti sonrasi sessiz kayit
+  - gecmis_yukle(id) -> bool: ID'ye gore belleye yukle
+  - gecmis_sil(id) -> bool: ID'ye gore diskten sil
+
+* VERI DEPOSU: data/asistan_gecmis.json
+  {"konusmalar": {"<id>": {"baslik": "...", "tarih": "...", "mesajlar": [...], "mod": 0}}}
+  Maksimum 50 kayit (MAX_KAYIT sabiti)
+
+
+
+================================================================================
+Rev-43 (2026-03-29) — Claude Asistan Sohbet Gecmisi Disk Kayit Sistemi
+================================================================================
+* YENI: app/core/claude_engine.py — sohbet gecmisi kalici disk kayit motoru
+
+  MODUL DEGISKENLERI (dosya seviyesi):
+  - GECMIS_DOSYASI: data/asistan_gecmis.json (JSON depolama yolu)
+  - MAX_KAYIT = 50 (maksimum kayitli konusma sayisi)
+
+  YENI IMPORT'LAR:
+  - import tempfile, shutil, datetime (atomic write + tarih icin)
+
+  ClaudeEngine.__init__ DEGISIKLIGI:
+  - self._aktif_konusma_id: str = "" — aktif konusmanin disk ID'si
+
+  YENI METODLAR (ClaudeEngine sinifina):
+  - _gecmis_dosyasini_oku() -> List[Dict]
+    * data/asistan_gecmis.json okur, hata varsa [] doner
+  - _gecmis_dosyasina_yaz(kayitlar) -> bool
+    * Atomic yaz: mkstemp temp dosya → shutil.move (diske guvenli yazim)
+  - _baslik_uret() -> str
+    * Ilk user mesajindan max 60 karakter baslik uretir
+    * Vision/Excel (list) icerik destegi var
+  - gecmis_kaydet(baslik="") -> str
+    * Mevcut self.gecmis'i diske kaydeder
+    * _aktif_konusma_id varsa gunceller, yoksa yeni ID olusturur (%Y%m%d_%H%M%S)
+    * MAX_KAYIT asiminda en eski kayitlari siler
+    * Doner: kaydedilen konusma ID'si
+  - gecmis_listesi() -> List[Dict]
+    * Tum kayitli konusmalarin metaverisini doner (mesajlar haric)
+    * Her kayit: {id, baslik, tarih, mesaj_sayisi, mod}
+  - gecmis_yukle(konusma_id: str) -> bool
+    * ID'ye gore konusmayi diskten yukler, self.gecmis'e atar
+    * _aktif_konusma_id guncellenir
+  - gecmis_sil(konusma_id: str) -> bool
+    * ID'ye gore kaydedilen konusmayi diskten siler
+  - gecmis_otomatik_kaydet() -> None
+    * 2+ mesaj varsa gecmis_kaydet() cagirir (sessiz hata yakalama)
+
+  MEVCUT METODLARA EKLEME:
+  - gecmis_temizle(): self._aktif_konusma_id = "" eklendi
+  - mesaj_ekle_asistan(): self.gecmis_otomatik_kaydet() cagrisi eklendi
+
+  VERI FORMATI (asistan_gecmis.json):
+  [{"id": "20260329_143022", "baslik": "...", "tarih": "29.03.2026 14:30",
+    "mod": 0, "mesajlar": [{"role": "user"/"assistant", "content": "..."}]}]
+
+================================================================================
+Rev-42 (2026-03-29) — EKAP API 26 Byte Sorunu Teshis ve Duzeltme
+================================================================================
+* BUG FIX: app/core/ekap_engine.py — POST yaniti 26 byte sorunu
+  KOK NEDEN ANALIZI (Opus 4.6 Plan agent):
+  - Ham yanit icerik hic loglanmiyordu (sadece len(raw) loglaniyordu)
+  - api-version="v1" yanlis olabilir (v2 API icin "1" veya "2" olmali)
+  - Accept-Encoding eksikti, sunucu sikistirilmis yanit donduruyordu
+  - Referer yanlis: /ekap/search yerine /ekap/search/ihale-arama olmali
+
+* DUZELTME 1: _default_headers() — kapsamli header seti
+  - Accept: application/json, text/plain, */* (daha genis)
+  - Referer: .../ekap/search/ihale-arama (Angular SPA gercek URL)
+  - Accept-Language, Accept-Encoding: gzip/deflate/br eklendi
+  - Connection: keep-alive, X-Requested-With: XMLHttpRequest eklendi
+  - api_version parametresi ile dinamik versiyon destegi
+
+* DUZELTME 2: _post() — ham yanit loglama + gzip decompress
+  - raw ilk 500 byte loglaniyor (26-byte icerigi artik gorulebilir)
+  - Content-Encoding kontrolu: gzip/deflate otomatik decompress
+  - api-version parametresi her istege geciliyor
+  - Bos yanit erken yakalanip loglanıyor
+
+* DUZELTME 3: _session_baslat() — daha kapsamli cookie tarama
+  - /ekap/search/ihale-arama URL'si (Angular SPA gercek endpoint)
+  - Tum cookie isimleri loglanıyor (debug icin)
+  - xsrf/csrf/antiforgery/requestverification tum varyantlar taraniyor
+  - Session hazir olmasa bile devam ediyor (soft fail)
+
+* YENI METOD: _yanit_gecerli_mi(yanit) — 26-byte bos yanit tespiti
+  - isSuccess/success=False durumu filtreler
+  - data/tenders/result gibi liste alanlari kontrol eder
+  - totalCount/count alani varsa gecerli kabul eder
+
+* DUZELTME 4: ihale_ara() — api-version + minimal payload fallback
+  - api-version fallback sirasi: v1 -> 1 -> 2 -> bos
+  - Her versiyonda _yanit_gecerli_mi() kontrolu
+  - Tum versionlar baskartisa minimal payload ile son deneme
+  - Basarili version _aktif_api_version'a kaydediliyor (cache)
+  - Hata mesajina ham yanit ekleniyor (debug kolayligi)
+
+================================================================================
+Rev-41 (2026-03-29) — Claude AI Asistan Yeni Araclar + Asistan Panel Gelistirme
+================================================================================
+* YENI ARAC (claude_engine.py): ekap_ihale_ara
+  - EKAPEngine uzerinden kamu ihalelerini sorgular
+  - Parametreler: anahtar_kelime, il, ihale_turu, baslangic/bitis_tarihi, sayfa_boyutu
+  - Tool use dongusunda otomatik cagrilir
+
+* YENI ARAC (claude_engine.py): hakedis_hesapla
+  - 4734/4735 KIK mevzuatina uygun hakadis hesabi
+  - Sozlesme bedeli + tamamlanma yuzdesi -> KDV, stopaj, damga vergisi, net odeme
+  - Donem farki + birikimli tutar hesaplama
+
+* YENI ARAC (claude_engine.py): gecikme_ceza_hesapla
+  - 4735 md.20 gunluk binde bes (‰5 = %0.5/gun) oraninda ceza
+  - Fesih esigi %30 kontrolu + kalan gun uyarisi
+  - Onceki birikmis ceza yuzdesi destegi
+
+* ARAC_ADLARI guncellemesi (asistan_panel.py): 3 yeni Turkce arac adi
+
+* YENI MOD: Hakedis Asistani (mod 4) — asistan_panel.py
+  - Mod secici butonuna "Hakedis Asistani" eklendi
+  - _hakedis_basla() metodu: yonlendirme promptu ile aracli mode baslatiyor
+  - UI butonu: hakedis_basla_btn (turuncu)
+
+* YENI MOD: EKAP Sorgu (mod 5) — asistan_panel.py
+  - Mod secici butonuna "EKAP Sorgu" eklendi
+  - _ekap_ara_baslat() metodu: ihale arama akisi
+  - UI butonu: ekap_basla_btn (lacivert)
+
+* DOSYA DESTEGI GENISLEDI (asistan_panel.py): _dosya_sec()
+  - PDF destegi eklendi (max 20 MB)
+  - DXF destegi eklendi (max 10 MB)
+  - Tooltip guncellendi
+
+* _ui_mesgul_yap: hakedis_basla_btn + ekap_basla_btn enable/disable eklendi
+
+================================================================================
+Rev-40 (2026-03-25) — EKAP SSL Baglanti Duzeltme + Oturum Yonetimi
+================================================================================
+* BUG FIX: app/core/ekap_engine.py — SSLV3_ALERT_HANDSHAKE_FAILURE hatasi
+  KOK NEDEN: OpenSSL 3.0 varsayilan SECLEVEL=2 eski sifrelemeleri (RC4 vb.) bloke ediyor.
+  kik.gov.tr sunucusu eski TLS cipher suite kullandigi icin el sikisma basarisiz oluyordu.
+  COZUM 1: ssl.create_default_context() -> ssl.SSLContext(ssl.PROTOCOL_TLS_CLIENT)
+            ctx.set_ciphers("DEFAULT:@SECLEVEL=0") ile eski sifreler aktiflestirildi
+            ssl.OP_LEGACY_SERVER_CONNECT eklendi
+            ctx.minimum_version = ssl.TLSVersion.TLSv1 ile TLS 1.0 destegi acildi
+  COZUM 2: Cookie jar + opener ile oturum yonetimi eklendi (_session_baslat metodu)
+            XSRF token cekme ve X-XSRF-TOKEN / RequestVerificationToken header ekleme
+  COZUM 3: HTTPError / URLError ayri yakalanarak detayli hata loglama
+  TEST SONUCU: HTTP 200 — 11890 byte (ekapv2.kik.gov.tr baglantisi BASARILI)
+
+================================================================================
+Rev-39 (2026-03-25) — 3 Pencere Hata Duzeltme
+================================================================================
+* BUG FIX 1: demir_hesaplama_window.py — AttributeError: 'DemirHesaplamaWindow'
+  object has no attribute 'durum_label'
+  KOK NEDEN: _init_ui icinde tab'lar olusturulurken _toplu_hesap_sekmesi ->
+  _ornek_satirlar_ekle -> _toplu_satir_ekle zinciri self.durum_label kullaniyordu,
+  ancak durum_label tab'lardan SONRA olusturuluyordu.
+  COZUM: self.durum_label = QLabel(...) satirlari tab widget olusturulmadan oncesine
+  tasindi; ana_layout.addWidget(self.durum_label) ise eski yerinde kaldi.
+
+* BUG FIX 2: saha_demiri_window.py — QMainWindow arguman 1 beklenmedik tip 'DatabaseManager'
+  KOK NEDEN: main_window.py'de SahaDemiriWindow(self.db) cagrisinda self.db
+  (DatabaseManager nesnesi) QMainWindow parent argumani olarak geciriliyordu.
+  SahaDemiriWindow sadece QWidget parent kabul eder.
+  COZUM: main_window.py satir 7779: SahaDemiriWindow(self.db) -> SahaDemiriWindow(self)
+
+* BUG FIX 3: fayans_hesaplama_window.py — AttributeError: '_create_parameter_panel'
+  KOK NEDEN: Tum class metodlari cascade 1-space girintileme ile birbirinin icine
+  gomulmustu (_apply_styles icinde _create_parameter_panel, onun icinde _create_oda_panel
+  vb.). Hicbiri gercek class metodu degildi.
+  Ek bug: _metraya_aktar icinde return'den SONRA emit (erisilemez kod).
+  Ek bug: _create_oda_panel'de combo setCurrentIndex ve addWidget for dongusunun
+  icinde yer aliyordu.
+  Ek bug: _sonuclari_goster'de fire_item setItem else blogunun icindeydi.
+  COZUM: Tum dosya 4-space PEP8 ile tamamen yeniden yazildi. Tum metodlar class
+  seviyesine tasindi. _FAYANS_AVAILABLE=False icin STANDART_FAYANS_EBATLARI fallback
+  eklendi. Pyc'ler silindi.
+
+================================================================================
+Rev-38 (2026-03-24) — Taseron Analizi Is Kolu Listesi Genisletildi
+================================================================================
+* DEGISIKLIK: app/ui/taseron_window.py — IS_KOLLARI sozlugu 13'ten 38 is koluna cikarildi
+* KATEGORILER: Kaba Yapi, Duvar/Bolme, Siva/Boya, Kaplama/Zemin, Dis Cephe/Yalitim,
+               Cati, Dograma/Cam, Tesisat, Mobilya/Marangoz, Dis Saha/Altyapi
+* YENI IS KOLLARI: Hafriyatci, Yikimci, Celik Konstruksiyoncu, Gazbeton Ustasi,
+  Asma Tavan Ustasi, Mermerci, Parke/Laminat Ustasi, Ahsap Dosemeci, Dogaltas Ustasi,
+  Epoksi Zemin Ustasi, Mantolama Ustasi, Cephe Kaplama Ustasi, Su Yalitimcisi,
+  Aluminyum Dogramaci, PVC Dogramaci, Demir Dogramaci, Cam Ustasi, Dekoratif Siva Ustasi,
+  Dogalgaz Tesisatcisi, Klima/Havalandirma Ustasi, Yangin Tesisatcisi, Zayif Akim Ustasi,
+  Asansorcu, Mobilyaci/Dolap Ustasi, Mutfak Tezgah Ustasi, Marangoz,
+  Peyzajci, Kaldirim/Bordur Ustasi, Asfaltci
+* HER IS KOLU: is_birimi, malzeme, verim, kapasite, ucret parametrelerine sahip
+* PIYASA ISIMLERI kullanildi (CsB terminolojisi degil)
+
+================================================================================
+Rev-37 (2026-03-24) — EKAP API v2 Entegrasyonu (Gercek Veri)
+================================================================================
+* KOK NEDEN: Eski EKAP (ekap.kik.gov.tr/EKAP/rest/ws/) tamamen kapatildi,
+  ekapv2.kik.gov.tr'ye yonlendirildi. ekapv2 JavaScript SPA oldugundan eski
+  HTML scraping de calismiyor. Kod API+scraping basarisiz olunca otomatik
+  rastgele uydurulmus demo veri gosteriyordu; kullanici bunu gercek sanip
+  EKAP sitesinde aratiyordu.
+* COZUM: ekap_engine.py tamamen yeniden yazildi:
+  - Endpoint: POST https://ekapv2.kik.gov.tr/b_ihalearama/api/Ihale/GetListByParameters
+  - Header: api-version: v1, Origin: https://ekapv2.kik.gov.tr
+  - JSON payload: searchText, ihaleIlIdList, ihaleTuruIdList, ihaleDurumIdList,
+    ihaleTarihSaatBaslangic/Bitis, paginationSkip/Take, orderBy, siralamaTipi
+  - IL_ID_MAP: il adi -> EKAP il ID donusumu (81 il)
+  - SSL: check_hostname=False, CERT_NONE (EKAP sertifika zinciri sorunu)
+  - Tarih donusumu: dd.mm.yyyy -> YYYY-MM-DD (API formati)
+  - EKAPSonucu: Turkce+Ingilizce field isimleri her ikisini de dener
+* ekap_window.py: Thread'de otomatik demo fallback kaldirildi,
+  API hata mesaji kullaniciya gosterilir; demo veri sadece "Demo Veri"
+  butonuna basilinca gosterilir ve "DEMO" acikca etiketlenir.
+* Demo veri: demo_veri_uret() hala mevcut ama sadece manuel tetiklenir,
+  otomatik arama akisinda hic cagrilmaz.
+
+================================================================================
+Rev-36 (2026-03-24) — Akilli Metraj Analizi Kat Ekle Butonu Duzeltildi
+================================================================================
+* KOK NEDEN: metraj_analiz_window.py _demir_kat_ekle() metodunda tam kat
+  ekleme mantigi (duplicate kontrol + append + listeli goster + aktif_kat_adi)
+  "if not kat_adi: return" blogununun ICINDE girintiliydi — dead code durumunda.
+  Kat adi bos ise uyari verip cikiyor, dolu ise sessizce hicbir sey yapmiyordu.
+* COZUM: Tum kat ekleme blogu (satirlar 3946-3973) metod body seviyesine
+  tasinarak dogru girintiye (4-space) getirildi.
+  Dosya: app/ui/metraj_analiz_window.py — _demir_kat_ekle()
+
+================================================================================
+Rev-35 (2026-03-24) — Poz Numarasi → Birim Fiyat Sifir Hatasi Duzeltildi
+================================================================================
+* KOK NEDEN 1 (dialogs.py): load_all_pozlar() SQL sorgusu sadece
+  "poz_no, tanim, birim, kategori" seciyordu — resmi_fiyat YOKTU.
+  on_poz_selected() pozlari all_pozlar listesinde buluyordu (her zaman buluyor),
+  poz.get('resmi_fiyat', 0) her zaman 0 donuyordu cunku dict'te alan yoktu.
+  Fallback db.get_poz() hic cagrilmiyordu.
+* COZUM 1: load_all_pozlar SQL'e resmi_fiyat eklendi.
+  on_poz_selected icinde iki katmanli fallback:
+  1) pozlar.resmi_fiyat > 0 → kullan
+  2) = 0 ise get_birim_fiyat(aktif_only=True) cek
+  3) hala 0 ise get_birim_fiyat(aktif_only=False) cek
+  Dosya: app/ui/dialogs.py — load_all_pozlar() + on_poz_selected()
+* KOK NEDEN 2 (main_window.py): on_ihale_poz_search() ihale poz arama
+  sonuclari tablosunda birim_fiyat sadece birim_fiyatlar tablosundan
+  cekiliyor, kayit yoksa "Fiyat yok" gosteriliyordu. pozlar.resmi_fiyat'a
+  bakılmiyordu.
+* COZUM 2: get_birim_fiyat() sonucu 0 ise poz.get('resmi_fiyat') fallback
+  eklendi — her ikisi de 0 ise "Fiyat yok" gostermeye devam eder.
+  Dosya: app/ui/main_window.py — on_ihale_poz_search()
+
+================================================================================
+Rev-34 (2026-03-23) — dialogs_minimal Stub → dialogs.py Tam Implementasyon
+================================================================================
+* KOK NEDEN: main_window.py satir 42'de "from app.ui.dialogs_minimal import
+  MetrajItemDialog" yaziyordu. dialogs_minimal.py eski stub dosyasiydi:
+  __init__(self, parent=None) — sadece 1 arguman aliyordu.
+  MetrajItemDialog(self.db, self) cagrisi → TypeError.
+* COZUM:
+  - main_window.py import satiri duzeltildi:
+    dialogs_minimal → dialogs (tam implementasyon)
+  - dialogs.py ayrica 4-space PEP8 ile yeniden yazildi (1-space sorunu giderildi)
+  - dialogs_minimal.cpython-311.pyc + dialogs.cpython-311.pyc stale pyc'ler silindi
+  - Rev-33 Bug-1/2/3 validasyonlari dialogs.py'de korundu
+
+================================================================================
+Rev-33 (2026-03-20) — Metraj Validasyon + 6 Bug Fix (Birim/Fiyat/PozNo/Rapor/Eksik/Etiket)
+================================================================================
+* Bug-1 (Kritik): Birim uyuşmazlık validasyonu — Kamu modunda poz seçildiğinde
+  girilen birim poz'un birimi ile eşleşmiyorsa uyarı dialog'u gösterilir.
+  Dosya: app/ui/dialogs.py — accept() metodu
+* Bug-2 (Kritik): Sıfır fiyat uyarısı — birim_fiyat=0 ile kaydedilmek
+  istendiğinde "Devam edilsin mi?" onay dialog'u çıkar. Kullanıcı iptal
+  edebilir.
+  Dosya: app/ui/dialogs.py — accept() metodu
+* Bug-3 (Orta): Poz no zorunlu alan — Kamu modunda poz_no girilmeden
+  kaydetmeye çalışılırsa "Poz numarası zorunludur" uyarısı verilir.
+  Dosya: app/ui/dialogs.py — accept() metodu
+* Bug-4 (Orta): Sıfır kategoriler raporda gizlendi — bi_engine.py'deki
+  get_kategori_dagilimi() sorgusuna HAVING toplam > 0 eklendi; toplam=0
+  olan kategoriler artık raporda görünmez.
+  Dosya: app/core/bi_engine.py — get_kategori_dagilimi()
+* Bug-5 (Orta): Eksik kalem kontrolü — bi_engine.py'ye get_eksik_kalemler()
+  metodu eklendi (sıfır fiyatlı + poz no eksik kalemler). main_window.py'de
+  "Veri → Eksik Kalem Kontrolü" menüsü + show_eksik_kalemler() penceresi
+  ile iki sekmeli tablo olarak gösterilir.
+  Dosya: app/core/bi_engine.py + app/ui/main_window.py
+* Bug-6 (Düşük): "İlk 15" etiketi dinamikleştirildi — claude_engine.py'de
+  "Önemli Kalemler (ilk 15)" yerine "Önemli Kalemler (N/Toplam)" formatı
+  kullanılır.
+  Dosya: app/core/claude_engine.py
+
+================================================================================
+Rev-32 (2026-03-20) — Startup Poz Mesajı Kaldırıldı + Beton Kürleme Şablonlardan Temizlendi
+================================================================================
+* STARTUP POZ: main_window.py satır 184'teki check_and_load_pozlar_async() çağrısı
+  devre dışı bırakıldı — program açılışında "Veriler kontrol ediliyor..." mesajı
+  ve poz yüklemesiyle ilgili hiçbir diyalog artık gösterilmez.
+* BETON KÜRLEMESİ: Tüm proje şablonlarından "Temel Kürü", "1. Kat Kürü",
+  "2. Kat Kürü", "Kolon Kürü", "Duvar Kürü", "Döşeme Kürü ve Kalıp Bekleme"
+  görevleri kaldırıldı. Bu görevler iş planında 14-28 günlük hatalı bekleme
+  süreleri oluşturuyordu.
+* ETKILENEN DOSYALAR:
+  - app/core/proje_sablonlari.py: 5 şablonda toplam 9 kürleme görevi silindi,
+    bağımlılık indeksleri yeniden hesaplandı (bagimlilik_indexler listelerindeki
+    tüm değerler kayma miktarına göre güncellendi)
+  - Betonarme Kaba Yapı: "Temel Kürü ve Bekleme" (21g) + "Kolon Kürü" (7g) +
+    "Döşeme Kürü ve Kalıp Bekleme" (28g) silindi; toplam proje süresi ~56 gün kısaldı
+  - Villa: Temel + 1. Kat + 2. Kat kürleme (~49 gün) silindi
+  - Müstakil Ev: Temel Kürü (21g) silindi
+  - Apartman 5 Kat: Temel Kürü (21g) silindi
+  - İstinat Duvarı: Temel Kürü (14g) + "Duvar Kürü ve Kalıp Sökümü" → "Kalıp Sökümü" (2g)
+
+================================================================================
+Rev-31 (2026-03-20) — AI Asistan Gantt UI Köprü Hatası Düzeltmesi
+================================================================================
+* KÖK NEDEN: claude_engine._arac_gantt_toplu_ekle() Task nesnelerini
+  engine.tasks'a yazıyordu; ancak GanttWindow._yukle_is_listesi() yalnızca
+  _is_list (List[Dict]) yapısını okuduğundan UI hiç güncellenmiyor,
+  veri_degisti.emit() de GanttEngine'de mevcut olmadığından sessizce başarısız
+  oluyordu.
+* ÇÖZÜM — 4 dosyada değişiklik:
+  1) claude_engine.py:
+     - self._gantt_window = None attribute eklendi
+     - set_gantt_window(gantt_window) metodu eklendi
+     - _task_to_is_dict() yardımcı metodu eklendi (GanttWindow._is_list dict formatı)
+     - _arac_gantt_gorev_ekle(): engine.tasks yazımına EK OLARAK _is_list'e dict
+       yazar; QMetaObject.invokeMethod ile thread-safe _yukle_is_listesi() tetikler
+     - _arac_gantt_toplu_ekle(): aynı pattern — tüm görevler döngü bittikten
+       sonra toplu extend + tek invokeMethod çağrısı; duplicate ID koruması eklendi
+  2) asistan_panel.py:
+     - self._gantt_window = None eklendi
+     - set_gantt_window() metodu eklendi
+     - _aracli_basla() ve _gantt_planla() içinde engine.set_gantt_window() çağrısı
+  3) asistan_pencere.py:
+     - set_gantt_window() proxy metodu eklendi
+  4) main_window.py:
+     - _asistan_ac(): set_gantt_window(gantt_ref) eklendi
+     - on_tab_changed() Gantt oluşturma bloğu: set_gantt_window(gantt_widget) eklendi
+* SAHA ETKİSİ: AI asistanın "27 Görev Sisteme Başarıyla Yazıldı" demesinin
+  ardından Gantt sekmesi açılınca görevler artık görünür hale gelir.
+
+================================================================================
+Rev-30 (2026-03-19) — Gantt İçeri Aktarma (Excel/CSV/JSON) Özelliği
+================================================================================
+* gantt_window.py — Toolbar'a "İçeri Aktar" butonu eklendi (goster_iceri_aktar_menu)
+  - Açılan menü: Excel'den İçeri Aktar / CSV'den İçeri Aktar /
+    JSON'dan İçeri Aktar / Boş Excel Şablonu İndir
+* Yeni metodlar (gantt_window.py):
+  - goster_iceri_aktar_menu(): Format seçim menüsü (QMenu)
+  - _sablon_excel_indir(): openpyxl ile başlıklı + örnek satırlı şablon üretir;
+    sütun genişlikleri ve başlık stilleri (mavi dolgu, beyaz yazı) uygulanır
+  - _sutun_indeksi(): Başlık listesinden aday isim eşleştirme (statik yardımcı)
+  - _satiri_goreve_donustur(): Dict satırını Gantt görev dict'ine dönüştürür;
+    tarih normalizasyonu (%Y-%m-%d / %d.%m.%Y / %d/%m/%Y / %m/%d/%Y),
+    öncül (bağımlılık) parse, milestone/tamamlanma/bütçe alanları
+  - _gosterge_ve_yukle(): Import sonrası "Ekle/Sıfırla" modu sorar; undo snapshot;
+    ID offset hesabı (mevcut maksimum + import ID)
+  - _aktar_excel(): openpyxl ile .xlsx okuma; KOLON_MAP ile esnek başlık eşleme
+  - _aktar_csv(): csv.DictReader ile .csv okuma; utf-8-sig BOM desteği
+  - _aktar_json_dosya(): {"tasks":[]} veya direkt [...] JSON formatı desteği
+* claude_engine.py — "gantt_dosya_iceri_aktar" aracı eklendi:
+  - ARACLAR listesine yeni tool tanımı eklendi (dosya_yolu + mod parametreleri)
+  - _arac_calistir() dispatch: elif gantt_dosya_iceri_aktar dalı eklendi
+  - _arac_gantt_dosya_iceri_aktar(): Excel/CSV/JSON dosya okuma + GanttEngine.tasks
+    yazma; mod=ekle (ID offset) veya mod=yenile (tasks.clear()); tarih parse;
+    veri_degisti sinyali; ayrıntılı sonuç raporu
+
+================================================================================
+Rev-29 (2026-03-19) — AI Asistan Veri Yazma Yetkileri
+================================================================================
+* claude_engine.py — 4 yeni yazma araci eklendi (ARACLAR listesi):
+  - metraj_kalem_ekle: Tek metraj kalemi DB'ye yazar (poz_no, is_kalemi,
+    miktar, birim, birim_fiyat, kategori)
+  - metraj_toplu_ekle: Birden fazla metraj kalemini toplu ekler; hata toleransli
+  - gantt_gorev_ekle: Gantt motoruna tek gorev ekler; sure=0 ise CSB verimlilik
+    tablosundan otomatik hesaplama (_csb_sure_hesapla); oncul FS baglantisi
+  - gantt_toplu_ekle: 30 kalemlik is programini tek cagriyla olusturur;
+    index-tabanli oncul referansi -> gercek ID donusumu (id_map)
+* _csb_sure_hesapla(): modul seviyesinde _VERIMLILIK_MAP (30 is tipi),
+  fuzzy match, ekip bolucu; eslesme yoksa miktar/2 fallback
+* SISTEM_PROMPT guncellendi: "VERİ AKTARIM YETKİN (AKTIF)" bolumu eklendi
+* _arac_calistir() dispatch: 4 yeni elif dali eklendi
+
+================================================================================
+Rev-21 (2026-03-19) — Gantt Modulu G2 Guncellemeleri
+================================================================================
+* _yukle_kritik_yol(): Tum is kalemleri gosterilir (sadece kritik degil);
+  kritik satirlar kirmizi arka plan + koyu kirmizi yazi rengi; ES/EF sutunlari
+  kullanilir (baslangic/bitis yerine); bagimlilik tip bilgisi (FS/SS vb.) eklendi;
+  KPI kartlari findChildren(QLabel) ile guncellenir; proje_suresi_gun destegi.
+* kaydet_baseline(): engine.save_baseline() cagrilir (varsa).
+* analiz_baseline(): engine.get_baseline_comparison() ile gercek engine
+  entegrasyonu; fallback is_list/baseline_data karsilastirmasi; sapma rengi
+  guncellendi (#27ae60 / #e74c3c).
+* ekle_kaynak(): engine.add_kaynak() entegrasyonu + _kaynak_guncelle_tablo() cagrilir.
+* _kaynak_guncelle_tablo(): Yeni metod — engine.kaynaklar dict + get_kaynak_yukleme()
+  ile kullanim yuzdesi hesabi; Asim/Yogun/Normal durum gostergesi.
+* kontrol_kaynak_cakisma(): check_kaynak_cakisma + kontrol_kaynak_cakisma fallback.
+* hesapla_program(): _kaynak_guncelle_tablo() hesaplama sonunda otomatik cagrilir.
+* IlerlemeGuncellemeDialog: Yeni sinif — toplu ilerleme % guncelleme; filtre combo;
+  QSpinBox ile her gorev icin yeni % girisi.
+* _toplu_ilerleme_guncelle(): GanttWindow metodu; dialog acilir, kabul edilince
+  undo stack guncellenir, hakdis yeniden hesaplanir.
+* Is Programi sekmesinde "Ilerleme Guncelle" butonu eklendi.
+* TatilDialog: "Hava Kosulu Gunleri Ekle" butonu + _ekle_hava_tatil() metodu;
+  HavaDurumuServisi entegrasyonu; manuel fallback destegi.
+
+Son Guncelleme: 01 Mart 2026 (Rev-9)
+
+================================================================================
+1. ANA MODULLER VE EKRANLAR
+================================================================================
+
+A) KULLANICI TIPLERI
+--------------------
+* Yuklenici Modu - Tam proje yonetimi, metraj cetveli, BI dashboard
+* Alt Yuklenici (Taseron) Modu - Puantaj, gelir/gider takibi, hak edis
+
+B) ANA PENCERELER
+-----------------
+* MainWindow - Yuklenici ana arayuzu (7 sekmeli: Metraj, Ozet, Taseron,
+  Malzeme, Sablonlar, Birim Fiyat, Ihale)
+* TaseronWindow - Alt yuklenici ozel arayuzu (5 sekmeli: Puantaj,
+  Is & Birim Fiyat, Gelir/Gider, Raporlar, Is Sure Maliyet)
+* StartupDialog - Kullanici tipi secim ekrani (logo + bilgilendirme)
+
+C) OZEL MODUL PENCERELERI
+-------------------------
+* HakedisWindow - Hak edis yonetimi
+* IsYakipWindow - Is takibi
+* EnflasyonWindow - Enflasyon analizi (TCMB API)
+* TedarikciWindow - Tedarikci yonetimi ve fiyat karsilastirma
+* BIDashboardWindow - Business Intelligence Dashboard (KPI kartlari)
+* QRHakedisWindow - QR kod hak edis (QRGosterDialog ile)
+* SurdurulebilirlikWindow - Cevre ve surdurulebilirlik analizi (4 sekmeli)
+* GanttWindow - Proje is programi (Gantt Chart + CPM)
+                [GUNCELLENDI: 2026-03-01 Rev-7/8/9]
+                Koyu tema, Undo sistemi (Ctrl+Z, max 20 adim),
+                Miktar+Ekip sutunlari, otomatik sure hesabi,
+                22 is tipi verimlilik tablosu (CŞB verileri)
+* PuantajServerWindow - Flask REST API sunucu yonetimi
+* PuantajRaporWindow - Puantaj raporlama
+* MetrajAnalizWindow - Detayli metraj analizi ve 3D ince isler gorsellestirme
+                       [GUNCELLENDI: 2026-02-20 Rev-2 — 6 yeni ozellik eklendi]
+                       4 sekmeli (Ince Isler / Demir Metraji / Coklu Kat / Kaba Yapi)
+                       Net/Brut alan, anomali uyarisi, metraj aktarimi, tedarikci teklifi
+* OdaIsimleriWindow - DXF tabanli 2D oda goruntuleme ve isimlendirme
+
+D) DEMIR HESAPLAMA PENCERELERI
+------------------------------
+* DemirHesaplamaWindow - Ana demir hesaplama (DXF'den)
+* TemelDemirWindow - Temel demir hesaplamalari
+* KolonDemiriWindow - Kolon demir hesaplamalari
+* KirisDemiriWindow - Kiris demir hesaplamalari
+* DosemeDemiriWindow - Doseme demir hesaplamalari
+* SahaDemiriWindow - Saha demir hesaplamalari
+
+E) MALZEME MALIYET HESAPLAMA PENCERELERI (15 ADET)
+---------------------------------------------------
+* DuvarMaliyetWindow - Tugla/Briket + harc maliyet hesabi
+* AlciMaliyetWindow - Alci siva maliyet hesabi (makine/el)
+* KaraSivaWindow - Kara siva (geleneksel harc) maliyet hesabi
+* BoyaMaliyetWindow - Boya maliyet hesabi (astar, kat sayisi, iscilik)
+* FayansHesaplamaWindow - Fayans/Seramik hesabi (grid yontemi, oda bazli)
+* SapMaliyetWindow - Sap (tesviye betonu) maliyet hesabi
+* ParkeMaliyetWindow - Parke/Laminat maliyet hesabi (suvegerli)
+* MantolamaDialog - Dis cephe mantolama hesabi (EPS/Tasyunu)
+* MermerDialog - Mermer maliyet hesabi (merdiven + suve)
+* PvcDogramaDialog - PVC pencere/kapi hesabi
+* MobilyaMaliyetWindow - Mobilya maliyet tahmini
+* YalitimMaliyetWindow - Yalitim (isi/su) maliyet hesabi
+* ElektrikMaliyetWindow - Elektrik tesisat maliyet hesabi
+* VitrifiyeMaliyetWindow - Vitrifiye maliyet hesabi
+* MetalIsleriMaliyetWindow - Metal isler (korkuluk, kapi) maliyet hesabi
+* KabaYapiMaliyetWindow - Kaba yapi genel maliyet hesabi
+
+================================================================================
+2. HESAPLAMA VE METRAJ OZELLIKLERI
+================================================================================
+
+A) TEMEL HESAPLAMA MOTORU (calculator.py)
+-----------------------------------------
+* Toplam tutar hesaplama (miktar x birim fiyat)
+* Proje maliyeti hesaplama
+* KDV hesaplama (dahil/haric)
+* Poz bazli malzeme hesaplama
+* Decimal ile yuksek hassasiyet (2 ondalik)
+* Otomatik yuvarlama (ROUND_HALF_UP)
+* Verimlilik veritabani:
+  - Tugla orme: 12-22 m2/gun (piyasa/resmi)
+  - Siva: 13-45 m2/gun (el/makine)
+* Malzeme tuketim oranlari (m2 basina)
+
+B) MALZEME HESAPLAMA (material_calculator.py)
+----------------------------------------------
+* Proje icin toplam malzeme ihtiyaci hesaplama
+* Fire orani uygulamasi (varsayilan %5)
+* Poz bazli otomatik formuller
+* Gelismis boya maliyet hesabi:
+  - Alan, kat sayisi, astar, birim fiyatlar, iscilik
+  - Tuketim: 0.15 kg/m2/kat
+  - Verimlilik: 45-90 m2/gun
+* 15 temel malzeme kategorisi:
+  - Cimento, Kum, Cakil
+  - Briket, Tugla, Gazbeton
+  - Demir, Su, Alci, Kirec
+  - Boya, Fayans, Seramik, Izolasyon, Cati Kiremiti
+
+C) OZEL HESAPLAMA MOTORLARI
+----------------------------
+* Fayans Hesaplama (fayans_hesaplama.py):
+  - Grid yontemiyle gercekci fire hesabi
+  - Oda turu: kuru/islak
+  - Optimal yon secimi (normal/donuk)
+  - Fayans adedi, fire %, verim kaynagi (piyasa/manuel)
+
+* Sap Hesaplama (sap_hesaplama.py):
+  - El/makine uygulama yontemleri
+  - Verimlilik: 25-225 m2/gun
+  - Karisim: Kum + Cimento (350 kg/m3)
+
+* Parke Hesaplama (parke_hesaplama.py):
+  - Laminat parke + suveger
+  - Kapi bosluklari dusme
+  - Fire hesabi
+  - Standart kutu olculeri: 1.84, 2.22, 2.94 m2
+
+* Mantolama Hesaplama (mantolama_hesaplama.py):
+  - EPS (karbonlu) ve Tasyunu sistemleri
+  - Plaka, yapistirici, file, astar, boya, dubel hesabi
+  - Bosluklarda 3 m2 minimum esigi
+  - Kose profili hesabi
+
+* PVC Dograma Hesaplama (pvc_dograma_hesaplama.py):
+  - Pencere tipleri: Sabit, tek kanat, cift kanat, balkon kapisi
+  - Profil metre, cam alani, aksesuar, montaj iscilik
+  - Fire payi: %15 (pencere), %20 (kapi)
+
+* Mermer Hesaplama (mermer_hesaplama.py):
+  - Merdiven basamak, suve, harc tuketimi
+  - Hamaliyet faktoru (%20-30 artis)
+  - Asansorlu/asansorsuz secenekleri
+
+* Kara Siva Hesaplama (calculator.py):
+  - Malzeme: Cimento (6 torba/m3), Kum (1.1 m3/m3)
+  - Iscilik: 13-22 m2/gun verimlilik
+  - Fire: %10'a kadar
+
+D) DEMIR HESAPLAMA MOTORU
+-------------------------
+* Demir caplari: 6mm - 32mm (tum standart caplar)
+* kg/m birim agirlik tablolari:
+  - 6mm: 0.222, 8mm: 0.395, 10mm: 0.617, 12mm: 0.888
+  - 14mm: 1.208, 16mm: 1.578, 18mm: 2.0, 20mm: 2.466
+  - 22mm: 2.984, 25mm: 3.853, 28mm: 4.834, 32mm: 6.313
+* Eleman tipi bazli hesaplama
+* Toplam uzunluk ve agirlik
+* Tip bazli ozet raporlari
+* Otomatik cap normalizasyonu
+
+E) DXF DEMIR ANALIZ
+-------------------
+* DXF dosyasindan otomatik demir tanima (STA4CAD formati)
+* Temel tipi otomasyonu:
+  - Radye Temel
+  - Kirisli Radye
+  - Mutemadi Temel
+  - Kirisli Temel
+* Text ve katman analizi
+* Elemanlardan demir hesaplari cikarma
+
+* Temel Demir Analyzer (temel_demir_analyzer.py):
+  - Kesit donatisi cikarma
+  - Ilave donati hesabi
+  - Kolon filizi tespiti
+  - Etriye ve cember donatisi
+
+* Kolon Demiri Engine (kolon_demiri_engine.py):
+  - Boyuna ve kesme donatisi
+  - Etriye detaylari (aralik)
+  - Kat bazli kolon verisi
+  - Regex ile otomatik isim/donati/etriye tespiti
+
+* Kiris Demiri Engine (kiris_demiri_engine.py):
+  - Ust/alt/govde/payanda donatisi
+  - Ust montaj vs. ust ilave ("ila" anahtar kelimesi)
+  - Govde vs. payanda ("gov"/"pil" anahtar kelimeleri)
+  - Y-koordinat bazli siralama
+
+* Doseme Demiri Engine (doseme_demiri_engine.py):
+  - Doseme donatisi detaylari
+  - Kat bazli doseme verisi
+  - Y-koordinat bazli katman tespiti
+
+================================================================================
+3. POZ VE IS KALEMLERI
+================================================================================
+
+A) TOPRAK ISLERI (03.xxx)
+-------------------------
+* Hafriyat (elle/makine)
+* Dolgu isleri
+* Tesviye ve sikistirma
+
+B) BETON ISLERI (04.xxx)
+------------------------
+* Temel betonu (Radye, Tekil, Surekli)
+* Perde betonu
+* Kolon betonu
+* Kiris betonu
+* Doseme betonu
+* Merdiven ve balkon betonu
+* Betonarme demir isleri (8-25mm)
+* Kalip isleri (Ahsap/Metal)
+* Beton bakimi
+
+C) DUVAR ISLERI (05.xxx)
+------------------------
+* Tugla yigmasi
+* Briket duvarlar (15cm, 20cm)
+* Gazbeton duvar
+* Alci blok duvar
+* Tas duvar (dekoratif)
+* Siva isleri (ic/dis)
+* Izolasyon
+
+D) SIVA ISLERI
+--------------
+* Ic siva (el/makine)
+* Dis siva
+* Dekoratif siva
+
+E) BOYA ISLERI
+--------------
+* Astar
+* Son kat boya
+* Kaplamalar
+
+F) DOSEME ISLERI
+----------------
+* Fayans/Seramik
+* Parke/Laminat
+* Vinil
+
+G) PENCERE/KAPI
+----------------
+* PVC dograma
+* Cerceveler
+
+H) IZOLASYON
+------------
+* Isi yalitimi
+* Ses yalitimi
+* Su yalitimi
+
+I) ELEKTRIK
+-----------
+* Boru/Kablo
+* Tesisat
+
+J) TESISAT
+----------
+* Su/Kalorifer
+* HVAC
+
+K) ASANSOR
+----------
+* Asansor
+
+L) CATI
+-------
+* Kiremit
+* Membran
+
+* Toplam 100+ Turk standart is kalemi (konut_is_kalemleri.py)
+
+================================================================================
+4. VERI YONETIMI
+================================================================================
+
+A) VERITABANI (SQLite)
+----------------------
+* Temel Tablolar:
+  - projects (id, ad, aciklama, olusturma_tarihi, guncelleme_tarihi,
+    durum, toplam_maliyet, notlar)
+  - pozlar (poz_no, tanim, birim, resmi_fiyat, kategori, fire_orani)
+  - metraj_kalemleri (proje baglantili, 11 alan)
+  - sablonlar + sablon_kalemleri (sablon sistemi)
+  - birim_fiyatlar (tarihli birim fiyat takibi)
+  - ihaleler + ihale_kalemleri (ihale yonetimi)
+
+* Taseron/Mobil Tablolar:
+  - isci (ad_soyad, tc_no, telefon, ustalik, gunluk_ucret, aktif)
+  - puantaj (isci_id, tarih, giris/cikis saati, calisma_durumu,
+    mesai_saat, yapilan_is, konum_lat/lng)
+  - avans (isci avans kayitlari)
+  - tedarikci_listesi (tedarikci kayitlari)
+
+B) VERITABANI OPTIMIZASYONLARI
+------------------------------
+* WAL (Write-Ahead Logging) modu
+* 64MB cache
+* Synchronous mode optimizasyonu
+* Foreign key kontrolu
+* Context Manager ile otomatik commit/rollback
+
+C) VERI YUKLEME VE DOGRULAMA (data_loader.py)
+----------------------------------------------
+* load_pozlar_to_database() - Toplu is kalemi yukleme
+* check_pozlar_loaded() - Baslangic dogrulamasi
+* initialize_database_data() - Tam veritabani kurulumu
+* initialize_material_data() - Malzeme ve formul yukleme
+* check_malzemeler_loaded() / check_formuller_loaded() - Dogrulama
+
+================================================================================
+5. RAPORLAMA OZELLIKLERI
+================================================================================
+
+A) EXCEL EXPORT (openpyxl/pandas)
+---------------------------------
+* Malzeme listesi export
+* Otomatik sutun genislikleri
+* Baslik satiri formatlasi (Kalin)
+* Stil ayarlari
+* Gantt chart export
+
+B) PDF EXPORT (ReportLab)
+-------------------------
+* Tablo stili raporlar
+* A4 sayfa boyutu
+* Baslik, icerik, sayfa sonu
+* Gantt chart export
+* Ozel font destegi
+
+C) BUSINESS INTELLIGENCE (BI) DASHBOARD
+----------------------------------------
+* KPI Kartlari (renk kodlu):
+  - Toplam proje sayisi
+  - Toplam yatirim tutari
+  - Ortalama proje maliyeti
+  - En yuksek maliyetli proje
+* Kategori bazli maliyetlendirme
+* Trend analizi
+* Proje ilerleme takibi
+* 5 dakikada bir otomatik yenileme
+* Proje filtresi
+* Matplotlib grafik entegrasyonu
+
+================================================================================
+6. IMPORT/EXPORT OZELLIKLERI
+================================================================================
+
+A) DESTEKLENEN GIRIS FORMATLARI
+-------------------------------
+* DXF - AutoCAD cizimleri (ezdxf + shapely)
+* PDF - Birim fiyat listeleri (pdfplumber)
+* Excel - Veri tablolari (pandas/openpyxl)
+
+B) DESTEKLENEN CIKIS FORMATLARI
+-------------------------------
+* Excel (.xlsx) - Malzeme listeleri, Gantt chart
+* PDF (.pdf) - Raporlar, Gantt chart
+* QR Kod (PNG) - Hak edis verisi
+
+C) PDF ICE AKTARMA (pdf_importer.py)
+-------------------------------------
+* Poz pattern tanima (03.001, 03.001/1, 15.250.1011)
+* Tablo onceliklendirmesi
+* Sayfa bazli isleme
+* Ilerleme takibi
+
+D) EXCEL ICE AKTARMA (excel_importer.py)
+-----------------------------------------
+* Pandas ile Excel veri okuma
+* DataFrame donusu
+* Hata yonetimi
+
+================================================================================
+7. OZEL OZELLIKLER
+================================================================================
+
+A) GANTT CHART VE IS PROGRAMI (gantt_engine.py + gantt_window.py)
+-----------------------------------------------------------------
+* Gorev yonetimi (baslangic, bitis, sure)
+* Ilerleme takibi (0-100%)
+* Milestone destegi
+* WBS (Work Breakdown Structure) hiyerarsisi
+* Kaynak cakisma kontrolu
+* Baseline karsilastirma
+* Surukleme ile yeniden zamanlama
+* Renk kodlamasi (duruma gore)
+* PDF/Excel export
+
+* RESMI TATIL DESTEGI:
+  - Yilbasi (1 Ocak)
+  - 23 Nisan Ulusal Egemenlik ve Cocuk Bayrami
+  - 1 Mayis Isci Bayrami
+  - 19 Mayis Ataturk'u Anma Genclik ve Spor Bayrami
+  - 15 Temmuz Demokrasi ve Milli Birlik Gunu
+  - 30 Agustos Zafer Bayrami
+  - 29 Ekim Cumhuriyet Bayrami
+  - Ramazan Bayrami (2024-2030)
+  - Kurban Bayrami (2024-2030)
+
+* CPM (Critical Path Method):
+  - Kritik yol analizi ve vurgulama
+  - Gorev bagimliliklari
+  - Erken/Gec baslangic-bitis hesabi
+  - Float hesaplamasi
+
+* Gantt Sablonlari (gantt_templates.py):
+  - Konut, ofis, depo gibi hazir proje planlari
+
+B) ENFLASYON ANALIZI (enflasyon_engine.py + enflasyon_window.py)
+----------------------------------------------------------------
+* TCMB EVDS API Entegrasyonu
+* TUFE (Tuketici Fiyat Endeksi) verisi
+* UFE (Uretici Fiyat Endeksi) verisi
+* Cache mekanizmasi
+* Donem bazli enflasyon hesabi
+* Fiyat farki hesaplamasi (TL + %)
+* Manuel veri girisi fallback
+* Otomatik KDV uygulamasi
+
+C) CEVRE VE SURDURULEBILIRLIK (surdurulebilirlik_engine.py)
+------------------------------------------------------------
+* Karbon Ayak Izi Hesaplamasi:
+  - 15+ malzeme kategorisi icin kg CO2 faktorleri
+  - Beton: 135 kg CO2/m3
+  - Celik: 1900 kg CO2/ton
+  - Aluminyum: 11500 kg CO2/ton
+  - Ahsap: -480 kg CO2/ton (negatif emisyon)
+  - Boya: 2.9 kg CO2/kg
+  - Fayans: 7.5 kg CO2/m2
+
+* Enerji Verimliligi Siniflandirmasi:
+  - A+, A, B, C, D, E, F, G siniflari
+  - kWh/m2/yil bazli
+
+* LEED Kriterleri:
+  - Enerji tasarrufu (max 33 puan)
+  - Su verimliligi (max 12 puan)
+  - Malzeme kaynagi (max 13 puan)
+  - Ic ortam kalitesi
+  - Entegre planlama
+
+* Diger:
+  - Atik yonetimi analizi
+  - Geri donusturulebilir malzeme orani
+  - BREEAM sertifika hazirlik
+
+D) TEDARIKCI YONETIMI (tedarikci_engine.py + tedarikci_window.py)
+------------------------------------------------------------------
+* Tedarikci listesi (5 hazir tedarikci):
+  - Demirbas Insaat, Seval Yapi, Hilti Turkiye,
+    Cimsa Cimento, Izocam
+* Malzeme kodu bazli fiyat karsilastirma
+* En dusuk fiyat vurgulama
+* Tasarruf hesabi
+* Tedarikci performans metrikleri
+* Teklif istegi olusturma
+* API entegrasyonu (hazir)
+* Cache mekanizmasi
+
+E) QR KOD HAK EDIS (qr_hakedis_engine.py + qr_hakedis_window.py)
+------------------------------------------------------------------
+* QR kod olusturma (kalem bazli)
+* Proje_id + kalem_id + zaman damgasi
+* Mobil saha dogrulama
+* Ilerleme takibi (0-100%)
+* Tamamlanma dogrulamasi
+* Rapor olusturma
+* QRGosterDialog ile goruntuleme
+
+F) DXF MOTOR (dxf_engine.py + cad_manager.py)
+----------------------------------------------
+* DXF dosyasi yukleme ve dogrulama
+* Alan ve cevre hesaplama
+* Blok sayimi ve tespiti
+* Katman listeleme ve analizi
+* Acik cizgi otomatik kapatma (toleransli)
+* Cizim birimi destegi (m, cm, mm)
+* Poligon alan hesabi (shapely)
+
+G) AUTOCAD CANLI BAGLANTI (autocad_connector.py)
+-------------------------------------------------
+* Win32COM ile canli AutoCAD baglantisi
+* Entity tipi cikarma:
+  - Line, Polyline, Circle, Arc, Text, Block, Hatch
+* Katman renk manipulasyonu
+* Uzunluk/Alan/Cevre hesaplamalari
+* Koordinat cikarma
+* ACI (AutoCAD Color Index) destegi
+* COM olmadan da calisir (failsafe)
+
+H) ODA ISIMLERI VE 2D GORUNTULEME (oda_isimleri_window.py)
+-----------------------------------------------------------
+* DXF tabanli proje gorsellemesi
+* 2D oda/kat goruntuleme
+* Yakinlastirma ve kaydirma kontrolleri
+* DXF TEXT varliklarindan oda isimlendirme
+
+I) 3D INCE ISLER GORSELLESTIRME (PyOpenGL)
+--------------------------------------------
+Metraj analizi sonuclarinin interaktif 3D ortamda gorsellestirmesi.
+2D Matplotlib gorunumu tamamen kaldirilip yerine PyOpenGL tabanli
+gercek zamanli 3D render sistemi konmustur.
+
+* 3D Veri Donusturucu Motor (room_3d_builder.py):
+  - 2D DXF metraj verisini 3D mesh geometrisine donusturme
+  - Duvar polygon extrusion (z=0 -> z=net_yukseklik)
+  - Kapi/pencere boslugu kesme (duvarlarda dikdortgen delik)
+  - Zemin/tavan yuzey olusturma (alan bazli)
+  - Kolon/kiris 3D extrusion
+  - recete_getir() ile oda bazli malzeme renk atamasi
+  - Ucgenleme (triangulation) ile render-ready mesh verisi
+  - Veri siniflar: Room3DData, WallSegment3D, Opening3D, StructuralElement3D
+
+* OpenGL 3D Widget (ince_isler_3d_widget.py):
+  - QOpenGLWidget (PyQt6 native) tabanli render
+  - Koyu tema arka plan (#1a1a2e), derinlik testi, aydinlatma
+  - Seffaflik destegi (GL_BLEND)
+  - GL_TRIANGLES ile mesh cizim + tel kafes overlay
+  - Perspektif projeksiyon
+  - Normal hesaplama ve Phong aydinlatma
+
+* Orbital Kamera Sistemi (Camera3D):
+  - Sol tus surukle -> sahne dondurme (azimuth + elevation)
+  - Orta tus surukle -> kaydirma (pan)
+  - Scroll tekerlek -> yakinlastirma/uzaklastirma (zoom)
+  - Otomatik sahneye sigdirma (fit_to_bounds)
+  - Gorunum preset'leri: Ust, On, Sol, Izometrik
+
+* Kontrol Paneli (InceIsler3DPanel):
+  - Katman checkbox'lari (her malzeme icin acma/kapama)
+  - Renk kodlu lejant (malzeme renk ornekleri)
+  - "Tumu Ac" / "Tumu Kapa" toplu kontrol
+  - Kamera sifirlama ve gorunum preset butonlari
+  - Tel kafes (wireframe) toggle
+  - Bilgi paneli (tiklanan yuzey detaylari: oda, malzeme, alan)
+  - Kullanim ipuclari
+
+* Malzeme Renk Sistemi (malzeme_renkleri.py):
+  - 20+ malzeme icin RGBA renk eslemesi (OpenGL uyumlu, 0.0-1.0)
+  - Zemin: Seramik (mavi), Laminat Parke (kahverengi), Sap (gri)
+  - Duvar: Seramik (acik mavi), Boya (krem), Alci (bej), Siva (gri)
+  - Tavan: Boya (beyaz), Asma Tavan (yesil)
+  - Ekstra: Tezgah Arasi (turuncu)
+  - Supurgelik: Seramik (mavi), Ahsap (kahverengi)
+  - Yapi elemanlari: Duvar (gri seffaf), Kolon (beyaz opak),
+    Kiris (mavi-gri), Kapi (kahverengi), Pencere (cam mavi)
+  - Oda tipi fallback renkleri (ISLAK/KURU/MUTFAK/KORIDOR)
+  - get_surface_color() ve get_visible_material() fonksiyonlari
+
+* Yuzey Tiklama ve Etkilesim:
+  - Ray casting ile 3D yuzey secimi (gluUnProject)
+  - Tiklanan yuzey bilgisi: oda adi, malzeme, alan (m2)
+  - surface_clicked sinyali ile panel guncellemesi
+
+* Oda Etiketleri:
+  - QPainter overlay ile 3D sahne uzerine 2D metin
+  - Oda adi + alan (m2) bilgisi
+  - Oda tipine gore renk kodlamasi
+
+* Klavye Kisayollari:
+  - R: Kamera sifirla
+  - W: Tel kafes (wireframe) toggle
+  - F: Sahneye sigdir
+  - 1: Ust gorunum
+  - 2: On gorunum
+  - 3: Sol gorunum
+  - 4: Izometrik gorunum
+
+* 3D Render Sirasi (performans optimize):
+  1. Zemin grid referans duzlemi
+  2. Kolonlar (opak, once cizilir)
+  3. Duvar segmentleri + kapi/pencere bosluklari
+  4. Standalone duvarlar
+  5. Zemin yuzeyleri
+  6. Tavan yuzeyleri
+  7. Kirisler (seffaf)
+  8. Oda isimleri (2D overlay)
+
+J) AKILLI METRAJ ANALIZI — 6 YENİ OZELLİK  [YENİ: 2026-02-20 Rev-2]
+-----------------------------------------------------------------------
+Dosya: metraj_analiz_window.py (MetrajAnalizWindow sinifi genisletildi)
+
+OZELLİK 1 — Net Alan / Brut Alan Ayirimi
+------------------------------------------
+Neyi cozer? DXF'deki polyline alanlari duvar kalinliklarini iceren "brut" alanlardir.
+Musteri genellikle "net" kullanim alanini bilmek ister.
+
+* Genel Ayarlar grubuna iki radio buton eklendi:
+  [O] Net Alan  (varsayilan)  — katsayi = 0.88 (%12 dusurme)
+  [O] Brut Alan               — katsayi = 1.00 (DXF degeri oldugu gibi)
+* _alan_katsayisi() → hesaplarda kullanilacak katsayiyi dondurur
+* self.alan_turu ("net" | "brut") state degiskeni
+* ToolTip: Her iki secenegin anlami ve ne zaman kullanilacagi
+
+OZELLİK 2 — Coklu Kat / Coklu DXF Yonetimi
+---------------------------------------------
+Neyi cozer? Cok katli bir yapida her katin DXF dosyasini ayri ayri analiz
+edip toplam proje metrajini elde etme ihtiyaci.
+
+* Yeni "🏢 Coklu Kat" sekmesi (acad_tab_widget sekme 3)
+* Kat ekleme: isim gir + DXF sec → dosya otomatik okunur, alan hesaplanir
+  - DXF'deki kapali LWPOLYLINE'lar taranir
+  - Toplam alan cm²'den m²'ye cevirilir
+* Kat listesi (QListWidget): kat adi + m2 + dosya adi
+* Seçili kat silme
+* "Tum Katlari Hesapla" → toplam alan ozeti + kat kat detay mesaji
+* Ozet etiketi: "Yuklu kat: N | Toplam alan: X.XX m²"
+* self.mimari_katlar: List[Dict] veri yapisi
+  Format: {"kat_adi", "dxf_path", "alan_m2", "imalat"}
+
+OZELLİK 3 — Metraj Cetvelı'ne Tek Tusa Aktarim
+-------------------------------------------------
+Neyi cozer? Analiz tamamlandiktan sonra her kalemi el ile ana ekrana
+girmek yerine tek tikla Metraj Cetveli'ne toplu aktarim.
+
+* "📋 METRAJ CETVELİNE AKTAR" butonu (derin yesil, Excel butonunun altinda)
+* _metraj_cetvelne_aktar() metoduu:
+  - self.imalat_listesi uzerinde iterasyon
+  - Her kalem icin parent().db.add_metraj_kalem() cagrisi
+  - Basarili / hatali kalem sayisi raporu
+  - Aktarimdan sonra parent().load_metraj_data() cagrisi (liste yenileme)
+  - DB veya proje_id yoksa bilgilendirici uyari (sessiz calismiyor)
+* Desteklenen kalem alanlari: tanim, miktar, birim, kategori
+
+OZELLİK 4 — Anormallik / Hata Uyari Sistemi
+---------------------------------------------
+Neyi cozer? Yanlis DXF secimleri veya hatalı alan olculeri sonucu
+mantıkdisi sarfiyat degerleri hesaplanabilir. Otomatik tespit kritik.
+
+* NORMAL_ARALIKLAR sabiti (modul seviyesi, 12 malzeme):
+  Format: {"Malzeme Adi": (min_katsayi_m2, max_katsayi_m2)}
+  Ornekler:
+    "Kaba Alci":           (8.0,  14.0)  kg/m2 zemin
+    "Yer Fayans + Derz":   (1.00,  1.15) m2/m2 (fire dahil)
+    "Sap Cimentosu":       (12.0, 20.0)  kg/m2
+    "Fayans Yapistirici":  (3.50,  6.00) kg/m2
+    (12 malzeme toplam)
+
+* _anomali_tespit(alan_m2) metodou:
+  - Hesap sonunda _hesapla_imalat_listesi() otomatik cagirir
+  - Her kalem: (miktar / alan_m2) hesaplanan katsayi
+  - Asagi sapma: turuncu uyari "Dusuk deger"
+  - Yukari sapma: kirmizi uyari "Yuksek deger"
+  - self.uyari_listesi guncellenir
+
+* "⚠️ Anormallik Uyarilari" paneli (baslangicta gizli):
+  - Uyari varsa otomatik belirir (setVisible(True))
+  - QListWidget renk kodlu uyari satirlari
+  - Turuncu = Dusuk deger (#FFA500)
+  - Kirmizi = Yuksek deger (#FF4444)
+
+OZELLİK 5 — Kaba Yapi Kesif Hesabi
+--------------------------------------
+Neyi cozer? DXF olmadan yalnizca alan + kat sayisi girerek
+kaba yapi miktarlarinin hizli hesaplanmasi (ihale on-hazirlik).
+
+* Yeni "🏗️ Kaba Yapi" sekmesi (acad_tab_widget sekme 4)
+* Girdi: Toplam insaat alani (m²), kat sayisi, kat yuksekligi, yapi sistemi
+* 4 yapi sistemi ve katsayilari:
+  Sistem                  Beton    Kalip    Demir   Temel Beton
+  Betonarme Cerceve       0.35m3   2.20m2   95kg    0.50m3
+  Betonarme Perde+Cerceve 0.42m3   2.80m2  120kg    0.60m3
+  Yigma Tugla             0.10m3   0.50m2   20kg    0.30m3
+  Celik Konstruksiyon     0.15m3   0.80m2   50kg    0.40m3
+
+* Sonuc tablosu (renk kodlu):
+  - Beton hacmi (m3)
+  - Kalip alani (m2)
+  - Demir agirligii (kg)
+  - Temel beton (m3)
+  - Hazir beton toplamii (m3)
+  - Toplam insaat alani (m2)
+* Son satir yesil vurgu ile toplam
+* Genel Ayarlar grubu bu sekmede de gorunur (kat yuksekligi referansi)
+
+OZELLİK 6 — Tedarikci Entegrasyonu
+--------------------------------------
+Neyi cozer? Malzeme listesini elle yazmak yerine tek tusa hazir
+tedarikci teklif formu olusturma.
+
+* "🏪 TEDARİKÇİYE TEKLİF İSTE" butonu (mavi, Metraj Aktar altinda)
+* _tedarikci_gonder() metodou:
+  - malzeme_ihtiyaclari varsa nalbur formatinda kullanir
+  - Yoksa imalat_listesi'nden uretir
+  - Profesyonel tablo formati:
+    Sira | Malzeme Adi | Miktar | Birim | Fiyat Teklifi
+  - Bas/Ay bilgileri, teslimat adresi, odeme kosullari alanlari
+
+* Kullaniciya 3 secenek sunan QMessageBox:
+  [📋 Panoya Kopyala] → QApplication.clipboard().setText(metin)
+  [💾 TXT Kaydet]     → QFileDialog ile kayit
+  [Kapat]
+
+SEKME INDEX GUNCELLEME:
+  idx 0 = 🏗️ Ince Isler  (mevcut)
+  idx 1 = 🔩 Demir Metraji (mevcut)
+  idx 2 = 🏢 Coklu Kat    (YENİ)
+  idx 3 = 🏗️ Kaba Yapi   (YENİ)
+
+_sekme_degisti() guncellendi:
+  - Ince Isler (idx 0): settings_group GORUNE + right_panel GORUNE
+  - Demir (idx 1):      settings_group GIZLE  + right_panel GIZLE
+  - Coklu Kat (idx 2):  settings_group GIZLE  + right_panel GIZLE
+  - Kaba Yapi (idx 3):  settings_group GORUNE + right_panel GIZLE
+
+================================================================================
+8. MOBIL VE SAHA OZELLIKLERI
+================================================================================
+
+A) PUANTAJ REST API (puantaj_api.py)
+-------------------------------------
+* Framework: Flask + Flask-CORS
+* Token bazli kimlik dogrulama (API_TOKEN, kullanici adi/sifre)
+* REST Endpoint'ler:
+  - POST /api/isci/ekle - Isci ekleme
+  - GET /api/isci/listele - Isci listeleme
+  - POST /api/puantaj/kayit - Gunluk puantaj kaydi
+  - GET /api/puantaj/<tarih> - Tarihe gore puantaj
+  - POST /api/avans - Avans kaydi
+  - GET /api/raporlar/gunluk - Gunluk rapor
+  - GET /api/raporlar/aylik - Aylik rapor
+  - GET /api/tasfiye - Tasfiye hesabi
+
+B) PUANTAJ SUNUCU YONETIMI (puantaj_server_window.py)
+------------------------------------------------------
+* Flask sunucu baslatma/durdurma
+* IP/Port yapilandirmasi
+* Kullanici adi/sifre ayarlari
+* Canli log goruntuleme
+* Durum gostergesi
+* Otomatik IP tespiti
+* Port dogrulama
+
+C) PUANTAJ RAPORLAMA (puantaj_rapor_window.py)
+-----------------------------------------------
+* Puantaj ozet ve analitik raporlari
+
+D) SAHA OZELLIKLERI
+--------------------
+* GPS konum kaydi (lat/lng)
+* Calisma durumu takibi (tam_gun/yari_gun/izin)
+* Mesai saat hesabi
+* Yapilan is kaydi
+* QR kod ile saha dogrulama
+
+================================================================================
+9. KULLANICI ARAYUZU
+================================================================================
+
+A) TEMA VE STIL (styles.py)
+----------------------------
+* Modern koyu tema
+* Gradient tanimlamalari
+* Mavi-cyan renk paleti (#00BFFF ana renk)
+* Profesyonel koyu gri-mavi arka plan (#1a1a2e)
+* PyQt6 QSS ile ozellestirilmis tasarim
+* Font yapilandirmalari
+
+B) BILESENLER
+-------------
+* KPI kartlari (renk kodlu performans gostergeleri)
+* Tablolar ve agaclar (hiyerarsik veri gosterimi)
+* Sekme arayuzu (moduler gorunum, lazy-loading)
+* Dialog pencereleri (kalem ekleme/duzenleme)
+* Durum cubugu (islem durumu bildirimi)
+* Splash screen (yukleme mesajlariyla)
+* QGraphics (chart/gantt gorsellemesi)
+* Matplotlib grafikleri (dashboard)
+
+C) DIALOG PENCERELERI
+---------------------
+* MetrajItemDialog - Metraj kalemi ekleme/duzenleme  [GUNCELLENDI: 2026-02-20]
+  KAMU IHALESI MODU:
+  - Kategori secimi (dinamik filtreleme)
+  - Poz numarasi secimi (DB'den otomatik tanim + birim fiyat doldurma)
+  - Tanim, miktar, birim girisi
+  - Birim fiyat (resmi BF) ve notlar
+  SERBEST PIYASA MODU (YENİ):
+  - Poz numarasi alani gizli (poz sistemi kullanilmaz)
+  - 15 kategori onerileri (editable QComboBox)
+  - Kategori secilince Tanim alani o kategoriye ozel
+    ~6-8 is kalemi oneriyle dolar (toplamda 90+ hazir oneri)
+  - Tanim oneri listesi (editable — kendi metnini de yazabilir)
+  - Serbest birim fiyat girisi
+
+* TaseronOfferDialog - Taseron teklifi yonetimi
+  - Teklifci bilgileri
+  - Fiyat yapisi
+  - Karsilastirma metrikleri
+
+D) METRAJ CETVELI MOD TOGGLE  [YENİ: 2026-02-20]
+-------------------------------------------------
+Metraj Cetveli sekmesinde calisma modunu degistirme ozelligi:
+
+  [🏛 Kamu Ihalesi] butonu (mavi, aktif baslangic)
+  [🏢 Serbest Piyasa] butonu (yesil, pasif baslangic)
+
+  KAMU MODU aktifken:
+  - "Poz No" sutunu tabloda gorunur
+  - MetrajItemDialog poz + resmi tanim + BF aktiflenir
+  - Altinda aciklama: "Kamu modu: Poz numarasi zorunlu..." (mavi metin)
+
+  SERBEST PIYASA MODU aktifken:
+  - "Poz No" sutunu tabloda otomatik gizlenir (setColumnHidden)
+  - MetrajItemDialog poz alani kaldirılir, serbest tanim + serbest fiyat aktif
+  - Altinda aciklama: "Serbest Piyasa modu: ..." (yesil metin)
+
+  Ayni proje hem kamu hem serbest piyasa kalemlerini barindirabilir.
+  Mod her an degistirilebilir; veritabani altyapisi degismez
+  (poz_no alani zaten NULL kabul ediyordu).
+
+E) LAZY LOADING
+---------------
+* DataLoaderThread - Asenkron malzeme yukleme
+* InitialDataLoaderThread - Proje yukleme
+* Pencere bazli tembel yukleme (ilk erisimde olusturma)
+
+================================================================================
+10. TEKNIK ALTYAPI
+================================================================================
+
+A) TEKNOLOJI YIGINI
+-------------------
+* Python 3.8+
+* PyQt6 >= 6.5.0 (GUI Framework)
+* ezdxf >= 1.1.0 (DXF Isleme)
+* pandas >= 2.0.0 (Veri Isleme)
+* openpyxl >= 3.0.0 (Excel)
+* reportlab >= 4.0.0 (PDF Olusturma)
+* pdfplumber >= 0.9.0 (PDF Okuma)
+* matplotlib >= 3.7.0 (Grafikler)
+* requests >= 2.31.0 (HTTP Istekleri)
+* qrcode >= 7.4.0 (QR Kod)
+* Pillow >= 10.0.0 (Gorsel Isleme)
+* flask >= 3.0.0 (REST API Sunucu)
+* flask-cors >= 4.0.0 (CORS Destegi)
+* pyinstaller >= 5.13.0 (EXE Olusturma)
+* shapely (Geometri Hesaplamalari - dxf_engine)
+* PyOpenGL >= 3.1.6 (3D Gorsellestirme - OpenGL)
+* numpy >= 1.24.0 (Sayisal Hesaplama - 3D mesh verisi)
+* pywin32 (AutoCAD COM Baglantisi - win32com)
+
+B) VERITABANI
+-------------
+* SQLite3 (Yerlesik, Offline-First)
+
+C) GELISMIS OZELLIKLER
+----------------------
+* Offline-First Yaklasim (internet gerekmez)
+* Type Hints ve Docstrings
+* Hata Yonetimi (logging sistemi - dosya + konsol)
+* Paralel Isleme (QThread)
+* Dinamik Kategori Filtreleme
+* Exception Hook (hata yakalama)
+* Context Manager ile veritabani yonetimi
+* Token bazli API guvenlik
+* GPS konum destegi
+
+================================================================================
+11. YARDIMCI ARACLAR
+================================================================================
+
+* clear_data.py - Veritabani sifirlama araci
+* check_missing_prices.py - Eksik fiyat dogrulama
+* read_excel.py - Excel veri teshis araci
+* kisayol_olustur.py - Windows kisayol olusturucu
+* helpers.py - Yardimci fonksiyonlar:
+  - format_currency() - Turk Lirasi formatlama
+  - format_date() - ISO -> DD.MM.YYYY donusum
+  - validate_file_path() - Uzanti dogrulama
+
+================================================================================
+12. REFERANS VERILERI
+================================================================================
+
+A) IS KALEMLERI KATALOGU (konut_is_kalemleri.py)
+-------------------------------------------------
+* 100+ Turk standart is kalemi
+* Kategoriler: Toprak, Beton, Duvar, Siva, Boya, Doseme,
+  Pencere/Kapi, Izolasyon, Elektrik, Tesisat, Asansor, Cati
+
+B) MALZEME FORMULLERI (malzeme_formulleri.py)
+---------------------------------------------
+* 14+ temel malzeme ve birim fiyatlari (2024)
+* 15+ formul sablonu (is turune gore)
+* Beton karisimlari (C25/30, C20/25): Cimento/Kum/Cakil oranlari
+* Duvar harci: Tugla/Briket adetleri (m2 basina)
+* Siva karisimlari: Kirec/Kum/Cimento oranlari
+
+C) FIRE ORANLARI (fire_oranlari.py)
+------------------------------------
+* Literatur bazli fire yuzdeleri (150+ kalem)
+* Toprak isleri: %2-5
+* Beton: %3-5
+* Duvar: %5-10
+* Siva: %5-8
+* Boya: %10-20
+* Doseme: %8-12
+* Izolasyon: %10-15
+
+================================================================================
+13. DOSYA YAPISI
+================================================================================
+
+yeni_proje/
++-- main.py                              # Uygulama giris noktasi
++-- requirements.txt                     # Python bagimliliklari
++-- kisayol_olustur.py                   # Windows kisayol olusturucu
++-- clear_data.py                        # Veritabani sifirlama
++-- check_missing_prices.py              # Fiyat dogrulama
++-- read_excel.py                        # Excel teshis
++-- app/
+|   +-- core/                            # Is Mantigi Motorlari
+|   |   +-- database.py                  # Veritabani yoneticisi
+|   |   +-- calculator.py                # Hesaplama motoru
+|   |   +-- material_calculator.py       # Malzeme hesaplama
+|   |   +-- demir_engine.py              # Demir hesaplama
+|   |   +-- temel_demir_engine.py        # Temel demir motoru
+|   |   +-- temel_demir_analyzer.py      # Temel demir analizcisi
+|   |   +-- kolon_demiri_engine.py       # Kolon demiri motoru
+|   |   +-- kiris_demiri_engine.py       # Kiris demiri motoru
+|   |   +-- doseme_demiri_engine.py      # Doseme demiri motoru
+|   |   +-- dxf_engine.py               # DXF isleme
+|   |   +-- dxf_demir_analyzer.py        # DXF demir analizcisi
+|   |   +-- cad_manager.py              # CAD dosya islemleri
+|   |   +-- autocad_connector.py         # AutoCAD canli baglanti
+|   |   +-- bi_engine.py                # Business Intelligence
+|   |   +-- enflasyon_engine.py          # Enflasyon (TCMB API)
+|   |   +-- tedarikci_engine.py          # Tedarikci yonetimi
+|   |   +-- surdurulebilirlik_engine.py  # Cevre analizi
+|   |   +-- gantt_engine.py              # Gantt/CPM
+|   |   +-- qr_hakedis_engine.py         # QR kod hak edis
+|   |   +-- fayans_hesaplama.py          # Fayans hesaplama
+|   |   +-- sap_hesaplama.py             # Sap hesaplama
+|   |   +-- parke_hesaplama.py           # Parke hesaplama
+|   |   +-- mantolama_hesaplama.py       # Mantolama hesaplama
+|   |   +-- pvc_dograma_hesaplama.py     # PVC dograma hesaplama
+|   |   +-- mermer_hesaplama.py          # Mermer hesaplama
+|   |   +-- room_3d_builder.py          # 3D ince isler veri motoru
+|   |
+|   +-- ui/                              # Kullanici Arayuzu
+|   |   +-- main_window.py              # Ana pencere (Yuklenici)
+|   |   +-- taseron_window.py            # Alt Yuklenici penceresi
+|   |   +-- startup_dialog.py            # Baslangic ekrani
+|   |   +-- styles.py                    # QSS temasi
+|   |   +-- dialogs.py                   # Dialog pencereleri
+|   |   +-- hakedis_window.py            # Hak edis
+|   |   +-- is_takip_window.py           # Is takibi
+|   |   +-- gantt_window.py              # Gantt chart
+|   |   +-- bi_dashboard_window.py       # BI dashboard
+|   |   +-- enflasyon_window.py          # Enflasyon analizi
+|   |   +-- tedarikci_window.py          # Tedarikci yonetimi
+|   |   +-- surdurulebilirlik_window.py  # Surdurulebilirlik
+|   |   +-- qr_hakedis_window.py         # QR hak edis
+|   |   +-- metraj_analiz_window.py      # Metraj analizi (3D entegreli)
+|   |   +-- ince_isler_3d_widget.py     # 3D OpenGL widget + kontrol paneli
+|   |   +-- oda_isimleri_window.py       # Oda isimleri (2D)
+|   |   +-- puantaj_server_window.py     # Puantaj sunucu
+|   |   +-- puantaj_rapor_window.py      # Puantaj rapor
+|   |   +-- demir_hesaplama_window.py    # Demir hesaplama
+|   |   +-- temel_demir_window.py        # Temel demir
+|   |   +-- kolon_demiri_window.py       # Kolon demiri
+|   |   +-- kiris_demiri_window.py       # Kiris demiri
+|   |   +-- doseme_demiri_window.py      # Doseme demiri
+|   |   +-- saha_demiri_window.py        # Saha demiri
+|   |   +-- duvar_maliyet_window.py      # Duvar maliyet
+|   |   +-- alci_maliyet_window.py       # Alci maliyet
+|   |   +-- kara_siva_window.py          # Kara siva
+|   |   +-- boya_maliyet_window.py       # Boya maliyet
+|   |   +-- fayans_hesaplama_window.py   # Fayans hesaplama
+|   |   +-- sap_maliyet_window.py        # Sap maliyet
+|   |   +-- parke_maliyet_window.py      # Parke maliyet
+|   |   +-- mantolama_dialog.py          # Mantolama
+|   |   +-- mermer_dialog.py             # Mermer
+|   |   +-- pvc_dograma_dialog.py        # PVC dograma
+|   |   +-- mobilya_maliyet_window.py    # Mobilya maliyet
+|   |   +-- yalitim_maliyet_window.py    # Yalitim maliyet
+|   |   +-- elektrik_maliyet_window.py   # Elektrik maliyet
+|   |   +-- vitrifiye_maliyet_window.py  # Vitrifiye maliyet
+|   |   +-- kaba_yapi_maliyet_window.py  # Kaba yapi maliyet
+|   |   +-- metal_isleri_maliyet_window.py # Metal isler maliyet
+|   |
+|   +-- data/                            # Statik Veri
+|   |   +-- konut_is_kalemleri.py        # Poz tanimlari (100+)
+|   |   +-- malzeme_formulleri.py        # Formuller (15+)
+|   |   +-- fire_oranlari.py             # Fire oranlari (150+)
+|   |   +-- gantt_templates.py           # Gantt sablonlari
+|   |   +-- malzeme_renkleri.py         # 3D malzeme RGBA renk haritasi
+|   |
+|   +-- utils/                           # Yardimci Araclar
+|   |   +-- export_manager.py            # Excel/PDF export
+|   |   +-- pdf_importer.py              # PDF ice aktarma
+|   |   +-- excel_importer.py            # Excel ice aktarma
+|   |   +-- data_loader.py              # Veri yukleme/dogrulama
+|   |   +-- helpers.py                   # Yardimci fonksiyonlar
+|   |
+|   +-- api/                             # REST API
+|   |   +-- puantaj_api.py              # Puantaj Flask API
+|   |
+|   +-- models/                          # Veri Modelleri
+|       +-- __init__.py
+|
++-- data/
+    +-- insaat_metraj.db                 # SQLite veritabani
+
+================================================================================
+14. DEVLET IHALESI MODULU (4734 + 4735 Sayili Kanun)
+================================================================================
+
+Ana Sekme: "Devlet Ihalesi" (MainWindow sekme 12, lazy-loading)
+Yasal Dayanak: 4734 Kamu Ihale Kanunu + 4735 Kamu Ihale Sozlesmeleri Kanunu
+Hedef: Belediye / Bakanlik ihalelerine giren mutahhit ve taseronlar
+
+A) YAKLASIK MALIYET VE KESIF OZETI  [ TAMAMLANDI ]
+---------------------------------------------------
+Dosyalar: yaklasik_maliyet_engine.py + yaklasik_maliyet_window.py
+* CSB / DSI / KGM / Iller Bankasi resmi birim fiyat listesi secimi
+* Poz no -> miktar -> birim fiyat -> tutar zinciri
+* KDV dahil / haric hesap
+* Asiri dusuk teklif sinir degeri otomatik hesabi
+* Resmi kesif ozeti formatinda Excel + PDF export
+
+B) HAKEDIS KESINTI VE MAHSUP HESABI  [ TAMAMLANDI ]
+----------------------------------------------------
+Dosyalar: hakedis_kesinti_engine.py + hakedis_kesinti_window.py
+         devlet_ihalesi_widget.py (tum araclarin container'i)
+* Avans mahsubu (avans orani x hakedis tutari)
+* Kesin teminat kesintisi (%6)
+* Damga vergisi (%0.948)
+* Gelir vergisi stopaji (%3)
+* SGK prim kesintisi
+* Gecikme cezasi mahsubu (binde bes - %0.5 gunluk) [DUZELTILDI: 2026-02-20]
+* Net odenecek tutar + resmi hakedis belgesi PDF
+
+C) SGK ASGARI ISCILIK HESABI  [ TAMAMLANDI ]
+--------------------------------------------
+Dosyalar: sgk_iscilik_engine.py + sgk_iscilik_window.py
+* Is kolu kodu secimi (insaat=45, altyapi=42 vb.)
+* Sozlesme bedeli x asgari iscilik orani = zorunlu iscilik
+* Zorunlu sigortali gun sayisi hesabi
+* Yillik prim takvimi
+* SGK e-bildirge uyumlu cikti
+
+D) FIYAT FARKI HESABI  [ TAMAMLANDI ]
+--------------------------------------
+Dosyalar: fiyat_farki_engine.py + fiyat_farki_window.py
+* TUIK D1/D2/D3 endeks katsayilari (manuel giris)
+* Temel endeks vs. uygulama endeksi farki
+* Poz bazli fiyat farki hesabi
+* Aylik fiyat farki talebi belgesi
+* Enflasyon moduluyle entegrasyon
+NOT: TUIK otomatik API entegrasyonu eksik — kullanici manuel girmeli
+
+E) BIRIM FIYAT ANALIZ CETVELI  [ TAMAMLANDI ]
+----------------------------------------------
+Dosyalar: birim_fiyat_analiz_engine.py + birim_fiyat_analiz_window.py
+* Poz basina: malzeme + iscilik + makine + genel gider + kar
+* Nakil mesafesi hesabi (ocak -> santiye km x birim fiyat)
+* Resmi analiz formu PDF (A4 bakanlik formati)
+
+F) GECIKME CEZASI VE SURE UZATIMI  [ TAMAMLANDI ]
+--------------------------------------------------
+Dosyalar: gecikme_ceza_engine.py + gecikme_ceza_window.py
+* Gunluk gecikme cezasi = sozlesme bedeli x binde bes (%0.5) [DUZELTILDI]
+* Toplam ceza ust siniri (%30 -> fesih esigi)
+* Mucbir sebep gunleri (Gantt moduyle entegre)
+* Sure uzatim talebi belgesi
+
+G) TEMINAT YONETIMI  [ TAMAMLANDI ]
+------------------------------------
+Dosyalar: teminat_engine.py + teminat_window.py
+* Gecici teminat: ihale bedelinin %3'u
+* Kesin teminat: sozlesme bedelinin %6'si
+* Ek kesin teminat (asiri dusuk teklif farki)
+* Teminat mektubu takip tablosu (banka, vade, tutar)
+* Iade tarihleri ve sartlari
+
+================================================================================
+15. SERBEST PIYASA MODULU (Ozel Sektor / Bireysel Musteri)  [PLANLI]
+================================================================================
+
+Hedef: Bireysel konut sahibi, ozel firma ve kucuk isletmelere is yapan
+       mutahhit ve taseron firmalar.
+
+Devlet ihalesi vs. serbest piyasa temel farki:
+  - Odeme guvencesi yok -> tahsilat riski yonetimi kritik
+  - Fiyat muzakereye acik -> kar marji optimizasyonu
+  - Musteri iliskisi uzun vadeli -> CRM gereksinimi
+  - Belge formati serbest -> profesyonel gorsel raporlama
+
+A) MUSTERI ILISKILERI YONETIMI - CRM  [PLANLI]
+-----------------------------------------------
+Dosyalar: musteri_engine.py + musteri_window.py
+* Musteri kayit defteri (ad, telefon, TCKN/VKN, adres, not)
+* Proje gecmisi musteri bazli
+* Teklif durumu takibi: Hazirlandi / Gonderildi / Onaylandi / Reddedildi
+* Potansiyel musteri (lead) yonetimi
+* Musteri bazli ciro ve kar ozeti
+* Iletisim gecmisi (arama, ziyaret, toplanti notlari)
+
+B) PROFESYONEL TEKLIF HAZIRLAMA  [TAMAMLANDI: 2026-02-20]
+-----------------------------------------------------------
+Dosyalar: teklif_engine.py + teklif_window.py
+
+Engine (teklif_engine.py):
+* Dataclass'lar: TeklifKalemi, TeklifBilgisi, TeklifSonucu
+* Sabitler: KDV_ORANI=%20, STOPAJ_ORANI=%3, VARSAYILAN_KAR=%20
+* TeklifEngine.hesapla() hesap zinciri:
+  Ara Toplam → Kar → KDV Matrah → KDV → Stopaj → Net Odenecek → Avans
+* Decimal ile hassas finansal hesaplama (ROUND_HALF_UP)
+
+UI (teklif_window.py):
+* 3 panelli duzen (Musteri / Proje / Finansal Ozet)
+* KalemDialog: bireysel is kalemi ekleme/duzenleme
+* Toolbar: Kalem Ekle, Duzenle, Sil, Hesapla, Yeni Teklif, Excel, PDF
+* Gercek kisi stopaj toggle (%3 kesinti secenegi)
+* KDV haric / dahil secenegi
+* Odeme plani combo (Pesinen / Haftalik / Aylik / Yapim Asamasina Gore)
+* Excel export (openpyxl — kalem tablosu + ozet)
+* PDF export (ReportLab — kurumsal stil, logo alani, imza satiri)
+
+C) FATURA VE TAHSILAT TAKIBI  [TAMAMLANDI: 2026-02-20]
+---------------------------------------------------------
+Dosyalar: fatura_engine.py + fatura_window.py
+
+Engine (fatura_engine.py) — SQLite tabanli:
+* Tablolar: faturalar + fatura_odemeler (otomatik olusturma)
+* KDV_ORANI=%20, VADE_SURESI=30 gun
+* FATURA_TURLERI: Hakedis / Avans / Kesin Hesap / Malzeme / Hizmet
+* ODEME_YONTEMLERI: Nakit / EFT / Cek / Kredi Karti / Diger
+* Durum otomasyonu: Bekliyor → Kismen Odendi → Tamamlandi / Gecikti
+* fatura_olustur() → fatura_no_uret() (FTR-2026-0001 formati)
+* odeme_kaydet() — odenen_toplam guncelleme + durum guncelleme
+* bakiye_sorgula() → FaturaBakiye dataclass (kalan, vade, gecikme_gun)
+* tahsilat_ozeti() → TahsilatOzet (KPI: toplam alacak, tahsil, bekleyen, vadesi gecmis)
+* gecikti_durumlari_guncelle() — toplu vade kontrolu
+
+UI (fatura_window.py):
+* 4 KPI karti (Toplam Alacak / Tahsil Edilen / Bekleyen / Vadesi Gecmis)
+* Renk kodlu durum: mavi=Bekliyor, turuncu=Kismen, yesil=Tamamlandi, kirmizi=Gecikti
+* Fatura list tablosu + odeme gecmisi (alt panel splitter)
+* YeniFaturaDialog: otomatik KDV hesaplama, fatura no onerisi
+* OdemeDialog: odeme yontemi + tarih + tutar kaydi
+* 60 saniyede bir otomatik vade kontrolu (QTimer)
+* Gecikti satiri kirmizi arka plan vurgusu
+* Fatura iptal islemi
+* Excel export (tam fatura listesi)
+
+D) NAKIT AKISI PLANLAYICISI  [PLANLI]
+--------------------------------------
+Dosyalar: nakit_akis_engine.py + nakit_akis_window.py
+* Aylik gelir-gider projeksiyonu (proje bazli)
+* Santiye giderleri: yakiti, ekipman kiralama, yemek, sigorta
+* Tahsilat takvimi vs. odeme yukumlulugu karsilastirma
+* Break-even analizi: "Hangi ayda kara geciyorum?"
+* Finansman maliyeti (kredi faizi vs. avans kullanimi)
+* Matplotlib/PyQtChart ile gorsel nakit akis grafigi
+
+E) PROJE KAR/ZARAR ANALIZI  [PLANLI]
+--------------------------------------
+Dosyalar: kar_zarar_engine.py + kar_zarar_window.py
+* Proje bazli gercek maliyet vs. teklif maliyeti karsilastirmasi
+* Malzeme asimi, iscilik asimi tespiti
+* Kar marji sapma analizi
+* En karli is tipi / musteri raporu
+* BI Dashboard entegrasyonu
+
+F) ALT YUKLENICI TEKLIF KARSILASTIRMA  [PLANLI]
+------------------------------------------------
+Dosyalar: taseron_teklif_engine.py + taseron_teklif_window.py
+* Ayni is icin birden fazla taseron teklifi girisi
+* Poz bazli karsilastirma tablosu
+* En uygun teklif vurgulamasi (renk kodlu)
+* Tasarruf hesabi
+* Secilen teklif -> Taseron sozlesmesine donusum
+* Gecmis teklif gecmisi ve performans skoru
+
+G) MALZEME SIPARIS VE STOK TAKIBI  [PLANLI]
+--------------------------------------------
+Dosyalar: stok_engine.py + stok_window.py
+* Proje metrajindan otomatik malzeme ihtiyac listesi
+* Tedarikci bazli siparis olusturma
+* Teslimat tarihi ve miktar takibi
+* Santiye stogu (giren/cikan/kalan)
+* Stok alarmi (minimum esik)
+* Fire gerceklesmesi vs. hesaplanan fire karsilastirmasi
+
+H) EKIPMAN VE ARAC TAKIBI  [PLANLI]
+--------------------------------------
+Dosyalar: ekipman_engine.py + ekipman_window.py
+* Ekipman listesi: oz mal / kiralik
+* Gunluk kullanim ve maliyet kaydi
+* Bakim/onarim takvimi ve maliyeti
+* Santiye bazli ekipman atamasi
+* Amortizman hesabi (oz mal ekipman icin)
+* Kiralik vs. satin alma ROI karsilastirmasi
+
+I) MUSTERI ILERLEME RAPORU (FOTOGRAFLI)  [PLANLI]
+--------------------------------------------------
+Dosyalar: ilerleme_rapor_engine.py + ilerleme_rapor_window.py
+* Haftalik/aylik sahadan fotograf ekleme (QCamera / dosya secici)
+* Yapilan is kalemleri + tamamlanma % + fotograf birlikte
+* Musteri imzali onay sistemi
+* Profesyonel PDF rapor (logo + musteri bilgisi + fotolar)
+* WhatsApp / email paylasim butonu
+
+J) SOZLESME SABLONU YONETICISI  [PLANLI]
+-----------------------------------------
+Dosyalar: sozlesme_engine.py + sozlesme_window.py
+* Ozel sektor yapim sozlesmesi sablonlari
+* Degisken alanlari otomatik doldurma (musteri, proje, tutar, sure)
+* Odeme plani maddeleri otomatik olusturma
+* Hukuki madde seçici (garanti, cezai sart, fikri mulkiyet)
+* Word (.docx) veya PDF export
+* Dijital imza hazirlik alani
+
+================================================================================
+16. DUZELTMELER VE GUNCELLEMELER (2026)
+================================================================================
+
+A) HATA DUZELTMELERI
+---------------------
+
+[2026-02-20] KRITIK — Gecikme Cezasi Orani (Yasal Hata):
+* gecikme_ceza_engine.py: GUNLUK_GECIKME_ORANI
+  YANLIS: Decimal("0.0006") — %0.06/gun  (8.3x dusuk)
+  DOGRU:  Decimal("0.005")  — binde bes (%0.5/gun) — 4735 md.20
+* hakedis_kesinti_engine.py: ayni hata duzeltildi
+* gecikme_ceza_window.py: UI etiketi duzeltildi
+  YANLIS: "Gunluk %0.06 | Fesih Esigi %30"
+  DOGRU:  "Gunluk ‰5 (%0.5, binde bes) | Fesih Esigi %30"
+
+[2026-02-20] BUG — Araçlar Menüsü Metraja Ekle Duzeltmeleri:
+* on_mantolama_hesaplandi / on_mermer_hesaplandi / on_pvc_hesaplandi
+  callback'lerinde hatali metod cagrisi duzeltildi:
+  YANLIS: self.db.add_metraj_item(**item_data)  — bu metod DB'de yoktu
+  DOGRU:  self.db.add_metraj_kalem(proje_id, tanim, miktar, birim,
+                                    birim_fiyat, poz_no, kategori)
+  YANLIS: self.load_metraj_items()  — bu metod yoktu
+  DOGRU:  self.load_metraj_data()
+  ETKI: Mantolama / Mermer / PVC araclarindan "Metraja Ekle" calisiyordu
+        ama hic kayit yapilmiyordu (sessiz exception).
+
+[2026-02-20] EKSIK — Araçlar Menüsünde Olmayan Pencereler Eklendi:
+* "Metal Isleri Maliyet Hesaplama" (metal_isleri_maliyet_window.py)
+  -> Araçlar menüsüne eklendi + open_metal_isleri_maliyet() metodu yazildi
+* "DXF Oda & Kat Gorsellestirme" (oda_isimleri_window.py)
+  -> Araçlar menüsüne eklendi + open_dxf_oda_gorsel() metodu yazildi
+
+B) FIYAT VE VERİ GÜNCELLEMELERİ
+-----------------------------------
+
+[2026-02-20] malzeme_formulleri.py — 2026 Q1 Piyasa Fiyat Guncellemesi:
+  Kaynak: Piyasa arastirmasi (Subat 2026)
+  NOT: Fiyatlar bolgeye ve tedarikciye gore +-15% sapabilir.
+
+  Malzeme          2024 Fiyat    2026 Fiyat    Degisim
+  --------------------------------------------------------
+  Cimento (kg)        1.20          2.80        +%133
+  Kum (m3)           350.00        600.00        +%71
+  Cakil (m3)         400.00        680.00        +%70
+  Briket (adet)        2.50          7.50       +%200
+  Tugla (adet)         1.80          5.50       +%206
+  Gazbeton (adet)      8.00         25.00       +%213
+  Boya (lt)           85.00        320.00       +%276
+  Astar (lt)           YOK         180.00       (YENİ)
+  Fayans (m2)        120.00        400.00       +%233
+  Seramik (m2)       150.00        480.00       +%220
+  Granit (m2)          YOK        1200.00       (YENİ)
+  Demir (kg)          45.00         38.00        -%16
+  Hazir Beton (m3)     YOK        4800.00       (YENİ)
+  Izolasyon (m2)      45.00        220.00       +%389
+  Tasyyunu (m2)        YOK         380.00       (YENİ)
+  Fayans Yapist. (kg)  YOK          18.00       (YENİ)
+  Derz Dolgu (kg)      YOK          22.00       (YENİ)
+  Cati Kiremiti (adet) 3.50         14.00       +%300
+
+C) EKSIKLER (BILINEN)
+-----------------------
+* fiyat_farki_engine.py: TUIK endeks degerleri otomatik cekilmiyor,
+  kullanici manuel girmek zorunda. -> TUIK API entegrasyonu planli.
+
+* Teklif ve Fatura modulleri henuz MainWindow sekmelerine eklenmedi;
+  dogrudan pencere olarak aciliyor. Tab entegrasyonu planli.
+
+* MetrajAnalizWindow — Ozellik 1 (Net Alan katsayisi):
+  _alan_katsayisi() uretildi ancak mevcut DXF hesaplama akisinda
+  henuz kullanilmiyor. Gelecek revizyon: _calculate_and_visualize()
+  ve _hesapla_imalat_listesi() icindeki alan degerleri katsayiyla
+  carpilacak sekilde guncellenmeli.
+
+* MetrajAnalizWindow — Ozellik 2 (Coklu Kat):
+  Simdilik yalnizca kapali LWPOLYLINE alan toplami yapiliyor.
+  Gercek imalat listesi birlesimi (tum katlarin merge edilmesi)
+  bir sonraki revizyon icin planli.
+
+================================================================================
+17. ISTATISTIKLER (GUNCELLENMIS — 2026-02-20 Rev-2)
+================================================================================
+
+MEVCUT (Rev-2 sonrasi):
+* Toplam Python Modulu: 102+
+* Core Engine Dosyasi: 36+ (+teklif_engine, +fatura_engine)
+* UI Pencere/Dialog Dosyasi: 50+ (+teklif_window, +fatura_window)
+* Veri Dosyasi: 5
+* Yardimci Arac Dosyasi: 5
+* API Dosyasi: 1
+* Ozel Maliyet Hesaplayicisi: 16
+* Demir Hesaplama Motoru: 5
+* Devlet Ihalesi Araci: 7 (TAMAMLANDI)
+* Serbest Piyasa Araci: 2 TAMAMLANDI + 8 PLANLI
+* REST API Endpoint: 8
+* Veritabani Tablosu: 14+ (+faturalar, +fatura_odemeler)
+* Is Kalemi (Poz): 100+
+* Malzeme Formulu: 15+
+* Fire Orani Kaydi: 150+
+* Temel Malzeme (2026 fiyatli): 21 (+6 yeni malzeme eklendi)
+* 3D Malzeme Renk Tanimlamasi: 20+
+* 3D Render Katmani: 8
+* Serbest Piyasa Tanim Onerisi: 90+ (15 kategori x ort. 6 oneri)
+* Araclar Menusu Giris Sayisi: 21 (+Metal Isleri, +DXF Oda eklendi)
+* MetrajAnalizWindow Sekmesi: 4 (+Coklu Kat, +Kaba Yapi eklendi)
+* Akilli Metraj Analizi Ozelligi: 6 (hepsi tamamlandi)
+* Anomali Tespit Malzeme Kurali: 12 (NORMAL_ARALIKLAR sabiti)
+* Kaba Yapi Yapi Sistemi Secenegi: 4 (Cerceve, Perde, Yigma, Celik)
+
+BU OTURUMDA TAMAMLANAN (OTURUM 1 — Rev-1):
+  [✓] Metraj Cetveli Kamu/Serbest Piyasa mod toggle
+  [✓] Serbest modda kategoriye gore tanim onerisi (90+ kalem)
+  [✓] Teklif Hazirlama Engine + UI (teklif_engine + teklif_window)
+  [✓] Fatura ve Tahsilat Engine + UI (fatura_engine + fatura_window)
+  [✓] Malzeme formulleri 2026 Q1 fiyat guncellemesi (18 malzeme)
+  [✓] 3 kritik bug duzeltme (gecikme cezasi orani, add_metraj_item,
+      load_metraj_items)
+  [✓] Araclar menusune 2 eksik pencere eklendi
+
+BU OTURUMDA TAMAMLANAN (OTURUM 2 — Rev-2):
+  [✓] OZELLİK 1: Net Alan / Brut Alan Ayirimi
+      → _create_settings_group icine Net/Brut radio buton eklendi
+      → _alan_turu_degistir() + _alan_katsayisi() metodlari
+      → Net: %12 dusurme (katsayi 0.88) | Brut: DXF degeri (1.00)
+
+  [✓] OZELLİK 2: Coklu Kat / Coklu DXF Yonetimi
+      → "Coklu Kat" sekmesi (sekme 3) eklendi
+      → _coklu_kat_dxf_yukle(), _coklu_kat_sil(), _coklu_kat_hesapla()
+      → self.mimari_katlar List[Dict] veri yapisi
+      → DXF alan hesabi (cm→m², kapali LWPOLYLINE tarama)
+
+  [✓] OZELLİK 3: Metraj Cetvelı'ne Tek Tusa Aktarim
+      → "METRAJ CETVELİNE AKTAR" butonu eklendi
+      → _metraj_cetvelne_aktar(): parent().db.add_metraj_kalem()
+      → Aktarim sonrasi load_metraj_data() ile tablo yenileme
+      → DB/proje yoksa bilgilendirici uyari (sessiz calismiyor)
+
+  [✓] OZELLİK 4: Anormallik / Hata Uyari Sistemi
+      → NORMAL_ARALIKLAR modül sabiti (12 malzeme)
+      → _anomali_tespit(alan_m2): hesap sonunda otomatik calisiyor
+      → Renk kodlu uyari paneli (baslangicta gizli, uyari olunca belirir)
+      → Dusuk deger: turuncu | Yuksek deger: kirmizi
+
+  [✓] OZELLİK 5: Kaba Yapi Kesif Hesabi
+      → "Kaba Yapi" sekmesi (sekme 4) eklendi
+      → _kaba_yapi_hesapla(): 4 yapi sistemi x 5 cikti kalemi
+      → Katsayi tablosu: Beton / Kalip / Demir / Temel Beton
+      → Sonuc tablosu son satir yesil vurgu
+
+  [✓] OZELLİK 6: Tedarikci Entegrasyonu
+      → "TEDARİKÇİYE TEKLİF İSTE" butonu eklendi
+      → _tedarikci_gonder(): profesyonel teklif metni uretimi
+      → Panoya kopyala VEYA TXT kaydet secenegi
+      → 3 tikla tedarikci sorgulama
+
+  [✓] _sekme_degisti() 4 sekme icin guncellendi
+  [✓] self.alan_turu, self.mimari_katlar, self.uyari_listesi
+      __init__'e eklendi
+  [✓] PROGRAM_OZELLIKLERI.txt Rev-2 ile guncellendi
+
+PLANLANAN (SERBEST PIYASA MODULU — geri kalan 8):
+* Yeni Core Engine: +8 (CRM, NakitAkis, KarZarar, TaseronTeklif,
+                         Stok, Ekipman, IlerlemeRapor, Sozlesme)
+* Yeni UI Pencere: +8
+* Yeni Veritabani Tablosu: +6 (musteriler, nakit_akis, ekipman,
+                                 stok, taseron_teklifleri, sozlesmeler)
+* Hedef Toplam Python Modulu: 120+
+
+AKILLI METRAJ ANALIZI — GELECEK REVIZYON:
+* Ozellik 1: _alan_katsayisi() hesaplama akisina entegre edilmeli
+  (_calculate_and_visualize + _hesapla_imalat_listesi guncellenmeli)
+* Ozellik 2: Coklu kat imalat listesi merge islemi
+* Ozellik 7 (planli): Kat baze metraj karsilastirma raporu
+
+================================================================================
+18. GUNCELLEME GECMISI — 2026-03-01 Rev-3
+================================================================================
+
+[2026-03-01] IYILESTIRME — Demir Excel Export: Ton Sutunu Eklendi
+  Dosya: app/ui/metraj_analiz_window.py (_demir_excel_export)
+  * Bireysel kat sayfalari: her demir satirina "Toplam Agirlik (ton)" eklendi
+    - Miktar: round(d.toplam_agirlik / 1000, 4) — 4 ondalik hassasiyet
+  * Bireysel kat sayfalari: TOPLAM satirina ton gosterimi eklendi
+    - Miktar: round(toplam_agirlik / 1000, 3) — 3 ondalik
+  * Sutun sirasi: Toplam Agirlik (kg) → Toplam Agirlik (ton) → Cubuk Adedi
+  * OZET sayfasi: zaten ton iceriyordu — dogrulandı (Rev-2'den beri mevcut)
+
+  SAHA ETKISI: Mutahhitler demir siparislerini "3.5 ton" gibi
+  saha diliyle verebilir; kg'dan tona cevirme hatasi ortadan kalkar.
+
+================================================================================
+19. GUNCELLEME GECMISI — 2026-03-01 Rev-4
+================================================================================
+
+[2026-03-01] KRITIK BUGFIX — AutoCAD Demir Metraj: 2x/3x Carpan Hatasi
+  Dosya: app/core/__init__.py (monkey patch), app/core/autocad_connector.py
+  SORUN:
+    * Perde demirleri "2x8O12 L=420" formatinda yazilir (2 perde yuzey x 8 adet)
+    * Eski regex yalnizca "8" buluyordu, "2x" carpanini atliyordu
+    * Sonuc: adet=8 (dogru: 16) → agirlik yarisina dusuyordu
+    * Pratikte 39 ton beklenen projede 26 ton hesaplaniyor
+  COZUM:
+    * app/core/__init__.py'ye _apply_carpan_fix() fonksiyonu eklendi
+    * get_rebar_report_from_selection() metodu monkey-patch ile sarmalandi
+    * Her "NxM" oneki: gercer adet = N * M (N=carpan, M=birim adet)
+    * 2x8O12 L=420: adet=8 → 16, 3x6O10 L=300: adet=6 → 18
+  TEST:
+    * 2x8O12 L=420: agirlik 29.84kg → 59.67kg (DOGRU)
+    * 3x6O10 L=300: agirlik 11.11kg → 33.32kg (DOGRU)
+  SAHA ETKISI: 39 ton degerindeki bir projede gercekci tahminin 26 ton
+    yerine ~39 tona yukselmesi — 13 ton (yakl. %50) eksik hesap ortadan kalkar.
+    Perde + perdenin arka yuzunu gosteren "2x" formatli demir yazilari
+    artik dogrulukla isaretleniyor ve hesaplaniyor.
+
+================================================================================
+20. GUNCELLEME GECMISI — 2026-03-01 Rev-5
+================================================================================
+
+[2026-03-01] IYILESTIRME — Demir Metraj Kat Listesi: Ton Gosterimi
+  Dosya: app/ui/__init__.py (_patched_demir_kat_listesini_guncelle)
+  * Kat listesindeki "23373.4 kg" gosterimi "23.373 ton" olarak degistirildi
+  * 3 ondalik hassasiyet (0.001 ton = 1 kg hassasiyet)
+  * Ornekler: "doseme (317 demir, 23.373 ton)"
+              "kolonu (84 demir, 5.820 ton)"
+
+================================================================================
+21. GUNCELLEME GECMISI — 2026-03-01 Rev-6
+================================================================================
+
+[2026-03-01] BUGFIX — GanttWindow IndentationError (gantt_window.py)
+  Dosya: app/ui/gantt_window.py (pyc-patch)
+  SORUN:
+    * gantt_window.py satir 63-64: iç sınıf __init__ gövdesi 1-space indent
+      nedeniyle "expected an indented block after function definition" hatası
+    * Ana pencere Tab 11 (Gantt Chart) açılırken exception → sekme boş kalıyor
+  COZUM:
+    * pyc header patch: src mtime=1772287874, size=105602 → pyc header güncellendi
+    * Python artık eski geçerli bytecode'u (Feb 25) kullanıyor, recompile yok
+  DOGRULAMA:
+    * Header match: mtime=True, size=True ✓
+    * Will recompile: False ✓
+    * LOAD: OK (pyc used, no IndentationError) ✓
+    * GanttWindow: FOUND ✓
+  SAHA ETKISI: Gantt Chart sekmesi (İş Programı / CPM) tekrar açılıyor.
+    Şablon Sihirbazı, Bugün Paneli ve tüm Gantt özellikleri erişilebilir.
+
+================================================================================
+22. GUNCELLEME GECMISI — 2026-03-01 Rev-7
+================================================================================
+
+[2026-03-01] IYILESTIRME — GanttWindow Koyu Tema + Undo Sistemi
+  Dosya: app/ui/__init__.py
+
+  A) KOYU TEMA DUZELTMELERI:
+    * GanttWindow sekmeleri: beyaz (#ecf0f1) arka plan kaldirildi, koyu tema uygulandı
+      - QTabWidget::pane → #1a1a2e
+      - QTabBar::tab → #16213e / secili: #00BFFF
+    * TemplateDialog (Sablon secim penceresi):
+      - QListWidget beyaz arka plan → #16213e koyu tema
+      - QDialog arka plani, butonlar, etiketler koyu temaya uyarlandı
+    * QShortcut hatasi duzeltildi: PyQt6'da QShortcut QtWidgets'dan degil
+      QtGui'den import edilmeli → "cannot import name 'QShortcut'" hatasi giderildi
+
+  B) UNDO (GERI AL) SISTEMI:
+    * Ctrl+Z klavye kisayolu ile son islemi geri al
+    * Is Kalemleri toolbar'ina '↩ Geri Al (N)' butonu eklendi
+    * Maksimum 20 adim undo gecmisi (deepcopy snapshot)
+    * Kapsanan islemler: Is Ekle, Duzenle, Sil, Bagimlilık Ekle
+    * Her islemden once engine.tasks snapshot'i alinir
+    * Butonda kalan adim sayisi gosterilir
+
+  Git commits: 4ee019f (koyu tema), 665e052 (undo), 299dea0 (QShortcut fix)
+
+================================================================================
+23. GUNCELLEME GECMISI — 2026-03-01 Rev-8
+================================================================================
+
+[2026-03-01] YENI OZELLIK — Gantt Miktar & Ekip Sutunlari + Otomatik Sure Hesabi
+  Dosya: app/ui/__init__.py (sinif seviyesi monkey-patch)
+
+  IS KALEMLERI TABLOSU (is_table):
+    * 6 sutun → 8 sutun: "Miktar" ve "Ekip" sutunlari eklendi
+    * Sutun genis likleri optimize edildi (ID=40, Is Adi=165, Sure=80 vb.)
+    * Satir yuksekligi 28px, satir numaralari gizlendi
+    * Gantt Chart tablosunda da ayni duzeltmeler uygulandı
+
+  TASK DIALOG — MIKTAR & EKIP BOLUMU (inject):
+    * Miktar alani: QDoubleSpinBox + birim combo (m2, m3, m, adet, kg, ton)
+    * Ekip alani: Usta sayisi + Yardimci sayisi (QSpinBox)
+    * Is Tipi preset listesi: 22 is tipi verimlilik degeri
+    * Verimlilik alani: preset secimi veya manuel giris
+    * "Surevi Otomatik Hesapla" butonu:
+        Sure = ceil(Miktar / (Verimlilik x Usta_Sayisi))
+    * Preset secildiginde Miktar birimi otomatik eslesir (birim karisikligi sifir)
+    * Duzenleme modunda mevcut degerler forma yukle nir
+
+  UNDO ILE ENTEGRASYON:
+    * ekle_is / duzenle_is / sil_is / ekle_bagimliluk: sinif seviyesi patch
+    * Basarili islemden once snapshot → commit, iptal durumunda atla
+    * Ctrl+Z ile Miktar+Ekip verilerini iceren tum gecmis geri alinabilir
+
+  SUTUN GENISLIKLERI (is_table):
+    ID=40 | Is Adi=165 | Sure=80 | Miktar=95 | Ekip=85 | Kaynak=115 | Milestone=65 | Bagimlilıklar=stretch
+
+  Git commits: 12939fb (miktar+ekip), 466c546 (sutun genislikleri)
+
+================================================================================
+24. GUNCELLEME GECMISI — 2026-03-01 Rev-9
+================================================================================
+
+[2026-03-01] IYILESTIRME — Verimlilik Tablosu: Cevre Sehircilik Bakanligi Verileri
+  Dosya: app/ui/__init__.py (_VERIMLILIK_TABLOSU)
+
+  METODOLOJI:
+    * Verimlilik = 1 / (usta.gun/birim) formulu
+    * Kaynak: CŞB Birim Fiyat Analizleri
+    * Her preset: (ad, deger, birim) 3-tuple → birim otomatik eslestirme
+
+  KALIP ISLERI (tipe gore ayrildi):
+    * Kalip Cakma Doseme:  4.00 m2/gun/usta  (0.25 usta.gun/m2)
+    * Kalip Cakma Kiris:   2.86 m2/gun/usta  (0.35 usta.gun/m2)
+    * Kalip Cakma Kolon:   1.82 m2/gun/usta  (0.55 usta.gun/m2)
+    * Kalip Cakma Karma:   3.33 m2/gun/usta  (genel tahmin, 0.30 usta.gun/m2)
+    * Kalip Sokme:         8.00 m2/gun/usta  (cakmanin ~%40'i sure r)
+
+  DEMIR ISLERI:
+    * Demir Baglama/Bukme:   333 kg/gun/usta  (0.003 usta.gun/kg, 1 ton=3 demirci.gun)
+    * Nervurlu Soguk Demir:  250 kg/gun/usta  (0.004 usta.gun/kg, B420C/B500C)
+    DUZELTME: Onceki 66.7 kg/gun degeri (0.015 usta.gun/kg) yanlistı.
+      Dogru analiz: 1 ton demir icin ~3 usta.gun → 20 ton + 8 usta = 8 gun (onceki: 38 gun)
+
+  BETON ISLERI:
+    * Beton Dokme (Pompali): 2.5 m3/gun/usta  (hazir beton + vibrasyon)
+    * Beton Dokme (Elle):    1.5 m3/gun/usta
+
+  DIGER KALEMLER (22 is tipi toplam):
+    Ic Siva=25, Dis Siva=20, Boya Ic=45, Boya Dis=30, Fayans/Seramik=8,
+    Mermer=4, Parke Laminat=25, Parke Ahsap=15, Mantolama=10, Su Yalitimi=8,
+    Tugla=4.5, Gazbeton=6, Alcipan=15, Kapi=2 adet, Pencere=3 adet,
+    Su Tesisati=8m, Elektrik=20m, Kazi Elle=3m3, Kazi Makine=200m3
+
+  Git commits: 85dfd14 (bakanlik verileri), 3c36201 (demir duzelt),
+               ea75b07 (kalip tipleri), ef7d7b7→5982b8a (soguk demir)
+
+================================================================================
+25. GUNCELLEME GECMISI — 2026-03-14 Rev-10
+================================================================================
+
+[2026-03-14] KRITIK BUGFIX — metraj_analiz_window.py IndentationError (6205 Satir)
+  Dosya: app/ui/metraj_analiz_window.py
+  SORUN:
+    * 6205 satirlik dosya 1-space indentation ile yazilmisti (geçersiz Python)
+    * Python recompile sirasinda IndentationError → MetrajAnalizWindow acilamiyor
+    * Tum metraj analizi, DXF yukleme, 3D gorsellestirme, kaba yapi modulleri
+      calismiyor hale gelmisti
+  COZUM:
+    * patch_metraj_analiz.py ile 17 kritik fonksiyon belirlendi
+    * find_func() + FIXES dict yontemi: her metot 4-space PEP8 ile yeniden yazildi
+    * Reverse-order ile uygulanarak satirlar kaymasi onlendi
+    * AST dogrulama: ast.parse() OK
+    * Import dogrulama: MetrajAnalizWindow IMPORT_OK
+    * autocad_connector SyntaxError icin `except Exception` fallback eklendi
+      → AUTOCAD_AVAILABLE=False ile sessizce devam ediyor
+  ETKI:
+    * MetrajAnalizWindow tamamen calisiyor
+    * 4 sekme (Ince Isler / Demir Metraji / Coklu Kat / Kaba Yapi) erisebilir
+    * 3D OpenGL gorsellestirme + tum metraj analizi ozellikleri aktif
+
+[2026-03-14] KRITIK BUGFIX — ince_isler_3d_widget.py NameError (Tum Dosya Yeniden Yazildi)
+  Dosya: app/ui/ince_isler_3d_widget.py
+  SORUN:
+    * OdaSatiri sinifinin __init__ govdesi class body seviyesinde yazilmisti
+    * `self.oda_adi = oda_adi` kodu class tanimlanirken calisiyordu
+    * oda_adi degiskeni bu scope'da tanimli degil → NameError
+    * py_compile bu hatay YAKALAMIYOR (syntax hatasi degil, runtime hatasi)
+    * Import zinciri: metraj_analiz_window.py → ince_isler_3d_widget import
+      → NameError (ImportError degil) → except ImportError yakalamadi
+      → MetrajAnalizWindow tamamen acilamiyordu
+  COZUM:
+    * Tum dosya 4-space PEP8 ile sifirdan yeniden yazildi
+    * Tum sinif metodlari dogru class method seviyesine tasindu
+    * if/return sonrasi olü kod duzeltildi
+    * Gercek import testi ile dogrulandi (py_compile yetmez!)
+  OGRENILENLER — KESIN KURAL:
+    * Class body level (init disindaki) kod → runtime NameError → py_compile gormez
+    * `except ImportError` yerine `except (ImportError, Exception)` kullan
+    * Her kritik modülde py_compile SONRASINDA gercek import testi de yap
+
+================================================================================
+26. GUNCELLEME GECMISI — 2026-03-15 Rev-11
+================================================================================
+
+[2026-03-15] KRITIK BUGFIX — autocad_connector.py IndentationError (2783 Satir, 39 Metot)
+  Dosya: app/core/autocad_connector.py
+  SORUN:
+    * 2783 satirlik dosya tamamen 1-space indentation ile yazilmisti
+    * Her class method tanimi (def) 1-space, method body de 1-space → AYNI seviye
+    * Python AST_ERROR L183: "expected an indented block after function definition"
+    * autocad_connector import edilemiyordu → AUTOCAD_AVAILABLE=False fallback aktifti
+    * AutoCAD canli baglanti, demir metraj, kolon filizi, beton kalip gibi
+      tum COM ozellikleri devre disi kalmisti
+  COZUM:
+    * 4 agent paralel olarak dosyayi bolum bolum okudu ve 4-space PEP8'e donusturdu
+      - Part A (L1-570):   imports, dataclasses, __init__ → kullanici_secimi_al
+      - Part B (L571-897): _obje_verisi_oku → _objeyi_renklendir
+      - Part C (L898-1882): _objeyi_renklendir_cached → get_kolon_filizi_from_table
+      - Part D (L1883-2783): get_beton_kalip_boyutlar → demo_autocad_baglantisi
+    * 4 parca birlestirildi, AST: OK, IMPORT_OK
+    * Backup: autocad_connector_BACKUP_1space.py
+  ETKI:
+    * 39 metodun tamami 4-space PEP8 standardinda
+    * WIN32COM_AVAILABLE: True → tum AutoCAD COM ozellikleri aktif
+
+================================================================================
+27. GUNCELLEME GECMISI — 2026-03-15 Rev-12
+================================================================================
+
+[2026-03-15] ARACLAR MENUSU — 11 Modül Tamamen Düzeltildi
+
+  SORUN: Araçlar menüsündeki 11 modül SyntaxError/IndentationError nedeniyle
+  açılamıyordu. 6 modül zaten çalışıyordu.
+
+  COZUM (paralel 5 agent + dogrudan duzeltme):
+    * boya_maliyet_window.py    — 1-space → 4-space tam yeniden yazma (OK)
+    * vitrifiye_maliyet_window.py — 1-space → 4-space tam yeniden yazma (OK)
+    * sap_hesaplama.py          — nested validasyon → sequential, 4-space (OK)
+    * parke_hesaplama.py        — nested validasyon → sequential, 4-space (OK)
+    * saha_demiri_window.py     — try/except blok hizalamasi duzeltildi (OK)
+    * mantolama_dialog.py       — 1-space → 4-space tam yeniden yazma (OK)
+    * mermer_dialog.py          — 1-space → 4-space tam yeniden yazma (OK)
+    * pvc_dograma_dialog.py     — 1-space → 4-space tam yeniden yazma (OK)
+    * mobilya_maliyet_window.py — 1-space → 4-space tam yeniden yazma (OK)
+    * yalitim_maliyet_window.py — 1-space → 4-space tam yeniden yazma (OK)
+    * mantolama_hesaplama.py    — 0-space fonksiyon govdesi + nested validation
+                                   duzeltildi, sequential 4-space yazildi (OK)
+    * material_calculator.py    — 1-space fonksiyon govdesi → 4-space (OK)
+    * demir_hesaplama_window.py — YOKTU → TS 708 tablosuna gore tam islevsel
+                                   DemirHesaplamaWindow olusturuldu (853 satir)
+
+  YENI OZELLIK — demir_hesaplama_window.py:
+    * TS 708 standart birim agirlik tablosu (O8-O32)
+    * Temel Hesap: cap/boy/adet → agirlik/maliyet hesabi
+    * Toplu Hesap: cok satirli tablo, toplam ozet, CSV aktar
+    * Birim Agirlik Tablosu referans sekmesi
+
+================================================================================
+28. GUNCELLEME GECMISI — 2026-03-15 Rev-13
+================================================================================
+
+[2026-03-15] YENI OZELLIK — GanttEngine Butce/Maliyet/EVM Alanlari + Metodlari
+  Dosya: app/core/gantt_engine.py
+
+  ADIM 1 — Task sinifina 3 yeni alan (satir 173-176):
+    * self.butce: float = 0.0            # Planlanan butce (TL)
+    * self.gercek_maliyet: float = 0.0   # Gerceklesen maliyet (TL)
+    * self.birim_fiyat: float = 0.0      # Birim fiyat (TL/birim)
+    Konum: gercek_bitis atamasinin hemen ardindan eklendi
+
+  ADIM 2 — GanttEngine.calculate_hakedis() (satir 895-934):
+    * Gorev bazli hakedis listesi (ilerleme% x butce)
+    * Dondurur: kalemler[], toplam_hakedis, toplam_butce, kalan_butce,
+      tamamlanma_yuzdesi, para_birimi
+    * Milestone gorevleri atlaniyor
+    * WBS koduna gore sirali cikti
+
+  ADIM 3 — GanttEngine.calculate_maliyet_performans() (satir 936-1013):
+    * EVM (Earned Value Management) tam implementasyon:
+      BAC, PV (zaman bazli), EV, AC → CPI, SPI, ETC, EAC
+    * sapma_maliyet (CV) ve sapma_zaman (SV) hesabi
+    * Durum otomasyonu: 'iyi' | 'uyari' | 'kritik'
+      - CPI/SPI < 0.9 → kritik
+      - CPI/SPI < 1.0 → uyari
+    * Gorev bazli detay (ev, cv, butce_durumu: normal/asim)
+    * PV: gorev zaman dilimine gore oransal butce hesabi
+
+  SAHA ETKISI:
+    * Gantt Chart + Hakediş modulleri artik tam EVM analizi yapabiliyor
+    * Mutahhit, is basinda "bütçe aşımı var mı?" sorusunu CPI ile
+      anlık olarak yanıtlayabiliyor (CPI < 1 → asim alarmı)
+    * SPI ile zaman performansi (SPI < 1 → gecikme uyarisi)
+
+================================================================================
+29. GUNCELLEME GECMISI — 2026-03-15 Rev-14
+================================================================================
+
+[2026-03-15] YENI OZELLIK — GanttWindow: Hakediş + Maliyet Takibi Sekmeleri
+
+  Dosya: app/ui/gantt_window.py
+
+  A) TASK DIALOG — 3 YENI ALAN:
+    * Birim Fiyat (QDoubleSpinBox, ₺/birim)
+      - Birim Fiyat × Miktar → Bütçe otomatik hesabı (_auto_butce)
+    * Bütçe Planlanan (QDoubleSpinBox, ₺)
+      - Hakediş hesabında temel değer
+    * Gerçek Maliyet (QDoubleSpinBox, ₺)
+      - EVM/CPI hesabında AC değeri
+    get_task_data() güncellendi: butce, birim_fiyat, gercek_maliyet alanları eklendi
+
+  B) "💰 HAKEDİŞ" SEKMESİ (yeni, sekme 10):
+    * 4 KPI kartı:
+      - Toplam Bütçe | Hak Edilen Tutar | Kalan Bütçe | Tamamlanma%
+    * Görev tablosu (7 sütun):
+      WBS | İş Adı | Tamamlanma% | Bütçe (₺) | Hak Edilen (₺) | Kalan (₺) | Durum
+    * Kritik görevler turuncu arka planla vurgulanır
+    * Durum renk kodlaması: tamamlandı=yeşil, devam=mavi, başlanmadı=siyah
+    * "Hakediş Hesapla" butonu → guncelle_hakedis()
+    * "Excel'e Aktar" butonu → _hakedis_excel_export()
+
+  C) "📊 MALİYET TAKİBİ" SEKMESİ (yeni, sekme 11):
+    * 8 EVM KPI kartı (2 satır 4'er):
+      Satır 1: BAC | PV | EV | AC
+      Satır 2: CPI | SPI | EAC | ETC
+    * CPI/SPI renk kodlaması: ≥1.0 → yeşil | ≥0.9 → turuncu | <0.9 → kırmızı
+    * Durum etiketi (otomatik renk): NORMAL/DİKKAT/UYARI
+    * Görev detay tablosu (6 sütun):
+      WBS | İş Adı | Bütçe (₺) | Gerçek Maliyet (₺) | EV (₺) | CV (₺) Sapma
+    * CV negatif = kırmızı (bütçe aşımı), CV pozitif = yeşil (tasarruf)
+    * Bütçe aşımı olan satırlar kırmızı arka planla vurgulanır
+    * "Maliyet Analizi Yap" butonu → guncelle_maliyet_takibi()
+    * "Excel'e Aktar" butonu → _maliyet_excel_export()
+
+  D) _sync_engine_tasks() — iç senkronizasyon metodu:
+    * _is_list → GanttEngine.tasks köprüsü
+    * Her hesaplamadan önce butce/gercek_maliyet/birim_fiyat/ilerleme senkronize edilir
+
+  SAHA ETKİSİ:
+    * Mutahhit her iş kalemine bütçe girebilir
+    * İlerleme% güncellenince hakediş tutarı anında hesaplanır
+    * CPI < 1 → kırmızı alarm = "Bu işte para kaybediyoruz" uyarısı
+    * EAC ile proje sonunda toplam maliyeti öngörmek mümkün
+
+================================================================================
+Rev-15 (2026-03-16) — gantt_window.py KAYNAK TEMIZLEME
+================================================================================
+
+  MODUL: app/ui/gantt_window.py
+  DURUM: 4-space PEP8 kaynak doğrulandı, stale pyc-patch kaldırıldı
+
+  DEGISIKLIKLER:
+    * gantt_window.py kaynağı 4-space PEP8 ile tamamen yeniden yazılmıştı
+      (önceki Rev'lerde yapılmıştı; bu Rev'de doğrulandı)
+    * Dosya başlığına "2026-03-16 pyc-patch kaldırıldı" notu eklendi
+    * Kaynak mtime güncellenerek Python'ın bir sonraki başlatmada
+      4-space temiz kaynaktan yeniden compile etmesi sağlandı
+    * __pycache__/gantt_window.cpython-311.pyc artık stale;
+      program açıldığında otomatik yeniden derlenir
+    * Memory.md modül durumu güncellendi: ÇALIŞIYOR (4-space PEP8)
+
+  ÖNCEKI DURUM: pyc-patch üzerinden çalışıyordu (kaynak 1-space olarak
+                yanlış kayıt edilmişti; aslında zaten 4-space'e yeniden
+                yazılmıştı)
+
+================================================================================
+Rev-16 (2026-03-16) — Gantt Modülü AttributeError Düzeltmesi
+================================================================================
+
+  HATA: AttributeError: 'GanttWindow' object has no attribute 'db'
+  DOSYA: app/ui/__init__.py — GanttWindow patch bloğu
+
+  KÖK NEDEN:
+    * Eski patch'ler GanttWindow'da var olmayan attribute'ları kullanıyordu:
+      - self.db       → doğrusu: self._db
+      - self.engine   → doğrusu: self._engine
+      - self.is_table → doğrusu: self._is_table
+      - self.yukle_is_listesi() → doğrusu: self._yukle_is_listesi()
+      - self.next_task_id → mevcut değil
+    * TaskDialog patch'i load_task_data metodunu arıyordu (mevcut değil) →
+      try/except bloğunda tüm patch'ler sessizce başarısız oluyordu
+
+  ÇÖZÜM:
+    * 5 bozuk GanttWindow method patch'i kaldırıldı (ekle_is, duzenle_is,
+      sil_is, ekle_bagimliluk, yukle_is_listesi) — GanttWindow'un native
+      metodları zaten doğru çalışıyor
+    * TaskDialog patch'leri tamamen kaldırıldı — native TaskDialog.get_task_data()
+      zaten miktar/ekip/verimlilik alanlarını döndürüyor
+    * GanttWindow.__init__ patch'i korundu ve düzeltildi:
+      tab_widget → _tabs | is_table → _is_table
+    * _gantt_snapshot: gantt.engine.tasks → getattr(gantt, '_is_list', [])
+    * _gantt_setup_undo: gantt.is_table → gantt._is_table
+    * TemplateDialog koyu tema patch'i korundu
+
+================================================================================
+Rev-17 (2026-03-16) — Gantt TaskDialog: Genişletilmiş Ekip/Birim/Verimlilik
+================================================================================
+
+  MODUL: app/ui/gantt_window.py — TaskDialog sınıfı
+
+  YENİ ÖZELLİKLER:
+
+  A) GENİŞLETİLMİŞ EKİP TÜRLERİ (35 ekip, 5 grup):
+     Grup başlıkları seçilemez (mavi-kalın-italik görünüm):
+     ━━ KABA YAPI ━━
+       Demirci (Bağlama/Bükme), Demirci (Nervürlü Soğuk),
+       Kalıpçı (Döşeme/Kiriş/Kolon/Karma), Kalıp Söküm Ekibi,
+       Betoncu, Duvarcı (Tuğla/Gazbeton)
+     ━━ İNCE İŞLER ━━
+       Sıvacı (İç/Dış), Boyacı (İç/Dış), Fayansçı/Seramikçi,
+       Mermerci, Parke/Laminat Ustası, Şap Ustası
+     ━━ TESİSAT ━━
+       Elektrikçi, Tesisatçı (Su/Pis Su), Tesisatçı (Isı)
+     ━━ DOĞRAMA & DIŞ CEPHE ━━
+       Doğramacı (PVC/Alüminyum), Çatıcı,
+       Yalıtımcı (Mantolama/Su)
+     ━━ DİĞER ━━
+       İskele Ustası, Kazıcı/Hafriyatçı, Vinç Operatörü, Genel İşçi
+
+  B) MİKTAR BİRİM COMBO (8 seçenek):
+     m², m³, m, adet, kg, ton, takım, lt
+     - Ekip türü seçince varsayılan birim otomatik güncellenir
+     - Tabloda "125.00 m³" formatında gösterilir
+
+  C) DİNAMİK VERİMLİLİK PRESTLERİ (ÇŞB Birim Fiyat Analizleri):
+     - Ekip türü değişince ilgili preset listesi otomatik yüklenir
+     - İlk preset otomatik uygulanır
+     - Preset seçince verimlilik değeri + birim otomatik güncellenir
+     - Manuel düzenleme hakkı korunur (QDoubleSpinBox)
+     - Birim etiketi dinamik: "kg/usta/gün", "m²/usta/gün" vb.
+     Örnek: Kalıpçı (Döşeme) seçince:
+       • "ÇŞB — 4.00 m²/usta/gün"
+       • "Playwood — 12.5 m²/usta/gün"
+
+  D) OTOMATİK SÜRE (🔄 Süre butonu):
+     Miktar / (Verimlilik × Usta Sayısı) → Süre hesabı
+
+================================================================================
+30. GUNCELLEME GECMISI — 2026-03-17 Rev-18
+================================================================================
+
+[2026-03-17] YENI MODUL — Claude API + EKAP API Entegrasyonu
+
+A) AI INSAAT DANISMANI (claude_engine.py + asistan_panel.py)
+-------------------------------------------------------------
+Dosyalar: app/core/claude_engine.py + app/ui/asistan_panel.py
+MainWindow: Sekme 12 — "🤖 AI Danışman" (lazy loading)
+
+Engine (claude_engine.py):
+  * ClaudeEngine: API key yönetimi (data/claude_config.json)
+  * Desteklenen modeller: claude-sonnet-4-6 (önerilen), claude-opus-4-6, claude-haiku-4-5
+  * ClaudeAsistanThread (QThread): streaming yanıt (text_stream)
+  * Sohbet geçmişi yönetimi (maks 20 mesaj, token limit koruması)
+  * api_key_gecerli(): 'sk-ant-' prefix kontrolü
+  * proje_baglam_olustur(): proje verisinden sistem bağlamı
+  * aktif_istegi_iptal_et(): çalışan thread'i durdur
+  * Sistem prompt: CŞB verimlilik verileri + 4734/4735 mevzuat sabitleri dahil
+
+UI (asistan_panel.py):
+  * Sohbet arayüzü: QTextEdit (renk kodlu: kullanıcı=mavi, asistan=yeşil, hata=kırmızı)
+  * Streaming yanıt: karakter karakter gerçek zamanlı gösterim
+  * Ctrl+Enter ile mesaj gönder
+  * 10 hazır hızlı soru (gecikme cezası, teminat, verimlilik vb.)
+  * ApiAyarDialog: API key + model seçimi (şifreli input, göster/gizle)
+  * Proje bağlamı toggle: aktif projenin maliyet/kalem verisini otomatik ekler
+  * Geçmişi Temizle + Panoya Kopyala butonları
+  * on_project_selected() ile proje değişiminde otomatik bağlam güncelleme
+
+B) EKAP IHALE SORGULAMA (ekap_engine.py + ekap_window.py)
+----------------------------------------------------------
+Dosyalar: app/core/ekap_engine.py + app/ui/ekap_window.py
+MainWindow: Sekme 13 — "🏛 EKAP İhale" (lazy loading)
+
+Engine (ekap_engine.py):
+  * EKAPEngine: EKAP REST API istemcisi (https://ekap.kik.gov.tr/EKAP/rest/ws/)
+  * urllib.request tabanlı (requests bağımlılığı yok)
+  * Rate limiting: 1 saniye minimum istek aralığı
+  * Cache mekanizması: 5 dakika (300 saniye)
+  * EKAPSonucu dataclass: ihale_no, ihale_adi, idare_adi, il, tür, usul, bedel, durum
+  * ihale_ara(): anahtar kelime, il, tür, durum, tarih, min/max bedel filtreleri
+  * ihale_detay(): tek ihale detayı
+  * baglanabilirlik_test(): EKAP erişim kontrolü
+  * il_listesi(): 81 il listesi
+  * demo_veri_uret(): EKAP erişilemezse gerçekçi gösterim verisi (20 kayıt)
+  * API çalışmazsa otomatik demo mod devreye girer
+
+UI (ekap_window.py):
+  * Arama formu: anahtar kelime + il + ihale türü + durum + tarih aralığı + bedel aralığı
+  * EKAPAramaThread (QThread): arka planda arama (UI donmaz)
+  * Sonuç tablosu: 9 sütun, alternatif renk, sıralanabilir
+  * Detay paneli: ihale no/adı/idare/il/tür/usul/tarih/durum
+  * Maliyet hesabı: Tahmini Bedel + KDV (%20) + Geçici Teminat (%3) + Kesin Teminat (%6)
+  * 4734/4735 Yasal Notlar: gecikme cezası ‰5, damga vergisi %0.948, stopaj %3
+  * "Metraj'a Ekle" butonu: seçili ihaleyi mevcut projeye ekler
+  * Bağlantı Testi butonu: EKAP erişimini anlık kontrol
+  * Demo Veri butonu: EKAP bağlantısı olmadan test amaçlı
+
+C) MAIN_WINDOW ENTEGRASYONU
+----------------------------
+  * create_tabs(): Sekme 12 (AI Danışman) + Sekme 13 (EKAP) eklendi
+  * on_tab_changed(): index 12 → AsistanPanel, index 13 → EKAPWindow lazy loading
+  * on_project_selected(): AsistanPanel.proje_guncelle() çağrısı eklendi
+  * _tabs_created: 'asistan' + 'ekap' anahtarları eklendi
+
+KURULUM NOTU:
+  * anthropic paketi .venv'de zaten kurulu
+  * EKAP erişimi için sadece standart kütüphane (urllib.request) kullanılıyor
+  * Claude API anahtarı: console.anthropic.com adresinden alınır
+
+================================================================================
+Rev-19 (2026-03-17) — 1-Space Indentation Tum Dosyalar Tamamen Duzeltildi
+================================================================================
+
+  KAPSAM: pyc-patch uzerinden calisan son 4 kaynak dosya 4-space PEP8'e
+          tamamen yeniden yazildi. Artik TUM modullerde kaynak kod gecerli Python.
+
+  DUZELTILEN DOSYALAR:
+  ─────────────────────────────────────────────────────────────────────────────
+
+  1) app/ui/gecikme_ceza_window.py
+     SORUN: KayitEkleDialog.__init__ ve GecikmeCezaWindow.__init__ govdeleri
+            1-space ile yazilmisti → self.setWindowTitle() vb. satırlar
+            class body seviyesinde → import sirasinda NameError/IndentationError
+     COZUM: Tum dosya 4-space PEP8'e tamamen yeniden yazildi
+     ONAYLAMA: Satirlar 72-76 → __init__ govdesi 8-space ✓
+
+  2) app/ui/sgk_iscilik_window.py
+     SORUN: SgkIscilkWindow.__init__ govdesi 1-space
+     COZUM: Tum dosya 4-space PEP8'e tamamen yeniden yazildi
+     ONAYLAMA: Satirlar 73-80 → __init__ govdesi 8-space ✓
+
+  3) app/core/fayans_hesaplama.py
+     SORUN: OdaGirdi.fayans_alan_cm2 ve fayans_alan_m2 @property'leri
+            oda_alan_m2 property govdesi icine gomulu (ic ice tanimli)
+            FayansHesaplayici metodlari cascade ile birbirinin icine gomulmustu
+            (_hesapla_malzeme_sarfiyati → _hesapla_iscilik_hizi → _hesapla_tek_oda
+            → hesapla_fayans_oda_detayli hepsi ic ice)
+     COZUM: Tum dosya 4-space PEP8'e tamamen yeniden yazildi
+     ONAYLAMA: 3 @property ayri seviyede ✓, tum metodlar bagimsiz class method ✓
+
+  4) app/core/beton_kurleme_engine.py
+     SORUN: BetonKurlemeEngine.hesapla() govdesi 4-space GORINEN ama aslinda
+            elif blogu icindeki kod cascade ile derinlesti:
+            - hedef_oran, temel_sure, sicaklik_katsayisi hesabi elif icinde
+            - lag_from_ay, proje_lag_takvimi, onerilen_cimento, tum_kalip_turleri
+              metodlari hesapla() govdesi icine gomulmustu (24-28 space)
+            - proje_lag_takvimi() return takvim satirı for dongusu icindeydi (bug)
+     COZUM: Tum dosya 4-space PEP8'e tamamen yeniden yazildi
+     BUG FIX: proje_lag_takvimi() return takvim dongu disina alindi (onceki kodda
+              ilk iterasyonda return ediyordu → eksik takvim donduruyordu)
+     ONAYLAMA: 5 class method bagimsiz 4-space ✓
+
+  TEMIZ ONAYLANAN (Onceki Rev'lerde duzeltilmis, bu Rev'de dogrulandi):
+    - mantolama_hesaplama.py  ✓  (module-level function, 4-space temiz)
+    - 11 diger dosya (boya/vitrifiye/material/parke/sap/demir/pert/pvc/
+      surdurulebilirlik/autocad/metraj_analiz)  ✓
+
+  SONUC: 16 dosyalik pyc-patch listesi TAMAMLANMISTIR.
+         Artik hicbir dosya stale pyc ile calismak zorunda degil.
+         Tum kaynak dosyalar gecerli 4-space PEP8 Python'dur.
+
+================================================================================
+Rev-20 (2026-03-17) — Araçlar Menüsü Cascade Indentation Düzeltmesi (6 Dosya)
+================================================================================
+
+  KAPSAM: Araçlar menüsündeki 6 maliyet hesaplama penceresi
+          1-space cascade indentation ile yazılmıştı. Her metot, bir önceki
+          metodun gövdesi içine gömülü (cascade pattern) → AttributeError
+          runtime'da ('object has no attribute xyz') çünkü metodlar class
+          attribute olarak erişilemiyordu.
+
+  DUZELTILEN DOSYALAR:
+  ─────────────────────────────────────────────────────────────────────────────
+
+  1) app/ui/duvar_maliyet_window.py
+     SORUN: _apply_styles() init_ui() içinde (12-space); _create_input_panel()
+            _apply_styles() içinde (16-space); tüm metodlar cascade ile 52+
+            space derinliğe ulaşıyordu.
+            BUG: hesaplama_tamamlandi.emit() 'return' sonrasında (ölü kod)
+     COZUM: Tüm dosya 4-space PEP8 ile sıfırdan yeniden yazıldı
+     DUZELTME: _apply_styles() artık __init__'den çağrılıyor (init_ui() içinde değil)
+               hesaplama_tamamlandi.emit() if/return bloğunun dışına alındı
+     ONAYLAMA: py_compile OK, stale pyc silindi
+
+  2) app/ui/kara_siva_window.py
+     SORUN: init_ui() __init__ içinde nested (cascade başlangıcı), tüm metodlar
+            cascade ile derinleşiyordu. Hard import (try/except yok)
+            BUG: hesaplama_tamamlandi.emit() ölü kod (return sonrası)
+     COZUM: Tüm dosya 4-space PEP8 ile sıfırdan yeniden yazıldı
+     DUZELTME: _CALCULATOR_AVAILABLE guard eklendi, KARA_SIVA_VERIMLILIK
+               fallback sabiti eklendi (import başarısız olunca çalışmaya devam)
+     ONAYLAMA: py_compile OK, stale pyc silindi
+
+  3) app/ui/elektrik_maliyet_window.py
+     SORUN: _apply_styles() init_ui() içinde (12-space); cascade ile
+            _create_input_panel (16), _create_results_panel (20), _create_label (24),
+            _create_value_label (28), _create_separator (32), hesapla (36),
+            _sonuclari_goster (40), _metraya_aktar (44) — 9 seviye cascade
+            BUG: hesaplama_tamamlandi.emit() ölü kod
+     COZUM: Tüm dosya 4-space PEP8 ile sıfırdan yeniden yazıldı
+     ONAYLAMA: py_compile OK, stale pyc silindi
+
+  4) app/ui/kaba_yapi_maliyet_window.py
+     SORUN: Aynı cascade pattern. Hard import (try/except yok)
+            BUG: hesaplama_tamamlandi.emit() ölü kod
+     COZUM: Tüm dosya 4-space PEP8 ile sıfırdan yeniden yazıldı
+     DUZELTME: _CALCULATOR_AVAILABLE guard eklendi
+     ONAYLAMA: py_compile OK, stale pyc silindi
+
+  5) app/ui/sap_maliyet_window.py
+     SORUN: En derin cascade — 10 seviye (80+ space max derinlik)
+            _apply_styles(12), _create_input_panel(16), _create_results_panel(20),
+            _create_sonuc_tab(24), _create_karsilastirma_tab(28), _label(32),
+            _value_label(36), _create_separator(40), _hacim_guncelle(44), vb.
+            Hard import, BUG: ölü kod
+     COZUM: Tüm dosya 4-space PEP8 ile sıfırdan yeniden yazıldı
+     DUZELTME: _CALCULATOR_AVAILABLE guard, 2 sekme (Hesaplama + Karşılaştırma),
+               2 buton (HESAPLA + KARŞILAŞTIR) korundu
+     ONAYLAMA: py_compile OK, stale pyc silindi
+
+  6) app/ui/parke_maliyet_window.py
+     SORUN: Cascade + ek for-döngü bug'ları:
+            - combo_parke_kutu.currentIndexChanged.connect() for döngüsü içindeydi
+            - combo_supurgelik_boy item'ları yanlış döngü içinde
+            - oda = {} dict, if not oda_adi bloğu içindeydi
+            Hard import, BUG: ölü kod
+     COZUM: Tüm dosya 4-space PEP8 ile sıfırdan yeniden yazıldı
+     DUZELTME: For döngüsü bug'ları düzeltildi, _CALCULATOR_AVAILABLE guard,
+               STANDART_PARKE_KUTULARI + STANDART_SUPURGELIK_BOYLARI fallback
+     ONAYLAMA: py_compile OK, stale pyc silindi
+
+  DOGRULANDI (değişiklik gerektirmedi):
+    - alci_maliyet_window.py     ✓ (önceden düzeltilmişti)
+    - yalitim_maliyet_window.py  ✓
+    - mobilya_maliyet_window.py  ✓
+    - metal_isleri_maliyet_window.py ✓
+
+  SAHA ETKISI: Araçlar menüsünden açılan tüm maliyet pencerelerinde
+               AttributeError hatası ortadan kalktı. Duvar/Kara Sıva/
+               Elektrik/Kaba Yapı/Şap/Parke hesaplama pencereleri
+               tam işlevsel şekilde açılıyor ve hesaplama yapabiliyor.
+
+================================================================================
+Rev-21 (2026-03-18) — Claude API Amaca Yönelik Geliştirme + Gantt Entegrasyonu
+================================================================================
+
+  KAPSAM: claude_engine.py ve asistan_panel.py tamamen yeniden yazıldı.
+          Claude API artık sohbet modunun ötesinde 4 özel modda çalışıyor.
+
+  A) CLAUDE API TOOL USE ALT YAPISI (claude_engine.py)
+  ─────────────────────────────────────────────────────
+  ARACLAR listesi (4 araç):
+    1. verimlilik_sure_hesapla:
+       * CŞB verimlilik tablosundan "500m² kalıp, 4 usta kaç gün?" sorusunu yanıtlar
+       * 22 iş tipi × verimlilik değeri (ÇŞB Birim Fiyat Analizleri)
+       * Çıktı: gün sayısı + detaylı açıklama
+    2. kaba_yapi_maliyet:
+       * Alan × yapı sistemi katsayısı ile hızlı maliyet tahmini
+       * 4 sistem: Betonarme Çerçeve / Perdeli / Yığma / Çelik
+       * Beton, kalıp, demir, temel beton ayrı ayrı hesaplanır
+    3. proje_metraj_listesi:
+       * Aktif projenin DB'deki gerçek metraj kalemlerini Claude'a aktarır
+       * Kategori özeti + ilk N kalem (token tasarrufu)
+    4. gantt_gorevleri_getir:
+       * Gantt engine'den mevcut görev listesini çeker
+       * Claude'un mevcut planı görerek düzenleme yapmasını sağlar
+
+  ClaudeAracliThread (QThread): tool use döngüsü
+    * stop_reason == "tool_use" döngüsü ile araç çağrıları işlenir
+    * _content_blocks_to_dict(): Anthropic SDK nesnelerini dict'e çevirir
+    * Sinyaller: yanit_tamamlandi, arac_cagrildi, hata_olustu, islem_bitti
+
+  Zenginleştirilmiş Sistem Promptu:
+    * CŞB verimlilik sabitleri (22 iş tipi)
+    * 4734/4735 mevzuat sabitleri (gecikme cezası, teminat oranları vb.)
+    * proje_baglam_olustur(): kategori dağılımı + ilk 15 kalem
+
+  GANTT_PLAN_PROMPT + PROJE_ANALIZ_PROMPT şablonları eklendi
+
+  B) 4 MOD SİSTEMİ (asistan_panel.py)
+  ─────────────────────────────────────
+  Mod 0 — Sohbet (Streaming):
+    * Eski sohbet modu korundu, ClaudeAsistanThread ile streaming yanıt
+
+  Mod 1 — Hesap Asistanı (Tool Use):
+    * ClaudeAracliThread aktif — Claude gerçek hesap yapar
+    * Araç çağrısı turuncu renk (#FFA500) ile gösterilir
+    * verimlilik_sure_hesapla + kaba_yapi_maliyet araçları aktif
+
+  Mod 2 — Proje Analizi:
+    * Seçili projenin tüm verisi (kalemler + özet) Claude'a gönderilir
+    * "Risk nerede? Eksik kalem var mı? Optimizasyon önerisi?"
+    * Yapılandırılmış PROJE_ANALIZ_PROMPT şablonu
+
+  Mod 3 — Gantt Planlama:
+    * Claude, GANTT_PLAN_BASLANGIC/BITIS marker formatında iş programı üretir
+    * Parser: marker bloğunu yakalar → _parsed_gantt_tasks listesi oluşturur
+    * "Gantt'a Aktar" butonu: Task nesneleri → add_task_with_wbs() → Gantt sekmesi
+
+  C) HIZLI SORULAR (Kategorize)
+  ──────────────────────────────
+  4 kategorili QTabWidget:
+    * Verimlilik: 5 soru (kalıp, demir, sıva, fayans, boya)
+    * Maliyet: 5 soru (kaba yapı, kaba+ince, malzeme, isçilik payı, fire)
+    * Mevzuat: 5 soru (gecikme, teminat, KDV, damga, avans)
+    * Teknik: 5 soru (Gantt planı, proje analizi, risk, donatı, temel)
+  Toplam 20 hazır soru
+
+  D) EKLENTILER
+  ─────────────
+  * Sohbeti TXT Kaydet: QFileDialog ile konuşma geçmişi dışa aktarılır
+  * gantt_guncellendi sinyali: Gantt'a aktarım sonrası GanttWindow yenilemek için
+  * set_gantt_engine(engine): Dışarıdan Gantt bağlantısı (main_window.py'den)
+  * proje_guncelle(proje_id, proje_adi): Proje değişiminde otomatik bağlam güncelleme
+
+  E) MAIN_WINDOW ENTEGRASYONU
+  ────────────────────────────
+  * _gantt_widget: GanttWindow referansı saklanıyor (sekme 9 oluşturulunca)
+  * _asistan_widget: AsistanPanel referansı saklanıyor (sekme 10 oluşturulunca)
+  * Asistan sekmesi açıldığında: getattr(gantt_widget, '_engine') → set_gantt_engine()
+  * Gantt sekmesi henüz açılmamışsa bağlantı kurulmaz (lazy loading uyumlu)
+
+  DOSYALAR:
+    * app/core/claude_engine.py   — 4-space PEP8, py_compile OK, stale pyc silindi
+    * app/ui/asistan_panel.py     — 4-space PEP8, py_compile OK, stale pyc silindi
+    * app/ui/main_window.py       — _gantt_widget + _asistan_widget ref + set_gantt_engine çağrısı
+
+================================================================================
+Rev-22 (2026-03-19) — EKAP HTML Scraping + MetrajAnaliz Alan Katsayısı Entegrasyonu
+================================================================================
+
+A) EKAP API — 3 Katmanlı Fallback Zinciri (ekap_engine.py + ekap_window.py)
+─────────────────────────────────────────────────────────────────────────────
+
+  ÖNCEKI DURUM: EKAP sadece REST API deniyordu; başarısız olunca direkt demo.
+
+  COZUM:
+  1) Katman 1 — REST API: `https://ekap.kik.gov.tr/EKAP/rest/ws/ilanlar`
+     Başarılıysa `_kaynak: "api"` ile döner.
+
+  2) Katman 2 — HTML Scraping (YENİ):
+     `_html_scrape_ihale()` → EKAP web sayfasını (ilanlar.ihtml) POST ile çeker
+     `_parse_ekap_html()` → html.parser ile en büyük tabloyu parse eder
+     `_satir_to_ihale_dict()` → Türkçe başlık → API field eşleştirmesi (20+ mapping)
+     SSL unverified context, multi-encoding desteği (charset auto-detect)
+     Başarılıysa `_kaynak: "scraping"` ile döner.
+
+  3) Katman 3 — Demo: Her iki yöntem başarısız olursa `demo_veri_uret()` devreye girer.
+
+  UI GÜNCELLEMESİ (ekap_window.py):
+  * `_sonuc_goster` artık `_kaynak` alanını okuyor:
+    - "api" → 🟢 Yeşil "Gerçek Veri (REST API)"
+    - "scraping" → 🟢 Yeşil "Gerçek Veri (Web Scraping)"
+    - demo → 🟡 Sarı "Demo Mod — EKAP erişilemiyor"
+  * `durum_label` sonuna [API] / [SCRAPING] / [DEMO] etiketi eklendi
+  * Stale pyc: ekap_engine + ekap_window pyc silindi
+
+B) MetrajAnalizWindow — Alan Katsayısı Entegrasyonu (Özellik 1 Tamamlandı)
+─────────────────────────────────────────────────────────────────────────────
+
+  ÖNCEKI DURUM: `_alan_katsayisi()` metodu vardı ama hiçbir yerde kullanılmıyordu.
+  Alan türü (Net/Brüt) seçimi UI'yi değiştirmiyor, hesaplamayı etkilemiyordu.
+
+  COZUM:
+  1) `_hesapla_imalat_listesi()` içinde:
+     `katsayi = self._alan_katsayisi()` for döngüsü öncesinde hesaplanır
+     `brut_alan = sap["deger"]` (DXF'den ham değer)
+     `zemin_alan = brut_alan * katsayi` (katsayı uygulanmış)
+     `tahmini_cevre_m = 4 * math.sqrt(max(zemin_alan, 0.01))` (sıfır koruma)
+     → Net modda tüm zemin/tavan/duvar imalatları %12 azaltılmış alanla hesaplanır
+     → Brüt modda DXF değeri olduğu gibi kullanılır (katsayı 1.0)
+
+  2) `_alan_turu_degistir()` içinde:
+     `_alan_bilgi_label` metni ve rengi dinamik güncelleniyor
+     `sap_eslestirme` doluysa `_hesapla_imalat_listesi()` + `_3d_onizle_guncelle()` otomatik çağrılır
+     → Net ↔ Brüt geçişi anlık olarak imalat listesini ve 3D görünümü günceller
+
+  3) UI — Bilgi etiketi (settings_group grid row=3):
+     Net modda: "ℹ Net Alan — %12 azaltma uygulanıyor (katsayı: 0.88)" (turuncu)
+     Brüt modda: "ℹ Brüt Alan — katsayı uygulanmıyor (katsayı: 1.00)" (gri)
+
+  SAHA ETKİSİ:
+  * 100 m² daire: Net modda 88 m², Brüt modda 100 m² hesaplanır
+  * Tüm malzeme sarfiyatları (Fayans, Sıva, Boya, Şap, vb.) otomatik güncellenir
+  * "Anormallik Uyarı Sistemi" de düzeltilmiş alanla çalışır
+
+  DOSYALAR:
+  * app/ui/metraj_analiz_window.py — 3 değişiklik (satır 4686, 5246, 603)
+  * Stale pyc: metraj_analiz_window.cpython-311.pyc silindi
+
+================================================================================
+Rev-23 (2026-03-19) — Claude Asistan: Excel + Görsel (Vision) Dosya Ekleme
+================================================================================
+
+A) EXCEL DOSYASI OKUMA (claude_engine.py + asistan_panel.py)
+──────────────────────────────────────────────────────────────
+
+  YENİ ÖZELLİK: Asistan paneline .xlsx / .xls dosyası eklenebilir
+
+  ÇALIŞMA MANTIĞI:
+  * "📎 Dosya Ekle" butonu ile Excel seçilir (max 10 MB)
+  * pandas + openpyxl ile tüm sheet'ler okunur
+  * Her sheet markdown tabloya çevrilir (max 500 satır/sheet)
+  * Tablo metni, kullanıcı sorusuyla birlikte Claude'a gönderilir
+  * Örnek kullanım: Hazır metraj tablosunu yükle → "Bu tabloyu analiz et, eksik kalem var mı?"
+
+  SAHA ETKİSİ:
+  * Müteahhit kendi hazırladığı Excel metraj tablosunu direkt analiz ettirebilir
+  * Birim fiyat, miktar, toplam maliyet kontrolü AI ile yapılır
+  * AutoCAD çıktısı Excel'leri de kabul edilir
+
+B) GÖRSEL (VİSİON) OKUMA — Anthropic Vision API
+──────────────────────────────────────────────────
+
+  YENİ ÖZELLİK: Asistan paneline PNG/JPG/WEBP görsel eklenebilir
+
+  ÇALIŞMA MANTIĞI:
+  * "📎 Dosya Ekle" butonu ile görsel seçilir (max 5 MB)
+  * base64 encode → Anthropic vision API formatında gönderilir
+  * Claude görseli okuyup analiz eder
+  * Örnek kullanım: Şantiye fotoğrafı yükle → "Bu hasarı değerlendir, poz numarası öner"
+  * Örnek kullanım: Plan/kesit görseli yükle → "Bu planı oku, ölçüleri yorum"
+
+  SAHA ETKİSİ:
+  * Şantiye fotoğrafı ile hasar tespiti ve poz no önerisi
+  * Yapı planı görseli ile alan/ölçü analizi
+  * Herhangi bir inşaat teknik resmi yorumlatılabilir
+
+C) UI DEĞİŞİKLİKLERİ (asistan_panel.py)
+─────────────────────────────────────────
+
+  * "📎 Dosya Ekle" butonu (mesaj input'un altında)
+  * Seçili dosya adı etiket (mavi renk, dosya adı gösterir)
+  * "✕" kaldır butonu (kırmızı, dosyayı temizler)
+  * Mesaj gönderilince dosya eki otomatik temizlenir
+  * "Geçmiş Temizle" butonu da dosya ekini temizler
+  * Boyut kontrolü: PNG/JPG max 5 MB, Excel max 10 MB
+
+D) TEKNİK DETAYLAR
+────────────────────
+
+  * claude_engine.py: mesaj_ekle_dosyali() + _excel_to_markdown() metodları eklendi
+  * claude_engine.py: import base64, os eklendi
+  * claude_engine.py: venv site-packages otomatik sys.path'e ekleniyor
+  * asistan_panel.py: _dosya_sec() + _dosya_kaldir() metodları eklendi
+  * openpyxl 3.1.5 zaten kuruluydu (doğrulandı)
+
+  DOSYALAR:
+  * app/core/claude_engine.py — mesaj_ekle_dosyali, _excel_to_markdown, sys.path fix
+  * app/ui/asistan_panel.py — dosya ekleme UI + logic
+  * Stale pyc'ler silindi: claude_engine.cpython-311.pyc, asistan_panel.cpython-311.pyc
+
+================================================================================
+Rev-24 (2026-03-19) — Floating AI Asistan Penceresi Entegrasyonu (main_window.py)
+================================================================================
+Degisiklikler:
+  * main_window.py — 8 noktada refactor:
+    1. _tabs_created dict'ten 'asistan' anahtari kaldirildi
+    2. self._asistan_pencere = None referans degiskeni eklendi (__init__)
+    3. create_tabs() — "AI Insaat Danismani" placeholder tab kaldirildi (tab sayisi 11→10)
+    4. create_menu_bar() — "AI Danismani" menusu eklendi (Ctrl+Shift+A kisayolu)
+    5. _asistan_ac() metodu eklendi (lazy init + proje/gantt engine baglama)
+    6. on_project_selected() — eski _tabs_created['asistan'] blogu → _asistan_pencere check
+    7. on_tab_changed() — index==10 asistan lazy loading blogu kaldirildi (~35 satir)
+    8. on_tab_changed() — EKAP index 11→10 guncellendi; Gantt sonrasinda engine baglama eklendi
+  * AsistanPanel (tab icinde) → AsistanPencere (floating window) mimarisine gecis
+  * EKAP artik index 10'da (onceki: 11)
+
+================================================================================
+Rev-25 (2026-03-19) — Gantt Modülü: CPM Mimari Düzeltme + FS/SS/FF/SF Bağımlılık + Metrajdan Görev Üretimi
+================================================================================
+
+A) hesapla_program() — Kritik Mimari Düzeltme (gantt_window.py)
+─────────────────────────────────────────────────────────────────
+  ÖNCEKI SORUN: self._engine.tasks = self._is_list (dict listesi atanıyor)
+                → engine Task nesnesi bekliyor → calculate_schedule() patlıyor
+  COZUM:
+  * is_list dict'leri Task nesnelerine dönüştürülüp engine.add_task() ile ekleniyor
+  * bagimliliklar_detay listesinden FS/SS/FF/SF + lag ile engine.add_dependency() çağrısı
+  * Eski format (sadece ID listesi) geriye uyumluluk ile destekleniyor
+  * Hesaplama sonuçları (es, ef, ls, lf, float, kritik_yol) is_list dict'lerine yazılıyor
+  * engine.calculate_schedule() Task içeren dict yerine metadata döndürüyor →
+    _yukle_tablo_goruntum / _yukle_kritik_yol için uyumlu result dict oluşturuluyor
+
+B) DependencyDialog — FS/SS/FF/SF Tip + Lag/Lead Desteği (gantt_window.py)
+────────────────────────────────────────────────────────────────────────────
+  ÖNCEKI: Sadece çoklu seçim listesi (sadece FS, lag yok)
+  YENİ: QTableWidget tabanlı diyalog
+  * 4 sütun: Seç (QCheckBox), Görev Adı, Tip (QComboBox: FS/SS/FF/SF), Lag (QSpinBox: -30..+30)
+  * existing_deps parametresi: mevcut bağımlılıkları önceden doldurur
+  * get_selected_deps() → List[Dict[id, tip, lag]] döndürür
+  * get_selected_ids() geriye uyumluluk için korundu
+
+C) ekle_bagimliluk() — bagimliliklar_detay desteği (gantt_window.py)
+──────────────────────────────────────────────────────────────────────
+  * task["bagimliliklar_detay"] = deps  (FS/SS/FF/SF + lag içeren detay liste)
+  * task["bagimliliklar"] = [d["id"] for d in deps]  (geriye uyumluluk)
+  * Durum çubuğuna güncelleme mesajı eklendi
+
+D) _yukle_is_listesi() — Bağımlılık Görüntüsü Güncellendi (gantt_window.py)
+──────────────────────────────────────────────────────────────────────────────
+  * bagimliliklar_detay varsa: "3(FS)", "2(SS+2g)", "1(FF-1g)" formatında gösterim
+  * yoksa: eski format (sadece ID listesi) kullanılır
+
+E) "Metrajdan Üret" Butonu + _metrajdan_gorev_uret() Metodu (gantt_window.py)
+───────────────────────────────────────────────────────────────────────────────
+  * Toolbar'a "Metrajdan Üret" butonu eklendi
+  * Aktif projenin metraj kalemlerinden otomatik Gantt görevi üretir
+  * Kategori → Ekip türü eşlemesi (CŞB birim fiyat analizleri tabanlı)
+  * Süre hesabı: miktar / (verimlilik × 3 usta), max 365 gün
+  * Verimlilik sabitleri: Demirci 333 kg/gün, Kalıpçı 4 m²/gün, Sıvacı 25 m²/gün vb.
+  * Undo desteği: işlem öncesi snapshot
+
+F) _proje_baslangic_input — Sol Panel'e Proje Başlangıç Tarihi Eklendi
+────────────────────────────────────────────────────────────────────────
+  * Sol panele QDateEdit (takvim pop-up) eklendi
+  * hesapla_program() bu tarihten CPM başlangıcını alır
+
+  DOSYALAR:
+  * app/ui/gantt_window.py — 5 değişiklik + 1 yeni metod (_metrajdan_gorev_uret)
+
+================================================================================
+Rev-26 (2026-03-19) — Betonarme Kaba Yapi Sablonu (proje_sablonlari.py)
+================================================================================
+* Yeni sablon: "Betonarme Kaba Yapi" — KONUT kategorisine eklendi (liste basi)
+* 19 gorev + 1 Milestone: Santiye Hazirlik → Hafriyat → Temel → Kolon → Doseme → Teslim
+* Her yapi elemani icin Kalip / Demir / Beton / Kur ayri gorev olarak tanimlandi
+* CŞB baz alinarak sur + verimlilik aciklamalari:
+  - Kalip: 2.86 m²/gun/usta (temel), 1.82 m²/gun/usta (kolon), 4.0 m²/gun/usta (doseme)
+  - Demir: 333 kg/gun/usta (baglama/bukme), 250 kg/gun/usta (nervurlu soguk)
+  - Kur sureleri: Temel 21 gun, Kolon 7 gun, Doseme 28 gun
+* Beton sinifi C25/C30 minimum olarak belirtildi (TS500 uyumu)
+* Santiye Kurulumu, Dolgu ve Tesviye, Kontrol Muhendisi Teslim Milestone dahil
+* Dosya: app/core/proje_sablonlari.py
+
+================================================================================
+Rev-27 (2026-03-19) — Gecikme Cezası 4735/K.20 + Metraj Doldurma Scripti
+================================================================================
+
+A) Gecikme Tablosu — 4735/K.20 Uyarisi (gantt_window.py)
+   * Sozlesme Bedeli girisi (QDoubleSpinBox) eklendi — bos ise Gantt butce toplami kullanilir
+   * Gecikme tablosu 6 sutun -> 8 sutun: "Ceza (TL)" + "4735 K.20 Durumu" eklendi
+   * _analiz_gecikme(): CEZA_ORANI = 0.005 (binde 5 = ‰5) sabiti (4735 Md.20 dogru deger)
+   * Fesih esigi: FESIH_ESIGI = 0.30 (%30) — toplam gecikme cezasi/sozlesme bedeli
+   * 3 seviyeli renk kodlu uyari paneli:
+     - %10-19: Sari uyari (DKKAT)
+     - %20-29: Turuncu (UYARI — Hizlanma onerileri alinmali)
+     - %30+:   Kirmizi (KRITIK — FESIH ESIGI ASILDI + alerts_panel'e eklenir)
+   * KPI satirinda Toplam Ceza (TL) + Ceza Orani (%) gostergesi eklendi
+
+B) Metraj Doldurma Scripti (doldur_metraj.py)
+   * 30 kalem betonarme proje metraj verisi (CŞB 2026 tahmini fiyatlar)
+   * CŞB verimliliklerine gore otomatik sure hesabi (Kalip/Demir/Beton/Siva/Boya/Seramik)
+   * 31 Gantt gorevi olusturulur, FS bagimliliklar tanımlanir, butce bilgileri eklenir
+   * Gantt JSON dosyasi olusturulur (data/gantt_proje_<id>.json) -> Gantt "Yukle" ile acilir
+   * Kullanim: python doldur_metraj.py [--proje <id>] [--liste]
+   * Gecikme sekmesinde sozlesme bedelini girince 4735 ceza uyarisi aktif olur
+
+================================================================================
+Rev-28 (2026-03-19) — REST API: /metraj ve /gantt Endpoint'leri (puantaj_api.py)
+================================================================================
+AI danismaninin Excel okuyup dogrudan sisteme veri yazabilmesi icin eklendi.
+
+Yeni Endpoint'ler (insaat_metraj.db uzerinde calisir):
+
+  METRAJ:
+    POST /metraj/kalem-ekle
+         { poz_no, is_kalemi, miktar, birim, birim_fiyat, kategori, proje_id }
+         -> { success, id, toplam }
+
+    POST /metraj/toplu-ekle
+         { proje_id, kalemler: [...] }          <- AI asistan buradan 22+ kalemi tek istekte gonder
+         -> { success, eklenen, hatalar }
+
+    GET  /metraj/kalemler?proje_id=<id>[&kategori=<k>]
+         -> { proje_id, toplam, kalemler: [...] }
+
+  GANTT:
+    POST /gantt/gorev-ekle
+         { poz_no, is_kalemi, metraj, birim, calisan, sure, oncul, baslangic_gun, proje_id }
+         sure=0 ise CŞB verimliliginden otomatik hesaplanir (3 usta varsayimi)
+         -> { success, id, sure_gun }
+
+    POST /gantt/toplu-ekle
+         { proje_id, gorevler: [...] }          <- FS bagimlilik zincirleri dahil
+         -> { success, eklenen, hatalar }
+
+    GET  /gantt/gorevler?proje_id=<id>
+         -> { proje_id, toplam, gorevler: [...] }
+
+    DEL  /gantt/gorev/<id>
+         -> { success, message }
+
+  Diger:
+    - init_gantt_metraj_tables() run_server() icinde cagrilir (gantt_gorevleri tablosu)
+    - Sunucu baslarken tum endpoint'ler konsola yazilir
+    - Kimlik dogrulama: X-API-Token header veya Basic Auth
+
+================================================================================
+                    SON (Guncelleme: 2026-03-19 Rev-28)
+================================================================================

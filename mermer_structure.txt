@@ -1,0 +1,20 @@
+def/decorator count: 16
+try/except count: 14
+
+Methods:
+  L90: @property
+  L91: def toplam_basamak_sayisi(self) -> int:
+  L95: @property
+  L96: def basamak_genisligi_m(self) -> float:
+  L109: @property
+  L110: def net_en_cm(self) -> float:
+  L114: @property
+  L115: def net_derinlik_cm(self) -> float:
+  L119: @property
+  L120: def alan_m2(self) -> float:
+  L124: @property
+  L125: def toplam_alan_m2(self) -> float:
+  L129: @property
+  L130: def uzunluk_mtul(self) -> float:
+  L134: @property
+  L135: def toplam_uzunluk_mtul(self) -> float:

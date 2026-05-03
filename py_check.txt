@@ -1,0 +1,2 @@
+Python 3.11.9
+E:\ÝNÞAAT METRAJ PRO\.venv\Scripts\python.exe

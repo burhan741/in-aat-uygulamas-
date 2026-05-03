@@ -1,0 +1,10 @@
+﻿
+Name     Value
+----     -----
+autopep  2777 
+work     2777 
+pycfix   2777 
+fullfix  2777 
+original 2783 
+
+

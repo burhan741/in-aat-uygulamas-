@@ -1,0 +1,2 @@
+L6696:     elif "mm" in birim_text:
+L6698:     else:

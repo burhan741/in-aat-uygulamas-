@@ -1,0 +1,9 @@
+calculate_materials_for_project: satýr 219-287
+OK [1/5] material_calculator.py güncellendi
+Bulunan fonksiyon satýrlarý: {'def create_malzeme_tab': 1324, 'def on_fire_mode_changed': 1411, 'def calculate_materials(self)': 1426, 'def export_materials_excel': 1514, 'def export_materials_supplier': 1557, 'def on_tab_changed': 4438}
+OK [2/5] create_malzeme_tab güncellendi (1324-1410)
+OK [3/5] calculate_materials güncellendi (1429-1516)
+OK [4/5] _filter + _malzeme_birim_fiyat_degisti eklendi (satýr 1580)
+OK [5/5] Otomatik malzeme hesaplama eklendi (satýr 2591)
+
+Tüm deðiþiklikler kaydedildi.

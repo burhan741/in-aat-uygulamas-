@@ -1,0 +1,47 @@
+On branch master
+
+No commits yet
+
+Untracked files:
+  (use "git add <file>..." to include in what will be committed)
+	.claude/
+	.venv/
+	"E\357\200\272\304\260N\305\236AAT"
+	PROGRAM_OZELLIKLERI.txt
+	TEST_AUTOCAD_SON.bat
+	TEST_DEMIR_OKU.bat
+	analiz_dxf.py
+	analiz_kiris.py
+	analiz_sonuc.txt
+	autocad_test_sonuc.txt
+	claude-1e5f-cwd
+	claude-2346-cwd
+	claude-2764-cwd
+	claude-2b79-cwd
+	claude-3808-cwd
+	claude-41e2-cwd
+	claude-59fe-cwd
+	claude-5fd1-cwd
+	claude-7702-cwd
+	claude-b16d-cwd
+	claude-c70b-cwd
+	claude-ddac-cwd
+	claude-e074-cwd
+	claude-f178-cwd
+	fix_venv.bat
+	git_status_out.txt
+	install_pywin32.bat
+	install_pywin32_final.bat
+	"metraj \303\247\304\261kart\304\261l\304\261rken autocadde uygulanacaklar.docx"
+	nul
+	test_autocad.bat
+	test_autocad.py
+	test_autocad_log.py
+	test_autocad_v2.bat
+	test_demir_metinleri.py
+	test_pywin32.bat
+	test_regex.py
+	test_sonuc.txt
+	yeni_proje/
+
+nothing added to commit but untracked files present (use "git add" to track)

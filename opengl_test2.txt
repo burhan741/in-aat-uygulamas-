@@ -1,0 +1,2 @@
+OPENGL_OK = True
+InceIsler3DWidget import: OK

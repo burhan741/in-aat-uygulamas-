@@ -1,0 +1,19 @@
+Toplam satir: 2777
+L 175 sp=1 tab=0: ' def __init__(self):'
+L 176 sp=1 tab=0: ' """AutoCADConnector başlatıcısı"""'
+L 177 sp=1 tab=0: ' self.acad_app = None'
+L 178 sp=1 tab=0: ' self.aktif_cizim = None'
+L 185 sp=1 tab=0: ' if not WIN32COM_AVAILABLE:'
+L 186 sp=1 tab=0: ' raise ImportError('
+L 187 sp=1 tab=0: ' "win32com.client modülü bulunamadı.\\n"'
+L 188 sp=1 tab=0: ' "Yüklemek için: pip install pywin32"'
+L 192 sp=1 tab=0: ' def bagli(self) -> bool:'
+L 193 sp=1 tab=0: ' """AutoCAD\'e bağlı mı?"""'
+L 194 sp=1 tab=0: ' return self._bagli and self.acad_app is not None'
+L 195 sp=0 tab=0: ''
+L 196 sp=1 tab=0: ' def baglan(self) -> bool:'
+L 197 sp=1 tab=0: ' """'
+L 198 sp=1 tab=0: ' Çalışan AutoCAD uygulamasına bağlan.'
+
+Kullanilan girinti seviyeleri: [1, 2]
+SYNTAX ERROR: Sorry: IndentationError: expected an indented block after function definition on line 175 (autocad_connector.py, line 176)

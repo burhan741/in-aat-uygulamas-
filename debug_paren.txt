@@ -1,0 +1,24 @@
+L3958 pd=1 ps=[8] kn=24 | ('beton', 20): ('Beton', 0.0), # Beton için adet h
+L3959 pd=1 ps=[8] kn=24 | ('beton', 25): ('Beton', 0.0),
+L3960 pd=1 ps=[8] kn=None | }
+L3961 pd=0 ps=[] kn=None | 
+L3962 pd=0 ps=[] kn=None | # Tam eşleşme ara
+L3963 pd=0 ps=[] kn=8 | key = (cins_lower, kalinlik)
+L3964 pd=0 ps=[] kn=8 | if key in malzeme_formulleri:
+L3965 pd=0 ps=[] kn=12 | return malzeme_formulleri[key]
+L3966 pd=0 ps=[] kn=None | 
+L3967 pd=0 ps=[] kn=None | # Yakın kalınlık ara (5cm tolerans)
+L3968 pd=0 ps=[] kn=8 | for (c, k), (malzeme, adet) in malzeme_formulleri.
+L3969 pd=0 ps=[] kn=12 | if c == cins_lower and abs(k - kalinlik) <= 5:
+L3970 pd=0 ps=[] kn=16 | logger.info(f" Tam eşleşme bulunamadı, yakın değer
+L3971 pd=0 ps=[] kn=16 | return (malzeme, adet)
+L3972 pd=0 ps=[] kn=None | 
+L3973 pd=0 ps=[] kn=None | # Varsayılan değerler (cins eşleşirse)
+L3974 pd=0 ps=[] kn=8 | if 'bims' in cins_lower:
+L3975 pd=0 ps=[] kn=12 | if 15 <= kalinlik <= 25:
+L3976 pd=0 ps=[] kn=20 | return ('Bims', 12.5) # 20cm varsayılan (standart 
+L3977 pd=0 ps=[] kn=None | elif kalinlik > 25:
+L3978 pd=0 ps=[] kn=20 | return ('Bims', 10.0) # 25cm varsayılan
+L3979 pd=0 ps=[] kn=None | 
+L3980 pd=0 ps=[] kn=8 | if 'gazbeton' in cins_lower:
+L3981 pd=0 ps=[] kn=12 | if 15 <= kalinlik <= 25:

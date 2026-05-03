@@ -1,0 +1,26 @@
+L41: [
+] => 
+L42: [c,l,a,s,s,SP,D,a,t,a,L,o] => class DataLoaderThread(QThread):
+L43: [SP,",",",A,r,k,a,SP,p,l,a] =>  """Arka planda veri yükleme thread'i"""
+L44: [SP,d,a,t,a,_,l,o,a,d,e,d] =>  data_loaded = pyqtSignal(dict)
+L45: [SP,p,o,z,_,q,u,e,s,t,i,o] =>  poz_question_needed = pyqtSignal()
+L46: [SP,
+] => 
+L47: [SP,d,e,f,SP,_,_,i,n,i,t,_] =>  def __init__(self, db: DatabaseManager)
+L48: [SP,s,u,p,e,r,(,),.,_,_,i] =>  super().__init__()
+L49: [SP,s,e,l,f,.,d,b,SP,=,SP,d] =>  self.db = db
+L50: [SP,
+] => 
+L51: [SP,d,e,f,SP,r,u,n,(,s,e,l] =>  def run(self) -> None:
+L52: [SP,",",",T,h,r,e,a,d,SP,ç] =>  """Thread çalıştığında"""
+L53: [SP,r,e,s,u,l,t,SP,=,SP,{,
+] =>  result = {
+L54: [SP,',m,a,l,z,e,m,e,l,e,r] =>  'malzemeler_loaded': False,
+L55: [SP,',f,o,r,m,u,l,l,e,r,_] =>  'formuller_loaded': False,
+L56: [SP,',m,a,l,z,e,m,e,_,c,o] =>  'malzeme_count': 0,
+L57: [SP,',f,o,r,m,u,l,_,c,o,u] =>  'formul_count': 0
+L58: [SP,},
+] =>  }
+L59: [SP,
+] => 
+L60: [SP,#,SP,P,o,z,l,a,r,ı,SP,k] =>  # Pozları kontrol et

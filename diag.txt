@@ -1,0 +1,3 @@
+main_window: IndentationError line 290: expected an indented block after 'if' statement on line 289
+surdurulebilirlik: IndentationError line 96: expected an indented block after function definition on line 95
+EXIT:0

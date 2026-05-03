@@ -1,0 +1,3 @@
+metraj_analiz_window: AST_OK
+autocad_connector: SYNTAX_ERROR L183: expected an indented block after function definition on line 182
+IMPORT_OK - MetrajAnalizWindow: True

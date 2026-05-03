@@ -1,0 +1,3 @@
+[OK] ICO file exists: 145846 bytes
+[FAIL] Old BAT file still exists, rename failed
+[FAIL] Shortcut not found

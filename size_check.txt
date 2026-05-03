@@ -1,0 +1,5 @@
+py_size=358404
+pyc_size=561761
+pyc_stored_mtime=1772031803
+pyc_stored_source_size=358424
+MATCH: py_size==pyc_source_size: False

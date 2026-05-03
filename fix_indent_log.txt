@@ -1,0 +1,22 @@
+Read 7478 lines
+ERROR:   File "E:\İNŞAAT METRAJ PRO\yeni_proje\app\ui\metraj_analiz_window.py", line 2818
+    except Exception as e:
+SyntaxError: expected 'except' or 'finally' block
+
+Context around line 2818:
+   2809 ( 24): '                        if idx >= 0:'
+   2810 ( 28): '                            self.duvar_kalinlik_combo.setCurrentIndex(idx)'
+   2811 ( 28): "                            # Duvar cinsi combo'ya ata (varsa)"
+   2812 ( 28): "                            cins = ai_veri.get('duvar_cinsi')"
+   2813 ( 28): "                            if cins and hasattr(self, 'duvar_cinsi_combo'):"
+   2814 ( 32): '                                idx = self.duvar_cinsi_combo.findText(cins)'
+   2815 ( 32): '                                if idx >= 0:'
+   2816 ( 36): '                                    self.duvar_cinsi_combo.setCurrentIndex(idx)'
+   2817 ( 36): '                                    self.statusBar().showMessage("AI önerisi uygulandı.")'
+   2818 (  4): '    except Exception as e:'
+   2819 (  8): '        logger.error(f"AI öneri uygulama hatası: {e}")'
+   2820 (999): ''
+   2821 (  4): '    def _autocad_renkleri_geri_al(self):'
+   2822 (  8): '        """AutoCAD\'de değiştirilen renkleri geri al"""'
+   2823 (  8): '        if not self.acad_connector:'
+   2824 ( 12): '            return'

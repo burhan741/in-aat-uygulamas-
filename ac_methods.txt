@@ -1,0 +1,40 @@
+Toplam method/func: 39
+  L182: def __init__(self):
+  L199: def bagli(self) -> bool:
+  L203: def baglan(self) -> bool:
+  L331: def _autocad_one_getir(self):
+  L390: def _win32_pencere_one_getir(self):
+  L392: def callback(hwnd, windows):
+  L435: def _com_retry(self, func, max_deneme=5, bekleme=0.1):
+  L451: def _guvenli_select_on_screen(self, selection_set, max_deneme=2):
+  L471: def baglantýyi_kes(self):
+  L495: def kullanici_secimi_al(self, mesaj: str = "Metraj alýnacak objeleri seçin") -> 
+  L571: def _obje_verisi_oku(self, entity) -> Optional[MetrajObjesi]:
+  L715: def _guvenli_text_oku(self, entity) -> Optional[str]:
+  L745: def _read_entity_props(self, entity) -> Optional[Dict[str, Any]]:
+  L807: def _read_entity_with_coords(self, entity) -> Optional[Dict[str, Any]]:
+  L853: def _objeyi_renklendir(self, entity, renk: AcadColor):
+  L898: def _objeyi_renklendir_cached(self, entity, renk: AcadColor,
+  L943: def objeleri_hatali_isaretle(self, handle_listesi: List[str]):
+  L966: def renkleri_geri_al(self):
+  L988: def _selection_set_temizle(self):
+  L996: def katman_listesi_al(self) -> List[str]:
+  L1010: def blok_listesi_al(self) -> List[str]:
+  L1027: def polyline_cizdir(self, mesaj: str = "Polyline çizin", kapat: bool = True) -> 
+  L1147: def blok_sayimi_al(self, mesaj: str = "Sayýlacak bloklarý seçin") -> Dict[str, A
+  L1173: def katmana_gore_sec(self, katman_adi: str) -> List[MetrajObjesi]:
+  L1224: def zoom_secim(self):
+  L1234: def cizimi_kaydet(self):
+  L1246: def komut_calistir(self, komut: str):
+  L1265: def get_rebar_report_from_selection(self,
+  L1585: def get_kolon_filizi_from_table(self,
+  L1884: def get_beton_kalip_boyutlar(
+  L2045: def get_rebar_summary_dataframe(self, rapor: Dict[str, Any]):
+  L2102: def calculate_vertical_rebar_unified(self, birim: str = "cm") -> Dict[str, Any]:
+  L2552: def calculate_all_grouped_columns(self, birim: str = "cm") -> Dict[str, Any]:
+  L2560: def lisp_calistir(self, lsp_dosya_adi: str, bekle: float = 0.5) -> bool:
+  L2605: def lisp_sonuc_oku(self) -> Dict[str, Any]:
+  L2630: def _parse_lisp_sonuc(self, json_str: str) -> Dict[str, Any]:
+  L2649: def katman_degisken_set(self, katman_dict: Dict[str, str]) -> None:
+  L2677: def lisp_tam_calistir(
+  L2713: def demo_autocad_baglantisi():

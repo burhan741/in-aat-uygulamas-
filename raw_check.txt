@@ -1,0 +1,7 @@
+94: 'self.alt_tabs.addTab(yaklasik_widget, "📋 Yaklaşık Maliyet")'
+100: 'self.alt_tabs.addTab(hakedis_widget, "💰 Hakediş Kesintileri")'
+106: 'self.alt_tabs.addTab(sgk_widget, "👷 SGK İşçilik")'
+112: 'self.alt_tabs.addTab(ff_widget, "📈 Fiyat Farkı")'
+118: 'self.alt_tabs.addTab(bfa_widget, "📊 Birim Fiyat Analizi")'
+124: 'self.alt_tabs.addTab(gecikme_widget, "⏰ Gecikme Cezası")'
+130: 'self.alt_tabs.addTab(teminat_widget, "🏦 Teminat Yönetimi")'

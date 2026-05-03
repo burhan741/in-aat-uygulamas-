@@ -1,0 +1,2 @@
+Previous HEAD position was 310ce7d fix(gantt): GanttWindow IndentationError pyc-patch + PROGRAM_OZELLIKLERI Rev-6
+Switched to branch 'master'

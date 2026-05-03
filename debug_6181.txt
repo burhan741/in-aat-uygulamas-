@@ -1,0 +1,53 @@
+Okundu: 6718 satir
+  _export_to_excel: L4939
+  _beton_kalip_acad_olc: L5108
+  _beton_kalip_eleman_degisti: L5199
+  _beton_kalip_hesapla_eleman: L5236
+  _beton_kalip_kalem_ekle: L5276
+  _beton_kalip_toplamlar_guncelle: L5318
+  _beton_kalip_satir_sil: L5341
+  _beton_kalip_excel: L5351
+  _alan_turu_degistir: L5425
+  _coklu_kat_olcum_polyline: L5504
+  _coklu_kat_olcum_obje: L5533
+  _coklu_kat_olcum_katman: L5568
+  _coklu_kat_olcum_manuel: L5609
+  _coklu_kat_metraja_aktar: L5695
+  _coklu_kat_ozet_guncelle: L5730
+  _metraj_cetvelne_aktar: L5740
+  _anomali_tespit: L5817
+  _kaba_yapi_hesapla: L5870
+  _tedarikci_gonder: L5936
+  _lisp_sonuc_oku: L6281
+  _lisp_sonuc_goster: L6305
+  _lisp_metraya_aktar: L6372
+Degistirilecek: _export_to_excel L4939-L5107
+Degistirilecek: _beton_kalip_acad_olc L5108-L5198
+Degistirilecek: _beton_kalip_hesapla_eleman L5236-L5275
+Degistirilecek: _beton_kalip_toplamlar_guncelle L5318-L5340
+Degistirilecek: _beton_kalip_satir_sil L5341-L5350
+Degistirilecek: _beton_kalip_excel L5351-L5424
+Degistirilecek: _coklu_kat_olcum_polyline L5504-L5532
+Degistirilecek: _coklu_kat_olcum_obje L5533-L5567
+Degistirilecek: _coklu_kat_olcum_katman L5568-L5608
+Degistirilecek: _coklu_kat_metraja_aktar L5695-L5729
+Degistirilecek: _metraj_cetvelne_aktar L5740-L5816
+Degistirilecek: _anomali_tespit L5817-L5869
+Degistirilecek: _tedarikci_gonder L5936-L6280
+Degistirilecek: _lisp_sonuc_oku L6281-L6304
+Degistirilecek: _lisp_sonuc_goster L6305-L6371
+Degistirilecek: _lisp_metraya_aktar L6372-L6435
+Total lines: 6204
+  6176: '    def get_cizim_birimi(self) -> str:'
+  6177: '        """Secilen cizim birimini dondur"""'
+  6178: '        birim_text = self.birim_combo.currentText()'
+  6179: '        if "cm" in birim_text:'
+  6180: '            return "cm"'
+  6181: '    elif "mm" in birim_text:'
+  6182: '        return "mm"'
+  6183: '    else:'
+  6184: '        return "m"'
+  6185: ''
+  6186: '    def get_use_hesap_siniri(self) -> bool:'
+  6187: '        """HESAP_SINIRI kullanilacak mi?"""'
+  6188: '        return self.hesap_siniri_checkbox.isChecked()'

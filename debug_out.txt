@@ -1,0 +1,10 @@
+Line  1426: indent=1 chars=['0x20'] | b' def calculate_materials(self) -> None:\r'
+Line  1324: indent=1 chars=['0x20'] | b' def create_malzeme_tab(self, add_to_tabs: bool = True)'
+Line  1557: indent=1 chars=['0x20'] | b' def export_materials_supplier(self) -> None:\r'
+
+=== Fonksiyon body indent tespiti (create_malzeme_tab) ===
+  Line 1324: indent=1 chars=['0x20'] | b' def create_malzeme_tab(self, add_to_tabs: bool = '
+  Line 1325: indent=1 chars=['0x20'] | b' """Malzeme Listesi sekmesini olu\xc5\x9ftur"""\r'
+  Line 1326: indent=1 chars=['0x20'] | b' tab = QWidget()\r'
+  Line 1327: indent=1 chars=['0x20'] | b' layout = QVBoxLayout(tab)\r'
+  Line 1328: indent=1 chars=['0x20'] | b' layout.setContentsMargins(10, 10, 10, 10)\r'

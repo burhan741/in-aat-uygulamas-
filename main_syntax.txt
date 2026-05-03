@@ -1,0 +1,1 @@
+Sorry: IndentationError: expected an indented block after 'if' statement on line 289 (yeni_proje/app/ui/main_window.py, line 290)EXIT:

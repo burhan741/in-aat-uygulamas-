@@ -1,0 +1,5 @@
+OK  app.core.gantt_engine
+OK  app.core.demir_engine
+OK  app.core.proje_sablonlari
+OK  app.core.hava_durumu
+OK  app.ui.metraj_analiz_window

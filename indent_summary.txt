@@ -1,0 +1,3 @@
+Toplam satir: 10233
+def satirlari indent dagilimi:
+  indent=1: 185 adet

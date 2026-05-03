@@ -1,0 +1,5 @@
+  File "E:\ÝNÞAAT METRAJ PRO\yeni_proje\app\ui\metraj_analiz_window.py", line 5184
+    else:
+    ^^^^
+SyntaxError: invalid syntax
+done

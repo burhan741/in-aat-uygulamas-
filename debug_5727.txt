@@ -1,0 +1,11 @@
+Original lines around 5727:
+  5723: '        if toplam:\n'
+  5724: "            if hasattr(pw, 'load_metraj_data'):\n"
+  5725: '                pw.load_metraj_data()\n'
+  5726: '                QMessageBox.information(self, "Baþarýlý", f" {toplam} ölçüm Metraj Cetveli\'ne aktarý'
+  5727: '    else:\n'
+  5728: '        QMessageBox.warning(self, "Uyarý", "Aktarýlacak ölçüm yok. Önce ölçüm ekleyin.")\n'
+  5729: '\n'
+  5730: '    def _coklu_kat_ozet_guncelle(self):\n'
+  5731: '        """Özet etiketini güncelle."""\n'
+  5732: '        n_kat = len(self.mimari_katlar)\n'

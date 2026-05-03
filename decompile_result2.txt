@@ -1,0 +1,12 @@
+uncompyle6 version: <module 'uncompyle6.version' from 'E:\\İNŞAAT METRAJ PRO\\.venv\\Lib\\site-packages\\uncompyle6\\version.py'>
+uncompyle6 HATA: RuntimeError: Unsupported Python version, 3.11, for decompilation
+decompyle3 HATA: ModuleNotFoundError: No module named 'decompile'
+Script bulundu: E:\İNŞAAT METRAJ PRO\.venv\Scripts\uncompyle6.exe
+  exit=0 out=
+Unsupported Python version, 3.11, for decompilation
+
+E:\İNŞAAT METRAJ PRO\yeni_proje\app\ui\__pycache__\main_window.cpython-311.pyc -- decompiled 0 files: 0 okay, 1 failed
+
+ err=
+# Unsupported bytecode in file E:\İNŞAAT METRAJ PRO\yeni_proje\app\ui\__pycache__\main_window.cpython-311.pyc
+# Unsupported Python version, 3.11, for decompilation

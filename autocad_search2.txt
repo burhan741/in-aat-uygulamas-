@@ -1,0 +1,6 @@
+﻿E:\İNŞAAT METRAJ PRO\autocad_connector_autopep8.py
+E:\İNŞAAT METRAJ PRO\autocad_connector_fullfix.py
+E:\İNŞAAT METRAJ PRO\autocad_connector_pycfix.py
+E:\İNŞAAT METRAJ PRO\autocad_connector_work.py
+E:\İNŞAAT METRAJ PRO\yeni_proje\app\core\autocad_connector.py
+E:\İNŞAAT METRAJ PRO\yeni_proje\app\core\autocad_connector_FIXED.py.bak
