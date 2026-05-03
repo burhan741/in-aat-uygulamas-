@@ -6,7 +6,7 @@
           {
             "type": "command",
             "shell": "powershell",
-            "command": "Set-Location 'E:\\İNŞAAT METRAJ PRO'; git add -A; git diff --staged --quiet; if ($LASTEXITCODE -ne 0) { $ts = Get-Date -Format 'yyyy-MM-dd HH:mm'; git commit -m \"auto-backup: $ts\" }",
+            "command": "Set-Location 'E:\\İNŞAAT METRAJ PRO'; git add -A; git diff --staged --quiet; if ($LASTEXITCODE -ne 0) { $ts = Get-Date -Format 'yyyy-MM-dd HH:mm'; git commit -m \"auto-backup: $ts\"; git push origin master }",
             "timeout": 30,
             "statusMessage": "Git yedekleme yapiliyor..."
           }
