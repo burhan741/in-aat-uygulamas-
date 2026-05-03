@@ -1,19 +1,4 @@
 {
-  "hooks": {
-    "Stop": [
-      {
-        "hooks": [
-          {
-            "type": "command",
-            "shell": "powershell",
-            "command": "Set-Location 'E:\\İNŞAAT METRAJ PRO'; git add -A; git diff --staged --quiet; if ($LASTEXITCODE -ne 0) { $ts = Get-Date -Format 'yyyy-MM-dd HH:mm'; git commit -m \"auto-backup: $ts\"; git push origin master }",
-            "timeout": 30,
-            "statusMessage": "Git yedekleme yapiliyor..."
-          }
-        ]
-      }
-    ]
-  },
   "permissions": {
     "allow": [
       "Bash(powershell:*)",
@@ -43,7 +28,23 @@
       "Bash(git -C \"E:/İNŞAAT METRAJ PRO/yeni_proje\" log --oneline -30 2>&1)",
       "WebFetch(domain:raw.githubusercontent.com)",
       "WebFetch(domain:www.edermi.com)",
-      "WebFetch(domain:chromewebstore.google.com)"
+      "WebFetch(domain:chromewebstore.google.com)",
+      "WebFetch(domain:ekspergpt.com)"
+    ]
+  },
+  "hooks": {
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "Set-Location 'E:\\İNŞAAT METRAJ PRO'; git add -A; git diff --staged --quiet; if ($LASTEXITCODE -ne 0) { $ts = Get-Date -Format 'yyyy-MM-dd HH:mm'; git commit -m \"auto-backup: $ts\"; git push origin master }",
+            "shell": "powershell",
+            "timeout": 30,
+            "statusMessage": "Git yedekleme yapiliyor..."
+          }
+        ]
+      }
     ]
   }
 }
