@@ -411,6 +411,7 @@ program özellikleri textini oku
  var olan modüller yada yeni eklenecek modüller ile ilgili olarak daha fazla nasıl kullanım kolaylığı sağlarız bunun üzerinede çözümler üretelim ortak fikir ile
  objektif ol olması mümkün değilse açık sözlü bir şekilde belirt
  her işlemden sonra cluade md güncelle
+her claude md oku dediğimde memory hatırlat
 
  
 
