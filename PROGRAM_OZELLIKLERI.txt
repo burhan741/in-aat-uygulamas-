@@ -21,6 +21,11 @@ Rev-88 (2026-05-04) — Sahibinden Scraper: Playwright → curl_cffi Cookie Sist
   - _sbd_cookie_gir(): Chrome F12 → Network → Cookie satirini yapistir → Kaydet
   - _sbd_getir_bitti(): benzer ilan sayisini durum barinda gosterir
   - _form_doldur_scrape(): benzer ilanlar + ilan URL mesaj kutusuna eklenir (AI okur)
+* GUNCELLEME: Cookie-free otomatik mod + otomatik yenileme (Rev-88b)
+  - scrape() cookie olmadan da deneme yapar — curl_cffi TLS taklidi cogunlukla yeterli
+  - Her basarili istekten Set-Cookie header otomatik kaydedilir (rolling update)
+  - Cookie suresi dolunca silinir, sonraki istek anonim modda yeniden dener
+  - "Cookie Gir" butonu turuncu (opsiyonel), yesil (aktif) renk gostergesi
 
 ================================================================================
 Rev-87 (2026-05-04) — Gantt Bagimlilik Fix (3 Sorun)
