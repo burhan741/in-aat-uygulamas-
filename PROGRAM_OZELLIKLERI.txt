@@ -2,7 +2,26 @@
                     INSAAT METRAJ PRO - TUM OZELLIKLER
 ================================================================================
 
-Son Guncelleme: 30 Nisan 2026 (Rev-86)
+Son Guncelleme: 04 Mayis 2026 (Rev-87)
+
+================================================================================
+Rev-87 (2026-05-04) — Gantt Bagimlilik Fix (3 Sorun)
+================================================================================
+* DUZELTME: gantt_window.py — Bagimlilik ok limiti 50 -> 200
+  - Gorsel Gantt'ta bagimlililik oklari 50'den fazla gorev olunca cizilemiyordu
+  - `if len(tasks) <= 50:` -> `if len(tasks) <= 200:` degistirildi
+  - Gercek projeler (100+ is kalemi) artik oklari gosteriyor
+* YENI: gantt_window.py — TaskDialog'a "Onceki Isler (Bagimlilik)" bolumu eklendi
+  - Is Ekle / Is Duzenle dialogunda yeni "Onceki Isler" GroupBox'i eklendi
+  - Checkbox + Tip (FS/SS/FF/SF) + Lag (gun) kolonlu embed tablo
+  - Mevcut bagimliliklar duzenle modunda tabloya yukleniyor
+  - Kullanici ayri "Bagimlilik" butonuna gerek kalmadan dialog icinden girebiliyor
+* DUZELTME: gantt_window.py — ekle_is / duzenle_is akilndaki bagimlilik kaybi
+  - ekle_is(): TaskDialog'a tasks_list iletiliyor
+  - duzenle_is(): tasks_list + task_data iletiliyor, bagimliliklar_detay korunuyor
+  - get_task_data(): bagimliliklar + bagimliliklar_detay return ediliyor
+
+Son Guncelleme: 04 Mayis 2026 (Rev-87)
 
 ================================================================================
 Rev-86 (2026-04-30) — PDF Turkce Font Fix + AI Routing + EXE Spec Guncelleme
