@@ -142,7 +142,7 @@ Her geliştirilen programda **yerleşik kullanım kılavuzu** bulunmalıdır:
 
 ## Program Özellikleri Kaydı
 - Tüm modül/özellik/bugfix geçmişi: `E:\İNŞAAT METRAJ PRO\PROGRAM_OZELLIKLERI.txt`
-- Son sürüm: **Rev-87 (2026-05-04)**
+- Son sürüm: **Rev-88 (2026-05-04)**
 - Her yeni özellik veya güncelleme sonrası bu dosyaya yeni bir Rev bölümü ekle.
 
 ## PyInstaller EXE Paketi (Rev-50, 2026-03-31)

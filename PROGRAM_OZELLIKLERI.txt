@@ -2,7 +2,25 @@
                     INSAAT METRAJ PRO - TUM OZELLIKLER
 ================================================================================
 
-Son Guncelleme: 04 Mayis 2026 (Rev-87)
+Son Guncelleme: 04 Mayis 2026 (Rev-88)
+
+================================================================================
+Rev-88 (2026-05-04) — Sahibinden Scraper: Playwright → curl_cffi Cookie Sistemi
+================================================================================
+* YENIDEN YAZIM: app/core/sahibinden_engine.py
+  - Playwright tamamen kaldirildi (CAPTCHA/Turnstile sorunu giderildi)
+  - curl_cffi (Chrome TLS taklidi) ile cookie-bazli scraping
+  - cookie_kaydet(cookie_str): Chrome DevTools'dan yapistirilan Cookie header kaydedilir
+  - cookie_var_mi() / cookie_sil(): session yonetimi
+  - scrape(url, benzer_cek=True): ilan detayi + benzer ilanlar tek cagrida
+  - benzer_ilanlar_getir(): il/ilce kategorisine gore arama sayfasindan emsal ceker
+  - ScrapeResult.benzer_ilanlar: List[Dict] — fiyat, m2, oda, ilce, url
+  - Mevcut parser'lar korundu (__NEXT_DATA__, JSON-LD, data-attrs, regex fallback)
+* GUNCELLEME: app/ui/asistan_panel.py
+  - "Giris Yap" butonu → "Cookie Gir" (QDialog ile adim adim aciklama)
+  - _sbd_cookie_gir(): Chrome F12 → Network → Cookie satirini yapistir → Kaydet
+  - _sbd_getir_bitti(): benzer ilan sayisini durum barinda gosterir
+  - _form_doldur_scrape(): benzer ilanlar + ilan URL mesaj kutusuna eklenir (AI okur)
 
 ================================================================================
 Rev-87 (2026-05-04) — Gantt Bagimlilik Fix (3 Sorun)
