@@ -2,7 +2,23 @@
                     INSAAT METRAJ PRO - TUM OZELLIKLER
 ================================================================================
 
-Son Guncelleme: 04 Mayis 2026 (Rev-88)
+Son Guncelleme: 30 Mayis 2026 (Rev-89)
+
+================================================================================
+Rev-89 (2026-05-30) — Demir Metraj: Ayri TEXT Obje Eslesme (2 Fazli Yakinlik)
+================================================================================
+* GUNCELLEME: app/core/autocad_connector.py
+  - _DEMIR_KISMI pattern (modul seviyesi): adet+cap kismi eslesme
+  - _L_KISMI pattern (modul seviyesi): L= kismi eslesme
+  - get_rebar_report_from_selection() icerisine Faz 2 blogu eklendi
+  - Faz 1: mevcut tam regex eslesme (degismedi)
+  - Faz 2: eslesmeyen TEXT objelerini koordinat bazli ciftler:
+    * adet+cap objesi + en yakin L= objesi bulunur (Oklid mesafesi)
+    * Eslesme basariliysa ikisi birlikte YESILE boyanir, rapor hesaplanir
+    * Eslesme basarisizsa KIRMIZIYA boyanir (eksik parca belirtilir)
+  - Ornek: "65 ?8 /50" + "L= 46" ayri TEXT → Faz2'de eslestirilerek
+    adet=65, cap=8, boy=46 olarak dogru hesaplanir
+  - SYNTAX_OK dogrulandi
 
 ================================================================================
 Rev-88 (2026-05-04) — Sahibinden Scraper: Playwright → curl_cffi Cookie Sistemi
