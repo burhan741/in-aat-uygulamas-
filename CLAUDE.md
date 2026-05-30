@@ -140,6 +140,22 @@ Her geliştirilen programda **yerleşik kullanım kılavuzu** bulunmalıdır:
 - `ince_isler_3d_widget.py` gibi dosyalarda class body level kod (init dışı) runtime NameError üretir ama `py_compile` bunu yakalamaz.
 - Import zincirinde `except ImportError` kullanan kodlar `NameError`'ı yakalamaz — her ikisini de yakala: `except (ImportError, Exception)`.
 
+## KRİTİK — Python Triple-Quoted String İçinde JS/HTML Kaçış Karakteri Tuzağı (2026-05-30)
+
+Flask uygulamalarında HTML şablonu Python `'''...'''` triple-quoted string olarak yazılırken **JavaScript içinde `\'` kullanma**.
+
+**Olay:** `checkReminders()` fonksiyonunda inline `onclick` için `\'hat-banner\'` yazıldı.
+- Python `'''` string içinde `\'` → Python backslash'i yutar → browser'a sadece `'` gider
+- Browser JS'te: `'...'hat-banner'...'` → string ortasında kapanmayan tırnak → **SyntaxError**
+- Bir `<script>` bloğunda SyntaxError → **tüm script çalışmaz** → `bugun()` hiç çağrılmaz → sayfa "Yükleniyor..." kalır
+
+**KURAL:**
+- ❌ `'<button onclick="f(\'id\')">'` — Python triple-quoted string içinde `\'` KULLANMA
+- ✅ Çözüm 1: Ayrı global JS fonksiyonu yaz → `onclick="fonksiyon()"` şeklinde çağır
+- ✅ Çözüm 2: `onclick` içinde tırnak gereken durumlarda HTML entity kullan: `&apos;` veya `&#39;`
+
+**Genel Kural:** Flask HTML şablonu triple-quoted Python string (`'''...'''`) içindeyken JS string escape (`\'`, `\"`) **Python tarafından tüketilir**, browser'a backslash gitmez. Bu kurala her inline event handler yazarken dikkat et.
+
 ## Program Özellikleri Kaydı
 - Tüm modül/özellik/bugfix geçmişi: `E:\İNŞAAT METRAJ PRO\PROGRAM_OZELLIKLERI.txt`
 - Son sürüm: **Rev-88 (2026-05-04)**
