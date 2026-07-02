@@ -158,7 +158,7 @@ Flask uygulamalarında HTML şablonu Python `'''...'''` triple-quoted string ola
 
 ## Program Özellikleri Kaydı
 - Tüm modül/özellik/bugfix geçmişi: `E:\İNŞAAT METRAJ PRO\PROGRAM_OZELLIKLERI.txt`
-- Son sürüm: **Rev-94 (2026-07-02)**
+- Son sürüm: **Rev-95 (2026-07-02)**
 - Her yeni özellik veya güncelleme sonrası bu dosyaya yeni bir Rev bölümü ekle.
 
 ## KRİTİK — prompt()/confirm() Sonrası Scroll Sıfırlanma Tuzağı (Rev-93, 2026-07-02)
@@ -167,10 +167,12 @@ Flask uygulamalarında HTML şablonu Python `'''...'''` triple-quoted string ola
 - **DOĞRU:** Scroll konumunu diyalog AÇILMADAN ÖNCE, fonksiyonun en başında yakala (`_OZET_SCROLL = window.scrollY;`), sonra `prompt()/confirm()` çağır.
 - Bu kalıp `pythonanywhere/app.py`'deki tüm ödeme/silme fonksiyonlarında (odemeYap, civiOde, vb.) uygulandı.
 
-## KRİTİK — "Kalan Yevmiye" Parasal Türetilmiş, Ham Veri Değil (Rev-94, 2026-07-02)
-- `pythonanywhere/app.py`'de "Kalan Yevmiye" alanı `kalan_odeme / gunluk_ucret` bölmesinden türetilir — bu, işçinin GERÇEKTE kaç gün/saat çalıştığını değil, kalan borcun gün cinsinden karşılığını gösterir.
-- Mesai çarpanı (Rev-91'de 1x'e düşürüldü) veya kısmi ödemeler bu oranı değiştirir, dolayısıyla "Kalan Yevmiye" hiçbir zaman "çalışılan gün + saat" ile birebir aynı görünmeyebilir — bu NORMALDİR, otomatik olarak "bug" sayılmamalı.
-- **Kural:** Kullanıcıya "ne kadar çalıştı" ile "ne kadar borç kaldı" bilgisini ASLA tek bir türetilmiş sayıyla karıştırıp gösterme — ikisini ayrı satırlarda göster (bkz. Rev-94: "Bu Dönem Çalışma: X gün + Y saat mesai" ayrı satırı eklendi).
+## KRİTİK — "Özet" Sekmesi "Dönem" Değil "Hafta" Olmalı (Rev-94/95, 2026-07-02)
+- **Olay:** `pythonanywhere/app.py`'de "Kalan Yevmiye" bir usta için "3.8 gün" gösterdi, kullanıcı "4 tam gün+1 saat mesai" beklerken bunu bug sandı.
+- **Gerçek kök neden:** "Kalan Yevmiye" `kalan_odeme/gunluk_ucret` bölmesinden türetilir (doğru), AMA `api/ozet/haftalik` endpoint'i ismine rağmen "hafta" değil, en son "Yeni Dönem Başlat" butonuna basıldığından beri BİRİKEN TÜM veriyi (kullanıcı hiç sıfırlamadığı için ~1 ay) topluyordu. Teşhis için ham `yevmiye`/`mesai_saat` alanları response'a eklenince (Rev-94) kullanıcı "bir aylık tüm yevmiyeyi Özet'e aktarmışsın" diye tekrar bug sandı — ama bu, YENİ bir hata değildi, var olan yanlış kapsamın görünür hale gelmesiydi.
+- **KURAL:** Endpoint/fonksiyon ismi ("haftalik") ile gerçek filtre mantığı (manuel "dönem" reset) ASLA uyuşmazlık içermemeli — isim neyi vaat ediyorsa kod onu yapmalı.
+- **Çözüm (Rev-95):** `api_haftalik()` artık `donem_baslangici` ayarı yerine mevcut haftanın Pazartesi-Pazar aralığını (`BETWEEN`) kullanıyor, otomatik haftalık sıfırlanıyor. "Yeni Dönem Başlat" özelliği (buton+JS+route) tamamen kaldırıldı.
+- **Genel ders:** Kullanıcı "X ay/haftalık veri karıştı" derse, önce YENİ eklenen kodun mu yoksa VAR OLAN ama yeni görünür hale gelen bir kapsam/filtre sorununun mu suçlu olduğunu ayır — ikisi çok farklı düzeltme gerektirir.
 
 ## Puantaj Mesai Ücreti Kuralı — DÜZ ORAN, ÇARPANSIZ (Rev-91, 2026-07-02)
 - **Kullanıcı kararı:** `pythonanywhere/app.py` puantaj modülünde mesai ücreti **1.5x yasal fazla mesai çarpanı KULLANILMIYOR** — kullanıcı özellikle "düz saatlik oran" seçti (santiye yevmiyeci pratiği, resmi bordro değil).

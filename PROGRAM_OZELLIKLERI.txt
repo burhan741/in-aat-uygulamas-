@@ -2,7 +2,27 @@
                     INSAAT METRAJ PRO - TUM OZELLIKLER
 ================================================================================
 
-Son Guncelleme: 02 Temmuz 2026 (Rev-94)
+Son Guncelleme: 02 Temmuz 2026 (Rev-95)
+
+================================================================================
+Rev-95 (2026-07-02) — Puantaj: Ozet Sekmesi Artik Gercekten Haftalik (Bugfix)
+================================================================================
+* KOK NEDEN (Rev-94'te ortaya cikti): "Ozet" sekmesi (api/ozet/haftalik) hic
+  "bu hafta" ile sinirli degildi — en son "Yeni Donem Baslat" butonuna
+  basildigindan beri BIRIKEN TUM veriyi (haftalar/aylar) topluyordu. Kullanici
+  donemi hic sifirlamadigi icin bir usta icin bir aylik yevmiye/mesai toplami
+  "Bu Donem Calisma" satirinda goruldu — kullanici bunu hata sandi.
+* KARAR: Kullanici ile konusuldu, "sadece bu hafta (Pazartesi-Pazar)" secildi.
+* COZUM: api_haftalik() artik "donem_baslangici" ayarini DEGIL, mevcut haftanin
+  Pazartesi-Pazar tarih araligini (BETWEEN) kullaniyor — otomatik her hafta
+  sifirlanir, manuel islem gerekmez.
+* KALDIRILAN OZELLIK: "Yeni Donem Baslat" butonu + yeniDonem() JS fonksiyonu +
+  /api/odeme/tumunu-sil backend route'u tamamen kaldirildi (artik anlamsiz,
+  Ozet zaten otomatik haftalik sifirlaniyor).
+* ETIKET GUNCELLEMESI: "Donem Ozeti" -> "Haftalik Ozet", "Bu Donem Calisma" ->
+  "Bu Hafta Calisma" (Bu Haftaki Toplam etiketiyle tutarli hale getirildi).
+* NOT: Aylik sekmesi (api/ozet/aylik) zaten takvim ayina gore calisiyordu,
+  bu degisiklikten etkilenmedi.
 
 ================================================================================
 Rev-94 (2026-07-02) — Puantaj: Kalan Yevmiye Yerine Ham Gun+Saat Gosterimi (Teshis+UX)
