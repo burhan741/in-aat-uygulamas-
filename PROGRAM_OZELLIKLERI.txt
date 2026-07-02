@@ -2,7 +2,28 @@
                     INSAAT METRAJ PRO - TUM OZELLIKLER
 ================================================================================
 
-Son Guncelleme: 02 Temmuz 2026 (Rev-93)
+Son Guncelleme: 02 Temmuz 2026 (Rev-94)
+
+================================================================================
+Rev-94 (2026-07-02) — Puantaj: Kalan Yevmiye Yerine Ham Gun+Saat Gosterimi (Teshis+UX)
+================================================================================
+* SIKAYET: "4 tam gun + 1 saat mesaisi olan usta 3.8 yevmiye gosteriyor, hata var"
+* ANALIZ: 10.294 TL / 2.700 TL = 3.8126 -> ekranin gosterdigi "3.8" matematiksel
+  olarak "Kalan Odeme / Gunluk Ucret" bolme isleminden geliyor (dogru hesaplaniyor)
+  ANCAK bu, kullaniciya "kac gun + kac saat calisildigini" DEGIL, "kalan borcun
+  gun karsiligini" gosteren TURETILMIS bir sayi. 4 tam gun tek basina 10.800 TL
+  eder (mesaisiz bile) ama gorunen 10.294 TL bundan 506 TL az — bu da altta
+  yatan ham verinin kullanicinin sandigi "4 gun+1 saat" ile birebir uyusmadigini
+  gosteriyor (yevmiye/mesai kayitlarinin DB'deki gercek hali dogrulanmali).
+* COZUM (gecici + kalici): api/ozet/haftalik artik 'yevmiye' (ham gun toplami)
+  ve 'mesai_saat' (ham saat toplami) alanlarini da donduruyor. Ozet ekranindaki
+  isci kartina yeni bir satir eklendi: "Bu Donem Calisma: X gun + Y saat mesai"
+  — artik "Kalan Yevmiye" (parasal turetilmis) ile "Bu Donem Calisma" (ham DB
+  verisi) YAN YANA gorunuyor, boylece hangi rakamin nereden geldigi netlesiyor.
+* SONRAKI ADIM: Kullanici "Bu Donem Calisma" satirinda gercekte kac gun/saat
+  yazdigini bildirsin — eger 4 gun + 1 saat DEGIL de baska bir sey cikarsa,
+  sorun kod degil veri girisi demektir (hangi gunun yanlis isaretlendigi
+  bulunup duzeltilecek).
 
 ================================================================================
 Rev-93 (2026-07-02) — Puantaj: Odeme Sonrasi Sayfa Basa Atlama Sorunu (Bugfix)
