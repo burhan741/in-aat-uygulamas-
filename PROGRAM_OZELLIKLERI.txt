@@ -2,7 +2,22 @@
                     INSAAT METRAJ PRO - TUM OZELLIKLER
 ================================================================================
 
-Son Guncelleme: 02 Temmuz 2026 (Rev-92)
+Son Guncelleme: 02 Temmuz 2026 (Rev-93)
+
+================================================================================
+Rev-93 (2026-07-02) — Puantaj: Odeme Sonrasi Sayfa Basa Atlama Sorunu (Bugfix)
+================================================================================
+* SORUN: Ozet sekmesinde odeme/gider islemi (Odeme Yap, Yemek Ode, Civi Ode/Sil
+  vb.) yapildiginda sayfa scroll'u en basa atlıyordu. Scroll konumu, prompt()/
+  confirm() diyalogu KAPANDIKTAN SONRA loadOzet(true) icinde yakalaniyordu —
+  ama mobil tarayicilarda (ozellikle klavye acan prompt()) diyalog scroll'u
+  daha once sifirliyordu, yani "korunan" konum zaten 0 olarak kaydediliyordu.
+* COZUM: Scroll konumu artik her islem fonksiyonunun (odemeYap, odemeGeri,
+  yemekOde, yemekOdemeGeri, civiGiderEkle, civiOde, civiOdemeGeri, civiGiderSil)
+  EN BASINDA, diyalog acilmadan once yakalaniyor (_OZET_SCROLL = window.scrollY).
+  loadOzet(koruyScroll) artik kendi ici scroll yakalamiyor, sadece geri yukluyor.
+* KURAL: Native prompt()/confirm() diyaloglari mobilde scroll/viewport'u
+  bozabilir — scroll pozisyonu her zaman diyalog TETIKLENMEDEN once kaydedilmeli.
 
 ================================================================================
 Rev-92 (2026-07-02) — Puantaj: Hatirlatma Banner Her Zaman Gun Sayisi Gostersin

@@ -158,8 +158,14 @@ Flask uygulamalarında HTML şablonu Python `'''...'''` triple-quoted string ola
 
 ## Program Özellikleri Kaydı
 - Tüm modül/özellik/bugfix geçmişi: `E:\İNŞAAT METRAJ PRO\PROGRAM_OZELLIKLERI.txt`
-- Son sürüm: **Rev-92 (2026-07-02)**
+- Son sürüm: **Rev-93 (2026-07-02)**
 - Her yeni özellik veya güncelleme sonrası bu dosyaya yeni bir Rev bölümü ekle.
+
+## KRİTİK — prompt()/confirm() Sonrası Scroll Sıfırlanma Tuzağı (Rev-93, 2026-07-02)
+- Mobil tarayıcılarda native `prompt()` (klavye açan) veya `confirm()` diyaloğu, sayfa scroll konumunu diyalog kapanmadan ÖNCE sıfırlayabilir.
+- **YANLIŞ:** Scroll konumunu API isteği tamamlandıktan SONRA (`.then()` içinde) yakalamak — diyalog zaten scroll'u bozmuş olur, yakalanan değer 0 olur.
+- **DOĞRU:** Scroll konumunu diyalog AÇILMADAN ÖNCE, fonksiyonun en başında yakala (`_OZET_SCROLL = window.scrollY;`), sonra `prompt()/confirm()` çağır.
+- Bu kalıp `pythonanywhere/app.py`'deki tüm ödeme/silme fonksiyonlarında (odemeYap, civiOde, vb.) uygulandı.
 
 ## Puantaj Mesai Ücreti Kuralı — DÜZ ORAN, ÇARPANSIZ (Rev-91, 2026-07-02)
 - **Kullanıcı kararı:** `pythonanywhere/app.py` puantaj modülünde mesai ücreti **1.5x yasal fazla mesai çarpanı KULLANILMIYOR** — kullanıcı özellikle "düz saatlik oran" seçti (santiye yevmiyeci pratiği, resmi bordro değil).
