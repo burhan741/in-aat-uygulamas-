@@ -158,8 +158,14 @@ Flask uygulamalarında HTML şablonu Python `'''...'''` triple-quoted string ola
 
 ## Program Özellikleri Kaydı
 - Tüm modül/özellik/bugfix geçmişi: `E:\İNŞAAT METRAJ PRO\PROGRAM_OZELLIKLERI.txt`
-- Son sürüm: **Rev-90 (2026-07-02)**
+- Son sürüm: **Rev-91 (2026-07-02)**
 - Her yeni özellik veya güncelleme sonrası bu dosyaya yeni bir Rev bölümü ekle.
+
+## Puantaj Mesai Ücreti Kuralı — DÜZ ORAN, ÇARPANSIZ (Rev-91, 2026-07-02)
+- **Kullanıcı kararı:** `pythonanywhere/app.py` puantaj modülünde mesai ücreti **1.5x yasal fazla mesai çarpanı KULLANILMIYOR** — kullanıcı özellikle "düz saatlik oran" seçti (santiye yevmiyeci pratiği, resmi bordro değil).
+- **Doğru formül:** `mesai_ucret = (gunluk_ucret / 8) * mesai_saat`
+- ❌ YANLIŞ: `(gunluk_ucret / 8 * 1.5) * mesai_saat` — bu İş Kanunu md.41 formülü, bu proje için KULLANILMAMALI
+- **Kapsam:** Sadece bu PythonAnywhere puantaj uygulaması için geçerli — ana masaüstü programdaki (`hakedis_kesinti_engine.py` vb.) yasal gecikme cezası/mesai hesapları bundan etkilenmez, onlar ayrı ve resmi mevzuata bağlı kalmalı.
 
 ## KRİTİK — "Hızlı Aksiyon" Butonları Sessizce Diğer Alanları Sıfırlıyor (Rev-90, 2026-07-02)
 - **Olay:** `pythonanywhere/app.py` puantaj modülünde hızlı durum butonları (✕/½/1/1½) her tıklamada `mesai_saat:0` ve `yapilan_is:''` gibi ilgisiz alanları **hardcoded** olarak backend'e gönderiyordu (`anindaKaydet()`). Backend `UPDATE` sorgusu bunu koşulsuz yazdığı için, foreman'ın detay panelinden önceden girdiği mesai saati sessizce siliniyordu.

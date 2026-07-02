@@ -2,7 +2,25 @@
                     INSAAT METRAJ PRO - TUM OZELLIKLER
 ================================================================================
 
-Son Guncelleme: 02 Temmuz 2026 (Rev-90)
+Son Guncelleme: 02 Temmuz 2026 (Rev-91)
+
+================================================================================
+Rev-91 (2026-07-02) — Puantaj: Mesai Ucreti 1.5x Carpani Kaldirildi (Bugfix)
+================================================================================
+* SORUN: mesai_ucret formulu (ucret/8*1.5)*mesai_saat kullaniyordu (yasal fazla
+  mesai carpani). Ancak santiyede yevmiyeci isciler icin carpansiz duz saatlik
+  oran uygulaniyor — 2400 TL/gun x 1 saat mesai = 300 TL beklenirken uygulama
+  450 TL (1.5x ile) hesapliyordu; kullanici canli sunucuda 600 TL gordugunu
+  bildirdi (eski/farkli sunucu kodu suphesi — yerelde net sebep tespit edilemedi,
+  ama duz oran fix'i beklenen 300 TL'yi dogru veriyor).
+* COZUM: 3 yerde (api/ozet/haftalik, api/ozet/aylik, api/rapor/haftalik)
+  mesai_ucret = (gunluk_ucret/8) * mesai_saat olarak degistirildi — 1.5 carpani
+  kaldirildi.
+* KULLANICI ONAYI: "Duz saatlik oran (carpansiz)" secildi — yasal 1.5x fazla
+  mesai degil, santiye pratigi (yevmiye uzerinden orantili odeme) tercih edildi.
+* SONRAKI ADIM: Duzeltilmis app.py dosyasi PythonAnywhere'e (/home/burhan852/app.py)
+  yeniden yuklenip Web > Reload yapilmali — yerel duzeltme sunucuyu otomatik
+  guncellemiyor.
 
 ================================================================================
 Rev-90 (2026-07-02) — Puantaj: Hizli Durum Butonlari Mesai Saatini Siliyordu (Bugfix)
