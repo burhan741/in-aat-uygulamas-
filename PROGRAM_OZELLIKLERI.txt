@@ -2,7 +2,33 @@
                     INSAAT METRAJ PRO - TUM OZELLIKLER
 ================================================================================
 
-Son Guncelleme: 02 Temmuz 2026 (Rev-95)
+Son Guncelleme: 02 Temmuz 2026 (Rev-96)
+
+================================================================================
+Rev-96 (2026-07-02) — Akilli Metraj: Demir Kalemlerine Eleman Tipi Etiketi
+================================================================================
+* AMAC: Demir fire oranini azaltmak icin kesim optimizasyonu (Kesim Listesi,
+  Rev-66 FFD) yapilacak, ancak kolon/perde boyuna demiri ESNEK (bindirmeli ek
+  yapilabilir, kat ortasinda) iken kiris/doseme boy demiri SABIT (kalip boyuna
+  gore, keyfi kesilemez) — bu ayrimi yapabilmek icin her demir kalemine hangi
+  elemana ait oldugu (Kolon/Perde/Kiris/Doseme/Temel/Diger) etiketi eklendi.
+* app/core/autocad_connector.py:
+  - DemirBilgisi dataclass'ina 'eleman_tipi: str = ""' alani eklendi
+  - calculate_vertical_rebar_unified(): KOLON/PERDE ayrimini zaten kendi
+    algoritmasiyla yaptigi icin eleman_tipi otomatik dolduruluyor
+  - get_kolon_filizi_from_table(): eleman_tipi="Kolon" sabit atanıyor
+* app/ui/metraj_analiz_window.py:
+  - Demir Metraji panelinin en ustune "Eleman Tipi" ComboBox eklendi
+    (Kolon/Perde/Kiris/Doseme/Temel/Diger)
+  - Kullanici sirayla: tipi sec -> "DEMIR METRAJI AL" -> AutoCAD'de o tipe ait
+    demirleri sec -> ENTER. Sonraki tip icin ayni adimlari tekrarlar, sonuclar
+    birikir (ustune yazilmaz)
+  - _autocad_demir_metraj(): rapor['basarili'] listesindeki her demire secili
+    eleman_tipi atanir; bilgi mesaji da secili tipi gosterir
+  - Excel export (_demir_excel_export): "Eleman Tipi" sutunu eklendi
+* SONRAKI ADIM: Kesim Listesi (demir_hesaplama_window.py) optimizasyonuna bu
+  eleman_tipi bilgisine gore esnek/sabit boy kurali eklenecek (Kolon/Perde
+  yuvarlanabilir, Kiris/Doseme sabit kalir + 12m'den uzunsa ek plani uretilir).
 
 ================================================================================
 Rev-95 (2026-07-02) — Puantaj: Ozet Sekmesi Artik Gercekten Haftalik (Bugfix)

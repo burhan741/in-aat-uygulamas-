@@ -158,7 +158,7 @@ Flask uygulamalarında HTML şablonu Python `'''...'''` triple-quoted string ola
 
 ## Program Özellikleri Kaydı
 - Tüm modül/özellik/bugfix geçmişi: `E:\İNŞAAT METRAJ PRO\PROGRAM_OZELLIKLERI.txt`
-- Son sürüm: **Rev-95 (2026-07-02)**
+- Son sürüm: **Rev-96 (2026-07-02)**
 - Her yeni özellik veya güncelleme sonrası bu dosyaya yeni bir Rev bölümü ekle.
 
 ## KRİTİK — prompt()/confirm() Sonrası Scroll Sıfırlanma Tuzağı (Rev-93, 2026-07-02)
