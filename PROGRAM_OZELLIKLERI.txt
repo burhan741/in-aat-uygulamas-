@@ -2,7 +2,20 @@
                     INSAAT METRAJ PRO - TUM OZELLIKLER
 ================================================================================
 
-Son Guncelleme: 02 Temmuz 2026 (Rev-91)
+Son Guncelleme: 02 Temmuz 2026 (Rev-92)
+
+================================================================================
+Rev-92 (2026-07-02) — Puantaj: Hatirlatma Banner Her Zaman Gun Sayisi Gostersin
+================================================================================
+* SORUN: checkReminders() banner'i sadece odeme tarihine 7 gun veya daha az
+  kalinca gosteriyordu (fark <= 7 siniri). Uzak tarihli hatirlatmalarda program
+  acilinca hicbir sey gorunmuyordu.
+* COZUM: 7 gunluk sinir kaldirildi (sadece fark >= 0 kontrolu kaldi) — artik
+  gelecekteki her hatirlatma, tarihi ne kadar uzak olursa olsun, program her
+  acildiginda "X gun kaldi: [Ad]" seklinde banner'da gosteriliyor.
+* Gecmis tarihli (fark < 0) hatirlatmalar banner'da gosterilmiyor (onceki
+  davranis korundu) — sadece Ayarlar sekmesindeki hatirlatma listesinde "Gecti"
+  etiketiyle goruluyor.
 
 ================================================================================
 Rev-91 (2026-07-02) — Puantaj: Mesai Ucreti 1.5x Carpani Kaldirildi (Bugfix)
