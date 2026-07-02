@@ -158,8 +158,16 @@ Flask uygulamalarında HTML şablonu Python `'''...'''` triple-quoted string ola
 
 ## Program Özellikleri Kaydı
 - Tüm modül/özellik/bugfix geçmişi: `E:\İNŞAAT METRAJ PRO\PROGRAM_OZELLIKLERI.txt`
-- Son sürüm: **Rev-88 (2026-05-04)**
+- Son sürüm: **Rev-90 (2026-07-02)**
 - Her yeni özellik veya güncelleme sonrası bu dosyaya yeni bir Rev bölümü ekle.
+
+## KRİTİK — "Hızlı Aksiyon" Butonları Sessizce Diğer Alanları Sıfırlıyor (Rev-90, 2026-07-02)
+- **Olay:** `pythonanywhere/app.py` puantaj modülünde hızlı durum butonları (✕/½/1/1½) her tıklamada `mesai_saat:0` ve `yapilan_is:''` gibi ilgisiz alanları **hardcoded** olarak backend'e gönderiyordu (`anindaKaydet()`). Backend `UPDATE` sorgusu bunu koşulsuz yazdığı için, foreman'ın detay panelinden önceden girdiği mesai saati sessizce siliniyordu.
+- **Etki:** Hakediş/Özet ekranındaki mesai ücreti (`gunluk_ucret/8*1.5*mesai_saat`) yanlış (eksik) çıkıyordu — formülün kendisi doğruydu, veri kayboluyordu.
+- **KURAL:** Bir kayıt için "kısmi güncelleme" yapan hızlı aksiyon/tek-tık fonksiyonları, göndermediği alanları asla varsayılan/sıfır değerle EZMEMELİ. İki seçenek:
+  1. Frontend: gönderilecek payload'ı mevcut state'ten (`PU_MAP[id]` gibi) doldur, sadece değişen alanı override et.
+  2. Backend: `UPDATE` sorgusunu `COALESCE(?, mevcut_kolon)` ile yaz, yoksa mevcut değeri koru.
+- **Kontrol:** Benzer "hızlı buton / inline aksiyon" içeren her modülde (Flask veya PyQt fark etmez) payload'ın TÜM alanları içerip içermediğini, eksik alanların sıfırla ezilip ezilmediğini kontrol et.
 
 ## PyInstaller EXE Paketi (Rev-50, 2026-03-31)
 - Spec: `yeni_proje/InsaatMetrajPro.spec` — tek-dosya EXE, console=False, quantix_icon.ico

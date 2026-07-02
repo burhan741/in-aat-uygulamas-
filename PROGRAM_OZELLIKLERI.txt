@@ -2,7 +2,22 @@
                     INSAAT METRAJ PRO - TUM OZELLIKLER
 ================================================================================
 
-Son Guncelleme: 30 Mayis 2026 (Rev-89)
+Son Guncelleme: 02 Temmuz 2026 (Rev-90)
+
+================================================================================
+Rev-90 (2026-07-02) — Puantaj: Hizli Durum Butonlari Mesai Saatini Siliyordu (Bugfix)
+================================================================================
+* SORUN: pythonanywhere/app.py — anindaKaydet() (Hizli durum butonlari X/half/1/1.5)
+  her tiklamada mesai_saat:0 ve yapilan_is:'' degerlerini SABIT olarak backend'e
+  gonderiyordu. Detay kartindan girilen mesai saati, foreman daha sonra ayni gun
+  icin hizli butona tekrar basinca sessizce 0'a sifirlaniyordu.
+* ETKI: Ozet sekmesi "Toplam Kalan" hesabindaki mesai ucreti
+  (gunluk_ucret/8*1.5*mesai_saat formulu) eksik/yanlis cikiyordu.
+* COZUM: anindaKaydet() artik PU_MAP[isciId] icindeki mevcut mesai_saat,
+  yapilan_is, giris_saati, cikis_saati degerlerini korur; sadece calisma_durumu
+  guncellenir.
+* KURAL: Hizli aksiyon butonlari (partial update amacli) asla ilgisiz alanlari
+  hardcoded degerle ezmemeli — mevcut state'ten okunmali.
 
 ================================================================================
 Rev-89 (2026-05-30) — Demir Metraj: Ayri TEXT Obje Eslesme (2 Fazli Yakinlik)
