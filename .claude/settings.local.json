@@ -29,7 +29,8 @@
       "WebFetch(domain:raw.githubusercontent.com)",
       "WebFetch(domain:www.edermi.com)",
       "WebFetch(domain:chromewebstore.google.com)",
-      "WebFetch(domain:ekspergpt.com)"
+      "WebFetch(domain:ekspergpt.com)",
+      "WebFetch(domain:burhan852.pythonanywhere.com)"
     ]
   },
   "hooks": {
