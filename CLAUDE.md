@@ -158,7 +158,7 @@ Flask uygulamalarında HTML şablonu Python `'''...'''` triple-quoted string ola
 
 ## Program Özellikleri Kaydı
 - Tüm modül/özellik/bugfix geçmişi: `E:\İNŞAAT METRAJ PRO\PROGRAM_OZELLIKLERI.txt`
-- Son sürüm: **Rev-99 (2026-07-06)**
+- Son sürüm: **Rev-100 (2026-07-06)**
 - Her yeni özellik veya güncelleme sonrası bu dosyaya yeni bir Rev bölümü ekle.
 
 ## KRİTİK — prompt()/confirm() Sonrası Scroll Sıfırlanma Tuzağı (Rev-93, 2026-07-02)
@@ -173,6 +173,12 @@ Flask uygulamalarında HTML şablonu Python `'''...'''` triple-quoted string ola
 - **KURAL:** Endpoint/fonksiyon ismi ("haftalik") ile gerçek filtre mantığı (manuel "dönem" reset) ASLA uyuşmazlık içermemeli — isim neyi vaat ediyorsa kod onu yapmalı.
 - **Çözüm (Rev-95):** `api_haftalik()` artık `donem_baslangici` ayarı yerine mevcut haftanın Pazartesi-Pazar aralığını (`BETWEEN`) kullanıyor, otomatik haftalık sıfırlanıyor. "Yeni Dönem Başlat" özelliği (buton+JS+route) tamamen kaldırıldı.
 - **Genel ders:** Kullanıcı "X ay/haftalık veri karıştı" derse, önce YENİ eklenen kodun mu yoksa VAR OLAN ama yeni görünür hale gelen bir kapsam/filtre sorununun mu suçlu olduğunu ayır — ikisi çok farklı düzeltme gerektirir.
+
+## Özet Kartı: "Bu Hafta Çalışma" Kaldırıldı, "Toplam Yevmiye"/"Toplam Ödeme" Eklendi (Rev-100, 2026-07-06)
+- **Talep:** Kullanıcı Özet kartındaki "Bu Hafta Çalışma" satırının tamamen kaldırılmasını, yerine "Toplam Yevmiye" (tüm zamanlar çalışılan gün) ve "Toplam Ödeme" (tüm zamanlar ödenen tutar) yazmasını istedi.
+- **Çözüm:** `isci_bakiye_hesapla()` zaten `toplam_gun` ve `odenen` alanlarını hesaplıyordu (Rev-98) — sadece API yanıtına eklendi (`toplam_yevmiye`, `toplam_odeme`), `yevmiye`/`mesai_saat` (haftalık) alanları kaldırıldı. Artık kullanılmayan `isci_bu_hafta_hesapla()` fonksiyonu ve `hafta_bas/hafta_son/hb/hs` değişkenleri de temizlendi (ölü kod bırakılmadı).
+- **Kart sırası:** Toplam Yevmiye → Toplam Ödeme → Kalan Yevmiye → Kalan Ödeme.
+- **Test:** `scratchpad/test_flask_uctan_uca.py` — kısmi ödeme senaryosunda `toplam_yevmiye`/`toplam_odeme`/`kalan` doğru, eski `yevmiye`/`mesai_saat` alanlarının artık dönmediği doğrulandı (PASS).
 
 ## KRİTİK — Pazartesi-Cliff: Takvim Haftası Yerine Rolling Son-7-Gün (Rev-99, 2026-07-06)
 - **Olay:** Rev-98 sonrası İbrahim Suri için "Bu Hafta Calisma: 0" görüldü, ama işçi bir gün önce (Pazar) çalışıp "1" seçilmişti. "Kalan Yevmiye: 0.9" doğruydu (kümülatif bakiyeye dahildi) ama "Bu Hafta Calisma" 0 gösteriyordu.

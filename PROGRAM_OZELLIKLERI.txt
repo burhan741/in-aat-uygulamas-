@@ -2,7 +2,24 @@
                     INSAAT METRAJ PRO - TUM OZELLIKLER
 ================================================================================
 
-Son Guncelleme: 06 Temmuz 2026 (Rev-99)
+Son Guncelleme: 06 Temmuz 2026 (Rev-100)
+
+================================================================================
+Rev-100 (2026-07-06) — Puantaj: Ozet Karti "Bu Hafta Calisma" Kaldirildi,
+"Toplam Yevmiye" + "Toplam Odeme" Eklendi
+================================================================================
+* TALEP: Kullanici Ozet kartindaki "Bu Hafta Calisma" satirinin tamamen
+  kaldirilmasini, yerine "Toplam Yevmiye" (tum zamanlar gun sayisi) ve
+  "Toplam Odeme" (tum zamanlar odenen tutar) yazmasini istedi.
+* COZUM: isci_bakiye_hesapla() zaten toplam_gun ve odenen hesapliyordu
+  (Rev-98) - API yanitina 'toplam_yevmiye'/'toplam_odeme' olarak eklendi,
+  'yevmiye'/'mesai_saat' (haftalik) alanlari kaldirildi. Artik kullanilmayan
+  isci_bu_hafta_hesapla() fonksiyonu ve hafta_bas/hafta_son degiskenleri
+  temizlendi.
+* KART SIRASI: Toplam Yevmiye -> Toplam Odeme -> Kalan Yevmiye -> Kalan Odeme
+* KANIT: scratchpad/test_flask_uctan_uca.py - kismi odeme senaryosunda
+  toplam_yevmiye/toplam_odeme/kalan dogru, eski alanlarin donmedigi
+  dogrulandi (PASS).
 
 ================================================================================
 Rev-99 (2026-07-06) — Puantaj: Pazartesi-Cliff Duzeltildi (Rolling Son-7-Gun)
