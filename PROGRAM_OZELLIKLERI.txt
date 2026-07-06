@@ -2,7 +2,37 @@
                     INSAAT METRAJ PRO - TUM OZELLIKLER
 ================================================================================
 
-Son Guncelleme: 06 Temmuz 2026 (Rev-105)
+Son Guncelleme: 06 Temmuz 2026 (Rev-106)
+
+================================================================================
+Rev-106 (2026-07-06) — Puantaj: "Milat" Temizligi - 05.07.2026 Oncesi
+Kayitlar Arsivlenip Aktif Tablolardan Siliniyor (Tek Seferlik Admin Endpoint)
+================================================================================
+* ISTEK: Kullanici gecmis/karisik kismi odeme verilerinin kalan_gun gibi
+  kumulatif hesaplari anlasilmaz hale getirdigini belirtip 05.07.2026'yi
+  "milat" kabul ederek bu tarihten ONCEKI tum puantaj+odeme kayitlarinin
+  silinmesini istedi (temiz sayfa).
+* COZUM: Yeni endpoint POST /api/admin/milat-temizle?onay=EVET-SIL
+  eklendi. Guvenlik: (1) yanlislikla tetiklenmeyi onlemek icin ?onay=
+  EVET-SIL parametresi ZORUNLU, (2) GERI ALINAMAZ bir islem oldugu icin
+  silmeden ONCE tum ilgili satirlar puantaj_arsiv_milat_oncesi /
+  odeme_arsiv_milat_oncesi tablolarina kopyalaniyor - is ihtilafi/kontrol
+  durumunda veri TAMAMEN kaybolmuyor, sadece aktif hesaplardan (kalan_gun
+  vb.) cikiyor.
+* MILAT_TARIHI = '2026-07-05' (bu tarihin KENDISI dahil degil, yani
+  05.07 ve sonrasi korunuyor, sadece < 05.07 olanlar silinip arsivleniyor).
+* ONEMLI UYARI: Hanifi'nin 04.07.2026 tarihli 18.300 TL'lik son odemesi
+  bu milatin ONCESINDE kaliyor - yani bu temizlik yapilirsa "Son Odemeyi
+  Geri Al" butonundaki o kayit da arsive tasinip aktiften silinecek.
+  Bu, "05.07'den once olan HER SEY silinsin" talebiyle tutarli ama
+  kullaniciya acikca bildirildi.
+* KANIT: scratchpad/test_milat_temizle.py - milat oncesi/sonrasi karisik
+  tarihli senaryo ile SADECE milat oncesinin arsivlenip silindigi, milat
+  ve sonrasinin dokunulmadan kaldigi dogrulandi (PASS).
+* DEPLOY + TETIKLEME: Once app.py /home/burhan852/app.py'ye yuklenip
+  Reload yapilmali. Sonra endpoint bir kez POST ile tetiklenmeli (curl
+  veya PowerShell Invoke-RestMethod ile) - butona/UI'ye baglanmadi,
+  kasitli olarak sadece bir kerelik manuel tetikleme.
 
 ================================================================================
 Rev-105 (2026-07-06) — Puantaj: Rev-104 Deploy Sonrasi "Yukleniyor..." Kilitlenmesi
