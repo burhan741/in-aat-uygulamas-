@@ -158,7 +158,7 @@ Flask uygulamalarında HTML şablonu Python `'''...'''` triple-quoted string ola
 
 ## Program Özellikleri Kaydı
 - Tüm modül/özellik/bugfix geçmişi: `E:\İNŞAAT METRAJ PRO\PROGRAM_OZELLIKLERI.txt`
-- Son sürüm: **Rev-97 (2026-07-06)**
+- Son sürüm: **Rev-98 (2026-07-06)**
 - Her yeni özellik veya güncelleme sonrası bu dosyaya yeni bir Rev bölümü ekle.
 
 ## KRİTİK — prompt()/confirm() Sonrası Scroll Sıfırlanma Tuzağı (Rev-93, 2026-07-02)
@@ -173,6 +173,13 @@ Flask uygulamalarında HTML şablonu Python `'''...'''` triple-quoted string ola
 - **KURAL:** Endpoint/fonksiyon ismi ("haftalik") ile gerçek filtre mantığı (manuel "dönem" reset) ASLA uyuşmazlık içermemeli — isim neyi vaat ediyorsa kod onu yapmalı.
 - **Çözüm (Rev-95):** `api_haftalik()` artık `donem_baslangici` ayarı yerine mevcut haftanın Pazartesi-Pazar aralığını (`BETWEEN`) kullanıyor, otomatik haftalık sıfırlanıyor. "Yeni Dönem Başlat" özelliği (buton+JS+route) tamamen kaldırıldı.
 - **Genel ders:** Kullanıcı "X ay/haftalık veri karıştı" derse, önce YENİ eklenen kodun mu yoksa VAR OLAN ama yeni görünür hale gelen bir kapsam/filtre sorununun mu suçlu olduğunu ayır — ikisi çok farklı düzeltme gerektirir.
+
+## Hesaplama Motoru Yeniden Yazıldı — isci_bakiye_hesapla (Rev-98, 2026-07-06)
+- **Talep:** Rev-97 patch'i debug edilmeye çalışılırken kullanıcı "hesaplama motorunu tekrardan yaz" dedi — inline SQL soup yerine izole, test edilebilir fonksiyon istendi.
+- **Çözüm:** `pythonanywhere/app.py`'ye iki bağımsız fonksiyon eklendi: `isci_bakiye_hesapla(c, isci_id, gunluk_ucret)` (tüm zamanlar hakediş/kalan/kalan_gun) ve `isci_bu_hafta_hesapla(c, isci_id, hb, hs)` (sadece "Bu Hafta Çalışma" görüntü satırı). `api_haftalik()` artık bu fonksiyonları çağırıyor, kendi içinde SQL JOIN mantığı yok.
+- **Test kanıtı (tahmin değil):** `scratchpad/test_hesap_motoru.py` (4 izole senaryo: yeni işçi tek gün, çoklu gün+mesai, kısmi ödeme, haftalık reset yok) + `scratchpad/test_flask_uctan_uca.py` (gerçek Flask route'larıyla POST /api/isci → POST /api/puantaj → GET /api/ozet/haftalik uçtan uca) — HEPSİ PASS. Yeni işçi + 1 yevmiye + ödeme yok → kalan=tam gunluk_ucret, kalan_yevmiye=1.0 doğrulandı.
+- **KURAL:** Bu motor fonksiyonları bozulursa (AttributeError/NameError vb.) önce `scratchpad/test_hesap_motoru.py` benzeri bağımsız bir test yazıp çalıştır, canlı sunucuda deneme yapma — kanıt olmadan "düzelttim" deme.
+- **UYARI:** Bu düzeltme SADECE yerel dosyada. Canlıya yansıması için `/home/burhan852/app.py`'ye yükleyip Web > Reload yapılması ZORUNLU — aksi halde kullanıcı hâlâ eski (yanlış) davranışı görür.
 
 ## KRİTİK — "Kalan Bakiye" ASLA Haftalık Sıfırlanmamalı, Sadece Ödemeyle Düşmeli (Rev-97, 2026-07-06)
 - **Olay:** Rev-95'teki düzeltme AŞIRI GİTTİ — `api_haftalik()` sorgusunda hem yevmiye (puantaj) HEM ödeme (odeme) HEM yemek HEM çivi toplamları `hb-hs` (Pazartesi-Pazar) `BETWEEN` ile sınırlandı. Sonuç: her Pazartesi tüm bakiye sıfırdan başlıyor, geçen hafta biriken ama henüz ÖDENMEMİŞ yevmiye/yemek/çivi tutarı sessizce kayboluyor.

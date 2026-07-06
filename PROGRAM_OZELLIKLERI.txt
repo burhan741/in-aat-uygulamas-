@@ -2,7 +2,35 @@
                     INSAAT METRAJ PRO - TUM OZELLIKLER
 ================================================================================
 
-Son Guncelleme: 06 Temmuz 2026 (Rev-97)
+Son Guncelleme: 06 Temmuz 2026 (Rev-98)
+
+================================================================================
+Rev-98 (2026-07-06) — Puantaj: Hesaplama Motoru Yeniden Yazildi (isci_bakiye_hesapla)
+================================================================================
+* TALEP: Rev-97 duzeltmesi canli sitede test edilirken beklenmedik bir sayi
+  goruldu ("Kalan Yevmiye: 0.9"). Kullanici inline SQL uzerinden debug yerine
+  hesaplama motorunun bagimsiz, test edilebilir sekilde YENIDEN YAZILMASINI
+  istedi.
+* COZUM: pythonanywhere/app.py'ye 2 bagimsiz fonksiyon eklendi:
+  - isci_bakiye_hesapla(c, isci_id, gunluk_ucret): TUM ZAMANLAR hakedis/
+    odenen/kalan/kalan_gun hesabi (tek yerde, tek sorumluluk)
+  - isci_bu_hafta_hesapla(c, isci_id, hb, hs): SADECE "Bu Hafta Calisma"
+    goruntu satiri icin haftalik gun/saat (bakiyeyi etkilemez)
+  api_haftalik() artik kendi icinde JOIN/CASE mantigi tasimiyor, bu iki
+  fonksiyonu her isci icin cagiriyor.
+* KANIT (tahmin degil, calistirilmis test): scratchpad/test_hesap_motoru.py
+  (4 izole senaryo) + scratchpad/test_flask_uctan_uca.py (gercek Flask route
+  zinciri: POST /api/isci -> POST /api/puantaj -> GET /api/ozet/haftalik) —
+  hepsi PASS. Yeni isci + "1" secimi + odeme yok => kalan=tam gunluk_ucret,
+  kalan_yevmiye=1.0 dogrulandi. Gecen hafta calisip odenmemis isci bakiyesi
+  de kaybolmuyor, dogrulandi.
+* NOT: Canli sitede gorulen "Hanifi - 0.9 gun" ornegi incelendiginde o
+  iscinin (id=63) sistemde son_odeme_id=537, son_odeme_miktar=18300 TL ile
+  GECMISTEN KAYITLI oldugu goruldu — yani "ilk kaydi bu" degildi, motor o
+  ozel durumda muhtemelen dogru calisiyordu. Ama motor yine de daha temiz,
+  test edilebilir hale getirildi.
+* UYARI: Bu duzeltme SADECE yerel dosyada — /home/burhan852/app.py'ye
+  yuklenip Web > Reload yapilmadan canli sitede degisiklik gorulmez.
 
 ================================================================================
 Rev-97 (2026-07-06) — Puantaj: "Kalan Bakiye" Artik Hicbir Zaman Haftalik
