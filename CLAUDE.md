@@ -158,7 +158,7 @@ Flask uygulamalarında HTML şablonu Python `'''...'''` triple-quoted string ola
 
 ## Program Özellikleri Kaydı
 - Tüm modül/özellik/bugfix geçmişi: `E:\İNŞAAT METRAJ PRO\PROGRAM_OZELLIKLERI.txt`
-- Son sürüm: **Rev-100 (2026-07-06)**
+- Son sürüm: **Rev-101 (2026-07-06)**
 - Her yeni özellik veya güncelleme sonrası bu dosyaya yeni bir Rev bölümü ekle.
 
 ## KRİTİK — prompt()/confirm() Sonrası Scroll Sıfırlanma Tuzağı (Rev-93, 2026-07-02)
@@ -173,6 +173,13 @@ Flask uygulamalarında HTML şablonu Python `'''...'''` triple-quoted string ola
 - **KURAL:** Endpoint/fonksiyon ismi ("haftalik") ile gerçek filtre mantığı (manuel "dönem" reset) ASLA uyuşmazlık içermemeli — isim neyi vaat ediyorsa kod onu yapmalı.
 - **Çözüm (Rev-95):** `api_haftalik()` artık `donem_baslangici` ayarı yerine mevcut haftanın Pazartesi-Pazar aralığını (`BETWEEN`) kullanıyor, otomatik haftalık sıfırlanıyor. "Yeni Dönem Başlat" özelliği (buton+JS+route) tamamen kaldırıldı.
 - **Genel ders:** Kullanıcı "X ay/haftalık veri karıştı" derse, önce YENİ eklenen kodun mu yoksa VAR OLAN ama yeni görünür hale gelen bir kapsam/filtre sorununun mu suçlu olduğunu ayır — ikisi çok farklı düzeltme gerektirir.
+
+## Özet Kartı Düzeltmesi — "Bu Hafta Yevmiye" + "Ödenecek Para" (Rev-101, 2026-07-06)
+- **Olay:** Rev-100'de "Toplam Yevmiye"/"Toplam Ödeme" TÜM ZAMANLAR kümülatif yapıldı, ama kullanıcı aslında "Toplam Yevmiye" derken HAFTALIK gün sayısı görmek istediğini belirtti — yanlış anlaşılma oldu, kullanıcı sert tepki verdi ("becerememişsin").
+- **Gerçek istek (netleşen):** Kart tam 2 satır olmalı: (1) o hafta kaç yevmiyesi var (haftalık, rolling son 7 gün), (2) altında ödenecek para (kalan — HİÇBİR ZAMAN sıfırlanmayan kümülatif bakiye, bkz. Rev-97).
+- **Çözüm (Rev-101):** `isci_bu_hafta_yevmiye(c, isci_id, hb, hs)` fonksiyonu geri eklendi (SADECE gün sayısı, mesai saati yok — sade tutuldu). Kart artık: **"Bu Hafta Yevmiye"** (`hafta_yevmiye` — rolling 7 gün) + **"Ödenecek Para"** (`kalan` — kümülatif, asla sıfırlanmaz). Eski `toplam_yevmiye`/`toplam_odeme`/`kalan_yevmiye` alanları kaldırıldı.
+- **Test:** `scratchpad/test_flask_uctan_uca.py` — 10 gün önce çalışıp ödenmemiş işçi: `hafta_yevmiye=0` (bu hafta değil) AMA `kalan=2000` (borç kaybolmuyor) — tam istenen ayrımı kanıtladı (PASS).
+- **KURAL:** "Toplam X" gibi belirsiz Türkçe etiketler (hangi zaman aralığı?) kullanıcıda "tüm zamanlar" veya "bu hafta" gibi FARKLI beklentiler yaratabilir — yeni bir alan/etiket eklerken zaman kapsamını (hafta/ay/tüm zamanlar) kullanıcıyla netleştirmeden varsayım yapma.
 
 ## Özet Kartı: "Bu Hafta Çalışma" Kaldırıldı, "Toplam Yevmiye"/"Toplam Ödeme" Eklendi (Rev-100, 2026-07-06)
 - **Talep:** Kullanıcı Özet kartındaki "Bu Hafta Çalışma" satırının tamamen kaldırılmasını, yerine "Toplam Yevmiye" (tüm zamanlar çalışılan gün) ve "Toplam Ödeme" (tüm zamanlar ödenen tutar) yazmasını istedi.

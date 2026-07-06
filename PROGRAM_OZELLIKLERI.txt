@@ -2,7 +2,29 @@
                     INSAAT METRAJ PRO - TUM OZELLIKLER
 ================================================================================
 
-Son Guncelleme: 06 Temmuz 2026 (Rev-100)
+Son Guncelleme: 06 Temmuz 2026 (Rev-101)
+
+================================================================================
+Rev-101 (2026-07-06) — Puantaj: Ozet Karti Duzeltmesi - "Bu Hafta Yevmiye" +
+"Odenecek Para" (Rev-100 yanlis anlasilmayi duzeltir)
+================================================================================
+* OLAY: Rev-100'de "Toplam Yevmiye"/"Toplam Odeme" TUM ZAMANLAR kumulatif
+  yapildi, ama kullanici "Toplam Yevmiye" derken HAFTALIK gun sayisi
+  gormek istedigini belirtti - yanlis anlasilma oldu.
+* GERCEK ISTEK: Kart tam 2 satir olmali: (1) o hafta kac yevmiyesi var
+  (haftalik, rolling son 7 gun), (2) altinda odenecek para (kalan -
+  HICBIR ZAMAN sifirlanmayan kumulatif bakiye, bkz. Rev-97).
+* COZUM: isci_bu_hafta_yevmiye(c, isci_id, hb, hs) fonksiyonu geri
+  eklendi (sadece gun sayisi, mesai saati yok - sade tutuldu). Kart
+  artik: "Bu Hafta Yevmiye" (hafta_yevmiye - rolling 7 gun) + "Odenecek
+  Para" (kalan - kumulatif, asla sifirlanmaz). Eski toplam_yevmiye/
+  toplam_odeme/kalan_yevmiye alanlari kaldirildi.
+* KANIT: scratchpad/test_flask_uctan_uca.py - 10 gun once calisip
+  odenmemis isci: hafta_yevmiye=0 (bu hafta degil) AMA kalan=2000 (borc
+  kaybolmuyor) - tam istenen ayrimi kanitladi (PASS).
+* GENEL DERS: "Toplam X" gibi belirsiz etiketler kullanicida "tum
+  zamanlar" veya "bu hafta" gibi FARKLI beklentiler yaratabilir - yeni
+  alan/etiket eklerken zaman kapsamini netlestirmeden varsayim yapma.
 
 ================================================================================
 Rev-100 (2026-07-06) — Puantaj: Ozet Karti "Bu Hafta Calisma" Kaldirildi,
