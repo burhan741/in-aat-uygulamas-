@@ -154,7 +154,9 @@ Flask uygulamalarında HTML şablonu Python `'''...'''` triple-quoted string ola
 - ✅ Çözüm 1: Ayrı global JS fonksiyonu yaz → `onclick="fonksiyon()"` şeklinde çağır
 - ✅ Çözüm 2: `onclick` içinde tırnak gereken durumlarda HTML entity kullan: `&apos;` veya `&#39;`
 
-**Genel Kural:** Flask HTML şablonu triple-quoted Python string (`'''...'''`) içindeyken JS string escape (`\'`, `\"`) **Python tarafından tüketilir**, browser'a backslash gitmez. Bu kurala her inline event handler yazarken dikkat et.
+**Genel Kural:** Flask HTML şablonu triple-quoted Python string (`'''...'''`) içindeyken JS string escape (`\'`, `\"`, **`\n` dahil**) **Python tarafından tüketilir**, browser'a backslash gitmez. Bu kurala her inline event handler yazarken VE her çok satırlı JS string'i (`alert()`/`confirm()` içine `\n` gömme gibi) yazarken dikkat et — Python `\n`'i gerçek newline'a çevirir, tek tırnaklı JS string'i ortasında gerçek satır sonu = SyntaxError = **tüm `<script>` bloğu çalışmaz** (bkz. Rev-104, `isciDetay()` fonksiyonunda `'...\n...'` yerine `'...\\n...'` yazılması gerekti).
+
+**ZORUNLU DOĞRULAMA (Rev-104'ten itibaren):** `pythonanywhere/app.py`'deki `HTML_TEMPLATE` içine JS eklerken/değiştirirken, `! python -m py_compile` yeterli DEĞİL (sadece Python syntax'ını kontrol eder, gömülü JS'i değil). Deploy öncesi mutlaka JS syntax'ını da doğrula: AST ile `HTML_TEMPLATE` string değerini çıkar, `<script>...</script>` içeriğini bir `.js` dosyasına yaz, `node --check dosya.js` çalıştır. Node bu makinede kurulu (`node --version` çalışıyor).
 
 ## Program Özellikleri Kaydı
 - Tüm modül/özellik/bugfix geçmişi: `E:\İNŞAAT METRAJ PRO\PROGRAM_OZELLIKLERI.txt`

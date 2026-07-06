@@ -2,7 +2,40 @@
                     INSAAT METRAJ PRO - TUM OZELLIKLER
 ================================================================================
 
-Son Guncelleme: 06 Temmuz 2026 (Rev-104)
+Son Guncelleme: 06 Temmuz 2026 (Rev-105)
+
+================================================================================
+Rev-105 (2026-07-06) — Puantaj: Rev-104 Deploy Sonrasi "Yukleniyor..." Kilitlenmesi
+Duzeltildi (JS \n Kacis Karakteri Python Tarafindan Yutulmustu)
+================================================================================
+* OLAY: Kullanici Rev-104'u yukleyip Reload yaptiktan sonra sayfa
+  "Yukleniyor..." yazisinda kilitli kaldi, baska hicbir sey gorunmedi.
+* KOK NEDEN: `isciDetay()` fonksiyonunda `metin += '...\n'` gibi JS string
+  literal'lari icinde `\n` kullanilmisti. HTML_TEMPLATE normal (raw
+  OLMAYAN) triple-quoted Python string oldugu icin Python `\n`'i GERCEK
+  satir sonuna cevirdi - browser'a giden JS kaynaginda tek tirnakli bir
+  string literalinin ortasinda gercek bir satir sonu olustu, bu JS
+  SyntaxError'dur ("Unterminated string literal"). Bir `<script>` blogunda
+  SyntaxError -> TUM script calismaz -> loadOzet() hic cagrilmaz -> sayfa
+  ilk konan "Yukleniyor..." yer tutucusunda kilitli kalir.
+* BU, CLAUDE.md'DE ONCEDEN BILINEN BIR BUG SINIFI: 2026-05-30'da `\'`
+  icin ayni sinif hata belgelenmisti (checkReminders() onclick'inde).
+  Bu sefer `\n` ile ayni tuzaga tekrar dusuldu - CLAUDE.md'deki genel
+  kural artik `\n`'i de acikca kapsayacak sekilde guncellendi.
+* COZUM: Tum `'...\n...'` JS string literalleri `'...\\n...'` olarak
+  duzeltildi (cift backslash - boylece Python'dan JS'e LITERAL `\n`
+  gider, JS bunu kendi icinde newline olarak yorumlar).
+* YENI DOGRULAMA ADIMI (BUNDAN SONRA HER JS DEGISIKLIGINDE ZORUNLU):
+  `py_compile` sadece Python syntax'ini kontrol eder, gomulu JS'i DEGIL.
+  Artik AST ile HTML_TEMPLATE string'i cikarilip, <script> icerigi bir
+  .js dosyasina yazilip `node --check dosya.js` ile JS syntax'i da
+  ayrica dogrulaniyor (node bu makinede kurulu). Bu script:
+  scratchpad/extract_js.py (gecici, tekrar kullanilabilir).
+* KANIT: Duzeltmeden once `node --check` "Unterminated string literal"
+  hatasi verdi, duzeltmeden sonra JS_SYNTAX_OK + PY_SYNTAX_OK ikisi de
+  gecti.
+* DEPLOY: Bu duzeltme de yerel dosyada, tekrar /home/burhan852/app.py'ye
+  yuklenip Reload yapilmasi gerekiyor.
 
 ================================================================================
 Rev-104 (2026-07-06) — Puantaj: Hafta Siniri Pazar-Cumartesi Yapildi,
