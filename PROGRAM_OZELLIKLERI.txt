@@ -2,7 +2,26 @@
                     INSAAT METRAJ PRO - TUM OZELLIKLER
 ================================================================================
 
-Son Guncelleme: 06 Temmuz 2026 (Rev-98)
+Son Guncelleme: 06 Temmuz 2026 (Rev-99)
+
+================================================================================
+Rev-99 (2026-07-06) — Puantaj: Pazartesi-Cliff Duzeltildi (Rolling Son-7-Gun)
+================================================================================
+* SIKAYET: Ibrahim Suri "Bu Hafta Calisma: 0" gosterdi, ama bir gun once
+  (Pazar) calisip "1" secilmisti. "Kalan Yevmiye: 0.9" dogruydu (kumulatif
+  bakiyeye dahildi) ama haftalik gorunum 0 gosteriyordu.
+* KOK NEDEN: hafta_bas = bugun - timedelta(days=bugun.weekday()) -> sabit
+  Pazartesi-Pazar takvim haftasi. Bugun Pazartesi oldugunda DUN (Pazar)
+  otomatik "gecen hafta"ya duser -> hafta degisir degismez dunun kaydi
+  "Bu Hafta Calisma"dan kayboluyormus gibi gorunur. Santiye 7 gun (Pazar
+  dahil) calistigi icin bu "cliff" her Pazartesi tekrarlanacakti.
+* COZUM: api_haftalik() icinde hafta_bas/hafta_son artik ROLLING SON 7 GUN
+  (bugun-6 ... bugun), sabit takvim haftasi degil. "Dun" hangi gun olursa
+  olsun her zaman pencere icinde kaliyor.
+* KANIT: scratchpad/test_flask_uctan_uca.py senaryo 5 - "dun" tarihli kayit
+  girilip yevmiye==1 ve kalan dogru arttigi test edildi (PASS).
+* GENEL DERS: 7 gun calisan bir santiye icin "haftalik" gorunumler sabit
+  Pazartesi-Pazar mantigiyla KURULMAMALI - rolling pencere kullan.
 
 ================================================================================
 Rev-98 (2026-07-06) — Puantaj: Hesaplama Motoru Yeniden Yazildi (isci_bakiye_hesapla)

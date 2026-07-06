@@ -158,7 +158,7 @@ Flask uygulamalarında HTML şablonu Python `'''...'''` triple-quoted string ola
 
 ## Program Özellikleri Kaydı
 - Tüm modül/özellik/bugfix geçmişi: `E:\İNŞAAT METRAJ PRO\PROGRAM_OZELLIKLERI.txt`
-- Son sürüm: **Rev-98 (2026-07-06)**
+- Son sürüm: **Rev-99 (2026-07-06)**
 - Her yeni özellik veya güncelleme sonrası bu dosyaya yeni bir Rev bölümü ekle.
 
 ## KRİTİK — prompt()/confirm() Sonrası Scroll Sıfırlanma Tuzağı (Rev-93, 2026-07-02)
@@ -173,6 +173,14 @@ Flask uygulamalarında HTML şablonu Python `'''...'''` triple-quoted string ola
 - **KURAL:** Endpoint/fonksiyon ismi ("haftalik") ile gerçek filtre mantığı (manuel "dönem" reset) ASLA uyuşmazlık içermemeli — isim neyi vaat ediyorsa kod onu yapmalı.
 - **Çözüm (Rev-95):** `api_haftalik()` artık `donem_baslangici` ayarı yerine mevcut haftanın Pazartesi-Pazar aralığını (`BETWEEN`) kullanıyor, otomatik haftalık sıfırlanıyor. "Yeni Dönem Başlat" özelliği (buton+JS+route) tamamen kaldırıldı.
 - **Genel ders:** Kullanıcı "X ay/haftalık veri karıştı" derse, önce YENİ eklenen kodun mu yoksa VAR OLAN ama yeni görünür hale gelen bir kapsam/filtre sorununun mu suçlu olduğunu ayır — ikisi çok farklı düzeltme gerektirir.
+
+## KRİTİK — Pazartesi-Cliff: Takvim Haftası Yerine Rolling Son-7-Gün (Rev-99, 2026-07-06)
+- **Olay:** Rev-98 sonrası İbrahim Suri için "Bu Hafta Calisma: 0" görüldü, ama işçi bir gün önce (Pazar) çalışıp "1" seçilmişti. "Kalan Yevmiye: 0.9" doğruydu (kümülatif bakiyeye dahildi) ama "Bu Hafta Calisma" 0 gösteriyordu.
+- **Kök neden:** `hafta_bas = bugun - timedelta(days=bugun.weekday())` → Pazartesi-Pazar SABİT takvim haftası. Bugün Pazartesi olunca `hafta_bas` = bugün, yani DÜN (Pazar) otomatik olarak "geçen hafta"ya düşüyor — hafta değişir değişmez dünün kaydı "Bu Hafta Calisma" görünümünden aniden kayboluyor.
+- **Neden önemli:** Bu şantiye 7 gün çalışıyor (Pazar dahil). Her Pazartesi sabahı bu "cliff" (uçurum) tekrar tekrar yaşanacaktı.
+- **Çözüm (Rev-99):** `api_haftalik()` içinde hafta_bas/hafta_son artık **rolling son 7 gün** (`bugun-6` ... `bugun`), sabit Pazartesi-Pazar takvim haftası DEĞİL. Böylece "dün" hangi gün olursa olsun her zaman pencerenin içinde kalıyor, Pazartesi sabahı ani kayıp yaşanmıyor.
+- **Test:** `scratchpad/test_flask_uctan_uca.py` senaryo 5 — "dün" tarihiyle kayıt girilip `yevmiye==1` ve `kalan` doğru arttığı doğrulandı (PASS).
+- **KURAL:** 7 gün çalışan bir şantiye için "haftalık" görünümler ASLA sabit Pazartesi-Pazar `bugun.weekday()` mantığıyla kurulmamalı — rolling pencere kullan, aksi halde hafta geçişlerinde veri "kayboluyormuş gibi" görünür (aslında kaybolmaz, sadece pencere dışına çıkar — kullanıcı için ayrım anlaşılmaz, bug gibi algılanır).
 
 ## Hesaplama Motoru Yeniden Yazıldı — isci_bakiye_hesapla (Rev-98, 2026-07-06)
 - **Talep:** Rev-97 patch'i debug edilmeye çalışılırken kullanıcı "hesaplama motorunu tekrardan yaz" dedi — inline SQL soup yerine izole, test edilebilir fonksiyon istendi.
