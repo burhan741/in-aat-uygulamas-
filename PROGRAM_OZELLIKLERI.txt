@@ -2,7 +2,39 @@
                     INSAAT METRAJ PRO - TUM OZELLIKLER
 ================================================================================
 
-Son Guncelleme: 06 Temmuz 2026 (Rev-102)
+Son Guncelleme: 06 Temmuz 2026 (Rev-103)
+
+================================================================================
+Rev-103 (2026-07-06) — Puantaj: "Bu Hafta Gelen Gun" + "Bu Hafta Odedigim"
+Ayri Alanlar Olarak Eklendi (Kalan/Yevmiye'ye Dokunulmadi)
+================================================================================
+* ISTEK: Kullanici hem (1) bir ustanin haftalik gelen gun sayisini + o
+  hafta ustaya yaptigi toplam odemeyi, HEM DE (2) odeme yaptiktan sonra
+  kalan toplam borcunu ayni ekranda gormek istedi.
+* NETLESTIRME: "Toplam odeme" tanimi belirsizdi (bu hafta mi, tum zamanlar
+  mi) - AskUserQuestion ile soruldu, cevap: "bu hafta yapilan odemeler".
+* COZUM: Yeni, BAGIMSIZ fonksiyon isci_bu_hafta_hesapla(c, isci_id,
+  hafta_bas, hafta_son) eklendi (app.py ~satir 1358) - rolling son 7 gun
+  penceresinde SADECE goruntuleme amacli 2 deger donduruyor:
+  'bu_hafta_gun' (saf yoklama, odeme durumundan bagimsiz) ve
+  'bu_hafta_odeme' (o pencerede yapilan odemelerin toplami).
+  api_haftalik() bu degerleri isciler listesine ekliyor, mevcut
+  isci_bakiye_hesapla() (kalan_gun/kalan, tum zamanlar kumulatif) HIC
+  DEGISTIRILMEDI.
+* ISIM SECIMI (KRITIK): Rev-99/100/101/102'de "Yevmiye" adi hem kumulatif
+  bakiye hem haftalik yoklama icin kullanilinca 3 kez yanlis anlasilma
+  oldu. Bu yuzden yeni alanlar BILEREK FARKLI isimle donduruluyor:
+  "Bu Hafta Gelen Gun" / "Bu Hafta Odedigim" - "Yevmiye"/"Kalan" etiketleri
+  sadece tum-zamanlar borc icin kullanilmaya devam ediyor.
+* KANIT: scratchpad/test_bu_hafta.py - pencere disindaki (10 gun once) 1
+  gunluk kayit ve 1000 TL odeme bu_hafta_gun/bu_hafta_odeme'ye HIC
+  yansimadi (bu_hafta_gun=1, bu_hafta_odeme=500 dogru cikti), ayni
+  senaryoda kalan/toplam_gun (tum zamanlar) degismedi (toplam_gun=2,
+  odenen=1500) - PASS.
+* DEPLOY: Bu degisiklik SADECE yerel dosyada
+  (yeni_proje/pythonanywhere/app.py). Canliya yansimasi icin
+  /home/burhan852/app.py'ye yuklenip PythonAnywhere Web > Reload
+  yapilmasi ZORUNLU.
 
 ================================================================================
 Rev-102 (2026-07-06) — Puantaj: "Yevmiye" = Odenmemis Gun Sayisi (kalan_gun),
