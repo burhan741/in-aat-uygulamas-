@@ -158,7 +158,7 @@ Flask uygulamalarında HTML şablonu Python `'''...'''` triple-quoted string ola
 
 ## Program Özellikleri Kaydı
 - Tüm modül/özellik/bugfix geçmişi: `E:\İNŞAAT METRAJ PRO\PROGRAM_OZELLIKLERI.txt`
-- Son sürüm: **Rev-96 (2026-07-02)**
+- Son sürüm: **Rev-97 (2026-07-06)**
 - Her yeni özellik veya güncelleme sonrası bu dosyaya yeni bir Rev bölümü ekle.
 
 ## KRİTİK — prompt()/confirm() Sonrası Scroll Sıfırlanma Tuzağı (Rev-93, 2026-07-02)
@@ -173,6 +173,14 @@ Flask uygulamalarında HTML şablonu Python `'''...'''` triple-quoted string ola
 - **KURAL:** Endpoint/fonksiyon ismi ("haftalik") ile gerçek filtre mantığı (manuel "dönem" reset) ASLA uyuşmazlık içermemeli — isim neyi vaat ediyorsa kod onu yapmalı.
 - **Çözüm (Rev-95):** `api_haftalik()` artık `donem_baslangici` ayarı yerine mevcut haftanın Pazartesi-Pazar aralığını (`BETWEEN`) kullanıyor, otomatik haftalık sıfırlanıyor. "Yeni Dönem Başlat" özelliği (buton+JS+route) tamamen kaldırıldı.
 - **Genel ders:** Kullanıcı "X ay/haftalık veri karıştı" derse, önce YENİ eklenen kodun mu yoksa VAR OLAN ama yeni görünür hale gelen bir kapsam/filtre sorununun mu suçlu olduğunu ayır — ikisi çok farklı düzeltme gerektirir.
+
+## KRİTİK — "Kalan Bakiye" ASLA Haftalık Sıfırlanmamalı, Sadece Ödemeyle Düşmeli (Rev-97, 2026-07-06)
+- **Olay:** Rev-95'teki düzeltme AŞIRI GİTTİ — `api_haftalik()` sorgusunda hem yevmiye (puantaj) HEM ödeme (odeme) HEM yemek HEM çivi toplamları `hb-hs` (Pazartesi-Pazar) `BETWEEN` ile sınırlandı. Sonuç: her Pazartesi tüm bakiye sıfırdan başlıyor, geçen hafta biriken ama henüz ÖDENMEMİŞ yevmiye/yemek/çivi tutarı sessizce kayboluyor.
+- **Kullanıcı tespiti:** "Ben zaten ödedikçe ödemeler düşüyor, sen pazartesi ödemeleri sıfırdan başlatınca pazar günü olan yevmiyeler sıfırlanıyor."
+- **KURAL:** "Kalan/Bakiye" (kalan_yevmiye, toplam_kalan, yemek_kalan, civi_kalan) alanları HER ZAMAN tüm zamanlar kümülatif olmalı (`hakedis_all_time - odenen_all_time`) — bir işçiye borç, sadece gerçek bir ödeme kaydı girilince düşer, takvim haftası değiştiği için DEĞİL.
+- **"Bu Hafta Çalışma" ayrı bir şey:** Sadece görüntüleme amaçlı "bu hafta kaç gün/saat çalıştı" istatistiği haftalık (`BETWEEN hb,hs`) kalabilir — ama bu ASLA borç/bakiye hesabına karışmamalı.
+- **Çözüm (Rev-97):** `api_haftalik()` içinde iki ayrı sorgu: (1) `hafta_yev_map` — sadece "Bu Hafta Çalışma" satırı için haftalık filtreli, (2) asıl `hakedis`/`kalan` hesabı — puantaj/odeme/yemek_odeme/civi_gider/civi_odeme sorgularının TÜMÜNDEN `BETWEEN` filtresi kaldırıldı, tüm zamanlar toplanıyor.
+- **Genel ders:** "Haftalık özet" adlı bir ekranda gösterilen HER sayı otomatik olarak "hafta ile sınırlı" olmak zorunda değil — parasal bakiye/alacak kalemleri her zaman kümülatif kalmalı, sadece istatistik/aktivite satırları haftalık olabilir. Bu ayrımı yapmadan "tüm alanları aynı BETWEEN filtresine sok" pratiği bir önceki Rev'de tam bu hataya sebep oldu.
 
 ## Puantaj Mesai Ücreti Kuralı — DÜZ ORAN, ÇARPANSIZ (Rev-91, 2026-07-02)
 - **Kullanıcı kararı:** `pythonanywhere/app.py` puantaj modülünde mesai ücreti **1.5x yasal fazla mesai çarpanı KULLANILMIYOR** — kullanıcı özellikle "düz saatlik oran" seçti (santiye yevmiyeci pratiği, resmi bordro değil).

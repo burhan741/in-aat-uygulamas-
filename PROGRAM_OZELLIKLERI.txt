@@ -2,7 +2,35 @@
                     INSAAT METRAJ PRO - TUM OZELLIKLER
 ================================================================================
 
-Son Guncelleme: 02 Temmuz 2026 (Rev-96)
+Son Guncelleme: 06 Temmuz 2026 (Rev-97)
+
+================================================================================
+Rev-97 (2026-07-06) — Puantaj: "Kalan Bakiye" Artik Hicbir Zaman Haftalik
+Sifirlanmiyor (Bugfix — Rev-95'in asiri gittigi nokta duzeltildi)
+================================================================================
+* SIKAYET (kullanici): "Ben zaten odedikce odemeler duesuyor, pazartesi
+  odemeleri sifirdan baslatinca pazar gunku yevmiyeler siliniyor."
+* KOK NEDEN: Rev-95, api_haftalik() icindeki TUM sorgulari (yevmiye/puantaj,
+  odeme, yemek_odeme, civi_gider, civi_odeme) haftanin Pazartesi-Pazar
+  araligiyla (BETWEEN hb,hs) sinirlamisti. Bu, "Bu Hafta Calisma" istatistigi
+  icin doğruydu ama "Kalan/Bakiye" (borc) hesaplari icin YANLISTI — her
+  Pazartesi butun borc hesabi sifirdan basliyor, gecen hafta odenmemis
+  yevmiye/yemek/civi tutari sessizce kayboluyordu.
+* COZUM: app/../pythonanywhere/app.py -> api_haftalik() iki ayri sorgu grubuna
+  bolundu:
+  1) hafta_yev_map: SADECE "Bu Hafta Calisma" goruntu satiri icin haftalik
+     filtreli (degismedi)
+  2) Asil hakedis/kalan hesabi: puantaj/odeme/yemek_odeme/civi_gider/
+     civi_odeme sorgularindaki TUM BETWEEN filtreleri kaldirildi — artik tum
+     zamanlar kumulatif toplaniyor, sadece gercek odeme girisi bakiyeyi
+     dusuruyor.
+* ETKİLENEN ALANLAR: kalan_yevmiye, toplam_kalan, yemek_kalan, civi_kalan,
+  son_odeme/son_yemek_odeme/son_civi_odeme id+miktar (artik tum zamanlarin
+  en son kaydini gosterir, haftayla sinirli degil)
+* GENEL DERS: "Haftalik ozet" ekraninda gosterilen her sayi otomatik olarak
+  haftaya sinirli olmak zorunda degil — parasal bakiye/alacak kalemleri her
+  zaman kumulatif kalmali, sadece aktivite/istatistik satirlari haftalik
+  olabilir. Detay: CLAUDE.md Rev-97 kaydi.
 
 ================================================================================
 Rev-96 (2026-07-02) — Akilli Metraj: Demir Kalemlerine Eleman Tipi Etiketi
