@@ -2,7 +2,44 @@
                     INSAAT METRAJ PRO - TUM OZELLIKLER
 ================================================================================
 
-Son Guncelleme: 06 Temmuz 2026 (Rev-103)
+Son Guncelleme: 06 Temmuz 2026 (Rev-104)
+
+================================================================================
+Rev-104 (2026-07-06) — Puantaj: Hafta Siniri Pazar-Cumartesi Yapildi,
+"Bu Hafta Odedigim" Kaldirildi, "Hesap Dokumu" (Tam Ledger) Endpoint'i Eklendi
+================================================================================
+* SIKAYET 1: Kullanici "insaatta hafta Cumartesi biter, Pazar 1. gun,
+  Pazartesi 2. gun olmali" dedi - Rev-103'teki rolling son-7-gun 6 gun
+  gosteriyordu, yanlisti.
+* COZUM 1: hafta_bas artik EN SON GECMIS PAZAR gunune sabitleniyor:
+  `bugun - timedelta(days=(bugun.weekday()+1) % 7)`. Pazar=1.gun,
+  Cumartesi=7.gun, her Pazar sifirdan basliyor (rolling degil, ama
+  Pazartesi-Pazar takvim haftasi da degil - Rev-99'daki "rolling kullan"
+  tavsiyesi santiyenin hafta baslangicini Pazar degil Pazartesi
+  varsayiyordu, o yuzden yanlisti).
+* KANIT: scratchpad/test_bu_hafta.py - haftanin 7 gunu icin de (Pazartesi..
+  Pazar) hafta_bas'in dogru Pazar gununu verdigi ve gun sirasinin
+  (Pazar=1..Cumartesi=7) dogru ciktigi ayri ayri PASS.
+* SIKAYET 2: Kullanici "bu hafta ne kadar odedigimi gormek istemedim"
+  dedi - Rev-103'te AskUserQuestion ile netlestirilen "bu hafta yapilan
+  odemeler" alani reddedildi.
+* COZUM 2: 'bu_hafta_odeme' alani ve isci_bu_hafta_hesapla()'daki ilgili
+  SQL sorgusu tamamen kaldirildi. Kart artik sadece "Bu Hafta Gelen Gun" +
+  mevcut "Kalan Yevmiye"/"Odenecek Para" gosteriyor.
+* SIKAYET 3: Kullanici Hanifi icin "Kalan Yevmiye 0.9 olamaz" dedi.
+  WebFetch ile /api/odeme (son 50 kayit) ve /api/ozet/aylik ile Hanifi'nin
+  Haziran+Temmuz verisini cektim ama /api/odeme'nin LIMIT 50 olmasi
+  (30 isci x aylik odemeler > 50 kayit) yuzunden TUM odeme gecmisini
+  goremedim - kor teori ile savunmak yerine kalici bir cozum yaptim.
+* COZUM 3: Yeni endpoint GET /api/isci/<id>/detay eklendi - bir iscinin
+  TUM puantaj + TUM odeme kayitlarini + isci_bakiye_hesapla ile AYNI
+  ozet sayilari (toplam_gun, hakedis, odenen, kalan, kalan_gun) doner.
+  Ozet kartina "Hesap Dokumunu Goster" butonu eklendi - tiklaninca
+  aylik calisma dokumunu + tum odeme tarihlerini + ozet toplamlari
+  bir pencerede gosterir. Boylece "neden bu rakam cikti" sorusu
+  kullanici tarafindan tek tikla, bize sormadan dogrulanabilir.
+* DEPLOY: Sadece yerel dosyada. /home/burhan852/app.py'ye yuklenip
+  Web > Reload YAPILMADAN degisiklikler canlida gorunmez.
 
 ================================================================================
 Rev-103 (2026-07-06) — Puantaj: "Bu Hafta Gelen Gun" + "Bu Hafta Odedigim"
