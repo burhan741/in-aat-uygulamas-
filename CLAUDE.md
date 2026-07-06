@@ -158,7 +158,7 @@ Flask uygulamalarında HTML şablonu Python `'''...'''` triple-quoted string ola
 
 ## Program Özellikleri Kaydı
 - Tüm modül/özellik/bugfix geçmişi: `E:\İNŞAAT METRAJ PRO\PROGRAM_OZELLIKLERI.txt`
-- Son sürüm: **Rev-101 (2026-07-06)**
+- Son sürüm: **Rev-102 (2026-07-06)**
 - Her yeni özellik veya güncelleme sonrası bu dosyaya yeni bir Rev bölümü ekle.
 
 ## KRİTİK — prompt()/confirm() Sonrası Scroll Sıfırlanma Tuzağı (Rev-93, 2026-07-02)
@@ -173,6 +173,13 @@ Flask uygulamalarında HTML şablonu Python `'''...'''` triple-quoted string ola
 - **KURAL:** Endpoint/fonksiyon ismi ("haftalik") ile gerçek filtre mantığı (manuel "dönem" reset) ASLA uyuşmazlık içermemeli — isim neyi vaat ediyorsa kod onu yapmalı.
 - **Çözüm (Rev-95):** `api_haftalik()` artık `donem_baslangici` ayarı yerine mevcut haftanın Pazartesi-Pazar aralığını (`BETWEEN`) kullanıyor, otomatik haftalık sıfırlanıyor. "Yeni Dönem Başlat" özelliği (buton+JS+route) tamamen kaldırıldı.
 - **Genel ders:** Kullanıcı "X ay/haftalık veri karıştı" derse, önce YENİ eklenen kodun mu yoksa VAR OLAN ama yeni görünür hale gelen bir kapsam/filtre sorununun mu suçlu olduğunu ayır — ikisi çok farklı düzeltme gerektirir.
+
+## KRİTİK — "Yevmiye" = Ödenmemiş Gün Sayısı, Rolling/Takvim Haftası DEĞİL (Rev-102, 2026-07-06)
+- **Olay:** Rev-101'deki "Bu Hafta Yevmiye" (rolling son-7-gün attendance sayısı) yine yanlıştı. Kullanıcı: "ustalara ödemeyi Cumartesi yapmışım (bakiye sıfırlandı), bugün Pazartesi, bu adamlar için max 2 yevmiye görünmesi gerekirken alakasız sayılar yazıyor."
+- **Kök neden:** Rolling 7-gün penceresi ÖDEME DURUMUNU hesaba katmıyordu — Cumartesi'de ödenmiş günler bile pencereye girip sayılıyordu. Oysa istenen: "kaç GÜNLÜK ÖDENMEMİŞ yevmiyesi var" — bu doğrudan `kalan / gunluk_ucret` demek, yani zaten var olan `kalan_gun` (eski adıyla "Kalan Yevmiye") metriğinin ta kendisi.
+- **Çözüm (Rev-102):** `isci_bu_hafta_yevmiye()` fonksiyonu tamamen kaldırıldı. Kart artık **"Yevmiye"** (`bakiye['kalan_gun']` — kalan bakiyenin gün cinsi karşılığı) + **"Ödenecek Para"** (`kalan` — TL) gösteriyor. İkisi de AYNI bakiyenin iki birimi; sadece gerçek ödeme kaydı bunları düşürür, gün geçmesi/hafta değişmesi DEĞİL.
+- **Test:** `scratchpad/test_flask_uctan_uca.py` senaryo 3 — 5 gün çalışıp tam ödendi (kalan=0), sonra 2 gün daha çalışıldı (ödenmedi) → `yevmiye=2.0` doğrulandı (PASS).
+- **KURAL (kesin, bir daha sapma):** Bu uygulamada "yevmiye/gün" ve "ödenecek para/TL" alanları HER ZAMAN `kalan_gun`/`kalan` çiftinden türetilir. Ayrı bir "bu hafta kaç gün geldi" (attendance/rolling pencere) metriği kartta GÖSTERİLMEZ — Rev-99/100/101'de bu ikisi defalarca karıştırıldı, kullanıcı üç kez düzeltmek zorunda kaldı. Eğer gelecekte "kaç gün geldi" (saf attendance, ödeme durumundan bağımsız) gerçekten isteniyorsa, bu AÇIKÇA "gelen gün sayısı" gibi farklı bir isimle, "Yevmiye" ile KARIŞTIRILMADAN ayrı bir alan olarak eklenmeli.
 
 ## Özet Kartı Düzeltmesi — "Bu Hafta Yevmiye" + "Ödenecek Para" (Rev-101, 2026-07-06)
 - **Olay:** Rev-100'de "Toplam Yevmiye"/"Toplam Ödeme" TÜM ZAMANLAR kümülatif yapıldı, ama kullanıcı aslında "Toplam Yevmiye" derken HAFTALIK gün sayısı görmek istediğini belirtti — yanlış anlaşılma oldu, kullanıcı sert tepki verdi ("becerememişsin").

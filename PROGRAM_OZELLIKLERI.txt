@@ -2,7 +2,32 @@
                     INSAAT METRAJ PRO - TUM OZELLIKLER
 ================================================================================
 
-Son Guncelleme: 06 Temmuz 2026 (Rev-101)
+Son Guncelleme: 06 Temmuz 2026 (Rev-102)
+
+================================================================================
+Rev-102 (2026-07-06) — Puantaj: "Yevmiye" = Odenmemis Gun Sayisi (kalan_gun),
+Rolling/Takvim Haftasi DEGIL (Rev-101'in de yanlis oldugu ortaya cikti)
+================================================================================
+* SIKAYET: "Ustalara odemeyi Cumartesi yapmisim (bakiye sifirlandi), bugun
+  Pazartesi, bu adamlar icin max 2 yevmiye gorunmesi gerekirken alakasiz
+  sayilar yaziyor."
+* KOK NEDEN: Rev-101'deki rolling son-7-gun penceresi ODEME DURUMUNU hesaba
+  katmiyordu - Cumartesi'de zaten odenmis gunler bile pencereye girip
+  sayiliyordu. Istenen aslinda "kac GUNLUK ODENMEMIS yevmiyesi var" - bu
+  dogrudan kalan/gunluk_ucret demek, yani zaten var olan kalan_gun (eski
+  "Kalan Yevmiye") metrigi.
+* COZUM: isci_bu_hafta_yevmiye() fonksiyonu tamamen kaldirildi. Kart artik
+  "Yevmiye" (kalan_gun) + "Odenecek Para" (kalan, TL) gosteriyor - ikisi
+  AYNI bakiyenin iki birimi, sadece odeme kaydi bunlari duserur.
+* KANIT: scratchpad/test_flask_uctan_uca.py senaryo 3 - 5 gun calisip tam
+  odendi (kalan=0), sonra 2 gun daha calisildi (odenmedi) -> yevmiye=2.0
+  dogrulandi (PASS).
+* KESIN KURAL: Bu uygulamada "yevmiye/gun" ve "odenecek para/TL" HER ZAMAN
+  kalan_gun/kalan ciftinden turetilir. Ayri bir "bu hafta kac gun geldi"
+  (attendance/rolling pencere) metrigi KARTTA GOSTERILMEZ - Rev-99/100/101'de
+  bu ikisi defalarca karistirildi. "Kac gun geldi" (odeme durumundan
+  bagimsiz saf attendance) gercekten istenirse, ayri ve acikca farkli
+  isimli bir alan olarak eklenmeli, "Yevmiye" ile KARISTIRILMAMALI.
 
 ================================================================================
 Rev-101 (2026-07-06) — Puantaj: Ozet Karti Duzeltmesi - "Bu Hafta Yevmiye" +
