@@ -55,6 +55,18 @@ Sayi Formati + Vadesi Gecmis Hatirlatma + XSS/CSS Kucuk Duzeltmeler
 * DEPLOY: Bu Rev SADECE app_test.py'de (yerel test kopyasi). Canliya
   yansimasi icin app.py'ye kopyalanip /home/burhan852/app.py'ye yuklenip
   Web > Reload yapilmasi GEREKIYOR - henuz yapilmadi.
+* EK (ayni gun): HTML_TEMPLATE = ''' → HTML_TEMPLATE = r''' yapildi
+  (raw string) - satir 333'teki JS regex `/\./g` (parseTLInput icinde)
+  Python'da gecersiz kacis dizisi sayildigi icin SyntaxWarning veriyordu,
+  raw string bunu giderdi. RISK TESPIT EDILDI VE DUZELTILDI: isciDetay()
+  fonksiyonundaki 11 adet bilincli `\\n` (cift ters bolu, Rev-104/105'te
+  JS'e dogru `\n` baytini gondermek icin ozellikle eklenmisti) raw string'de
+  ham kalip `\\n` (3 karakter) gonderecekti - bu da JS tarafinda satir
+  sonu yerine literal ters-bolu+n gosterecekti (sessiz bicim bozulmasi,
+  syntax hatasi degil). Bu 11 yer `\n` (tek ters bolu) olarak duzeltildi -
+  raw string'de tek ters bolu oldugu gibi kalir, ayni dogru 2-baytlik
+  cikti (`\n`) korunur. py_compile 0 warning, node --check PASS,
+  onceki iki regresyon testi de PASS.
 
 ================================================================================
 Rev-106 (2026-07-06) — Puantaj: "Milat" Temizligi - 05.07.2026 Oncesi
