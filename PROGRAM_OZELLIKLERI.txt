@@ -2,7 +2,41 @@
                     INSAAT METRAJ PRO - TUM OZELLIKLER
 ================================================================================
 
-Son Guncelleme: 02 Agustos 2026 (Rev-107)
+Son Guncelleme: 02 Agustos 2026 (Rev-108)
+
+================================================================================
+Rev-108 (2026-08-02) — Puantaj: Yedekleme Sistemi Eklendi (Veritabani Indirme,
+JSON Disa Aktarma, Otomatik Gunluk Yedek) (app_test.py - test kopyasi)
+================================================================================
+* ISTEK: puantaj.db tek dosyada tum veriyi tutuyordu ve hicbir yedegi yoktu.
+* GET /api/yedek/indir — puantaj.db'yi puantaj_yedek_YYYY-MM-DD.db adiyla
+  dogrudan indirilebilir dosya olarak dondurur (send_file, as_attachment=True).
+* GET /api/yedek/json — 10 tablonun (isci, puantaj, ek_gider, odeme, ayarlar,
+  yemek_odeme, civi_gider, civi_odeme, odeme_hatirlatma, yemek_fiyat_gecmisi)
+  tamamini tek JSON nesnesi olarak, Content-Disposition: attachment ile
+  puantaj_yedek_YYYY-MM-DD.json adinda indirilebilir dondurur — .db formatini
+  acamayan biri icin tasinabilir yedek.
+* OTOMATIK GUNLUK YEDEK: init_db() artik _gunluk_otomatik_yedek() cagiriyor —
+  backups/ klasorune (yoksa olusturulur) puantaj_YYYY-MM-DD.db kopyalar.
+  Ayni gun icinde tekrar tetiklenmez (dosya adi kontrolu). En fazla son 14
+  yedek tutulur, fazlasi (tarih siralı en eskiden) silinir. puantaj.db
+  henuz yoksa (ilk hic calistirma) yedek ALINMAZ — bunun icin dosyanin
+  varligi sqlite3.connect() TABLOLARI OLUSTURMADAN ONCE kontrol edildi
+  (aksi halde connect() bos dosyayi otomatik yaratip "ilk calistirma"
+  tespitini bozardi).
+* ARAYUZ: "Ayarlar" panelinde "Odeme Hatirlatmalari" kartinin altina yeni
+  "Yedekleme" karti eklendi — "Veritabanini Indir" + "JSON Yedek Al"
+  butonlari window.open(url) ile calisiyor.
+* TEST KANITI: scratchpad/test_yedekleme.py — ilk calistirmada yedek
+  alinmadigi, ikinci calistirmada 1 yedek alindigi, ayni gun tekrar
+  calistirmada tekrar alinmadigi, 14 limitinin calistigi, iki endpoint'in
+  dogru Content-Disposition ile dogru veriyi dondurdugu dogrulandi (PASS).
+  Yan not: import sirasinda gercek lokal puantaj.db uzerinde de calisti ve
+  backups/puantaj_2026-08-02.db gercekten olustu — ozellik gercek veriyle
+  de calistigi kanitlandi (*.db zaten .gitignore'da, commit riski yok).
+* Mevcut endpoint'lere/hesaplama mantigina DOKUNULMADI (talep geregi).
+* DEPLOY: Bu Rev SADECE app_test.py'de. Canliya yansimasi icin app.py'ye
+  kopyalanip yuklenip Reload yapilmasi GEREKIYOR - henuz yapilmadi.
 
 ================================================================================
 Rev-107 (2026-08-02) — Puantaj: Retroaktif Ucret Hatasi Duzeltildi + Turkce
