@@ -160,6 +160,22 @@ Flask uygulamalarında HTML şablonu Python `'''...'''` triple-quoted string ola
 
 **ÖNEMLİ — DOSYAYA GÖRE FARKLI KURAL (2026-08-02):** `app_test.py`'de `HTML_TEMPLATE` artık `r'''...'''` (raw string) — bu yukarıdaki kuralı TERSİNE ÇEVİRİR: raw string'de Python HİÇBİR ters bölüyü işlemez, `\'`, `\"`, `\n` oldukları gibi (tek ters bölü olarak) browser'a gider. Yani `app_test.py`'de artık JS'te normal tek ters bölü (`\n`, `\'`) yazılmalı — ÇİFT YAZMA (`\\n`), aksi halde browser'a fazladan ters bölü gider (syntax hatası vermez ama görsel/mantıksal bozukluk olur, bkz. Rev-107). `app.py` (canlı, henüz bu değişikliği almadı) HALA normal (raw olmayan) string — orada eski kural (çift `\\n`/`\\'` gerekir) geçerliliğini koruyor. `app_test.py`'deki değişiklikler `app.py`'ye taşınırken bu `r'''` farkını da birlikte taşımayı UNUTMA — aksi halde `app.py`'ye kopyalanan tek-ters-bölülü JS, normal string altında yanlış işlenir (Rev-104/105'teki hatanın aynısı).
 
+## KRİTİK — Opsiyonel/Nadir Kullanılan Kütüphaneler Dosya TEPESİNDE Import EDİLMEZ (Rev-109/110, 2026-08-02)
+- **Olay:** `pythonanywhere/app.py`'ye Excel çıktısı eklenirken `from openpyxl import Workbook` dosyanın EN ÜSTÜNE (diğer modül-seviyesi importlarla birlikte) kondu. `openpyxl` canlı sunucuda kurulu olmadığı için WSGI süreci `app.py`'yi import ederken (ilk istekten ÖNCE, dosya yüklenirken) `ModuleNotFoundError` fırlattı — bu, tek bir route'u değil TÜM SİTEYİ çökertti ("Unhandled Exception", her endpoint 500/yüklenmez oldu).
+- **KESİN KURAL:** Flask tek-dosya uygulamalarında (`app.py` gibi) çekirdek olmayan (Flask/sqlite3/os dışındaki) her kütüphane importu — openpyxl, reportlab, PIL, pandas, requests vb. — **route fonksiyonunun İÇİNE, `try/except ImportError` ile** yazılır, ASLA dosya tepesine değil. Modül bulunamazsa o ENDPOINT `503` döner ("X kütüphanesi kurulu değil"), sitenin geri kalanı ETKİLENMEZ.
+  ```python
+  @app.route('/api/pdf/aylik')
+  def api_pdf_aylik():
+      try:
+          from reportlab.lib.pagesizes import A4
+          # ... diğer reportlab importlari
+      except ImportError:
+          return jsonify({'error': 'PDF icin reportlab kurulu degil'}), 503
+      # ... route govdesi
+  ```
+- **Test kanıtı gerekliliği:** Böyle bir özellik eklenirken/değiştirilirken, kütüphanenin YOK olduğu bir ortamda (`.venv` içinde o paket kurulu olmayan bir Python) `import app_test as app_module` çalıştırılıp (1) hiç hata vermeden import edildiği, (2) ilgisiz route'ların (`/api/isci` vb.) normal çalıştığı, (3) o özelliğin route'unun 503 + anlamlı hata mesajı döndürdüğü doğrulanmadan "hazır" denmez — bkz. `scratchpad/test_pdf_reportlab_eksik.py` (Rev-110).
+- **Deploy öncesi genel kontrol listesi:** `app.py`'ye HERHANGİ bir yeni üçüncü parti import eklenmeden önce sor: "Bu paket canlı sunucuda kesin kurulu mu?" Emin değilsen dosya tepesine koyma, route içine try/except ile koy.
+
 ## KRİTİK — Retroaktif Oran Hatası: "O Anki Değer" Her Zaman İşlem Satırına Kilitlenmeli (Rev-107, 2026-08-02)
 - **Genel kural (sadece puantaj değil, tüm modüller için geçerli):** Bir işlem/kayıt (puantaj günü, hakediş kalemi, sipariş satırı vb.) parent bir varlığın (işçi, malzeme, poz) O ANKİ değişken oranını (ücret/birim fiyat) referans alıyorsa, bu değer işlem KAYDEDİLDİĞİ ANDA o satıra kopyalanıp kilitlenmeli — hesaplama zamanında parent'tan CANLI okunmamalı. Aksi halde parent'ın değeri değiştiğinde (zam, fiyat güncellemesi) TÜM GEÇMİŞ kayıtlar sessizce yeniden hesaplanır.
 - **Somut örnek:** `pythonanywhere/app.py` puantaj tablosunda `gunluk_ucret` sütunu vardı ama hiç yazılmıyordu — bakiye hesabı hep `isci.gunluk_ucret` (güncel) kullanıyordu. İşçiye zam yapılınca geçmiş tüm günler yeni ücretten hesaplanıyordu.

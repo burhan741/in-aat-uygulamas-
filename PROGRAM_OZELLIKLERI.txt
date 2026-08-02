@@ -2,7 +2,65 @@
                     INSAAT METRAJ PRO - TUM OZELLIKLER
 ================================================================================
 
-Son Guncelleme: 02 Agustos 2026 (Rev-109)
+Son Guncelleme: 02 Agustos 2026 (Rev-110)
+
+================================================================================
+Rev-110 (2026-08-02) — Puantaj: Excel TAMAMEN KALDIRILDI, Yerine PDF
+Ciktisi Eklendi (reportlab, guvenli import deseni ile) (app.py'ye TASINDI)
+================================================================================
+* SEBEP: Rev-109'daki openpyxl'in dosya tepesindeki import'u canli siteyi
+  komple cokertmisti (bkz. CLAUDE.md "Opsiyonel Kutuphaneler" kritik
+  kurali). Kullanici siteyi kendi yedeginden geri yukleyip site'i kurtardi,
+  sonra Excel'i tamamen kaldirip PDF ile degistirmemi istedi.
+* A) EXCEL KALDIRILDI: `from openpyxl import Workbook`/`openpyxl.styles`
+  importlari, `/api/excel/aylik`, `/api/excel/haftalik` route'lari,
+  `_excel_yanit`/`_excel_baslik_satiri` yardimci fonksiyonlari, arayuzdeki
+  "Excel Indir"/"Haftalik Excel Indir" butonlari ve `excelAylikIndir()` JS
+  fonksiyonu SILINDI. requirements.txt'ten openpyxl cikarildi.
+* B) PDF EKLENDI (reportlab):
+  - GET /api/pdf/aylik?ay=YYYY-MM ve GET /api/pdf/haftalik — mevcut
+    api_aylik()/api_haftalik() fonksiyonlari DOGRUDAN CAGRILIP veri
+    alinir, hesap mantigi degistirilmedi.
+  - **GUVENLI IMPORT DESENI (kritik, Rev-109 hatasini tekrarlamamak icin):**
+    reportlab importlari dosya TEPESINDE DEGIL, her PDF route'unun
+    ICINDE `try/except ImportError` ile yapiliyor. reportlab sunucuda
+    kurulu degilse SADECE o iki endpoint `503 {'error': 'PDF icin
+    reportlab kurulu degil'}` doner, sitenin geri kalani ETKİLENMEZ.
+  - Turkce font: `/usr/share/fonts/truetype/dejavu/DejaVuSans(-Bold).ttf`
+    varsa (PythonAnywhere/Linux'ta beklenen) DejaVu kaydedilip kullanilir;
+    yoksa (yerel Windows gelistirme gibi) Helvetica'ya fallback yapilir
+    (bu fallback'te Ş/Ğ/İ/ı duzgun gorunmez ama uygulama COKMEZ) —
+    `_pdf_font_hazirla()` fonksiyonu, sonuc cache'lenir.
+  - Bicim: SimpleDocTemplate + Table/TableStyle, baslik #e94560 dolgu +
+    beyaz kalin yazi, zebra satir deseni, para sutunlari saga yasli
+    (Turkce binlik nokta formati: `_pdf_tl()`).
+  - Diske yazma YOK: io.BytesIO uzerinde uretilip send_file ile donuyor.
+  - requirements.txt'e reportlab eklendi (PythonAnywhere'de genelde
+    onyuklu olabilir; degilse `pip install --user reportlab` gerekir ama
+    kurulmamasi SITEYI COKERTMEZ, sadece PDF route'lari 503 doner).
+* ARAYUZ: "Aylik" panelinde "Goster" yaninda "PDF Indir" (`pdfAylikIndir()`);
+  "Ozet" panelinin ustunde "Haftalik PDF Indir" butonu.
+* TEST KANITI (3 ayri senaryo):
+  1. `scratchpad/test_pdf_reportlab_eksik.py` — reportlab'in HIC KURULU
+     OLMADIGI bir ortamda `app_test.py` import edilip COKMEDIGI, ilgisiz
+     route'larin (`/api/isci`) normal calistigi, PDF route'larinin duzgun
+     503+mesaj dondugu dogrulandi (PASS) — KRITIK FIX kaniti.
+  2. `scratchpad/test_pdf_uretim.py` — reportlab kuruluyken uretilen PDF'ler
+     `pypdf` ile GERI OKUNUP baslik/isci adi/tutar/GENEL TOPLAM metni
+     dogrulandi (PASS).
+  3. `scratchpad/test_app_py_final2.py` — DOGRUDAN app.py (deploy edilecek
+     dosya) uzerinde retroaktif ucret + yedekleme + PDF + Excel route'larinin
+     404 dondugu (tamamen kalktigi) + openpyxl'in sys.modules'a hic
+     yuklenmedigi dogrulandi (PASS).
+  Onceki 3 regresyon testi (retroaktif ucret, NULL fallback, yedekleme) de
+  tekrar calistirildi, hepsi hala PASS.
+* Mevcut hesaplama mantigina DOKUNULMADI - sadece okundu.
+* DEPLOY: **Bu Rev app_test.py'den app.py'ye TASINDI (yerelde hazir)**.
+  Canliya yansimasi icin (1) app.py + requirements.txt PythonAnywhere'e
+  yuklenmeli, (2) reportlab yoksa `pip install --user reportlab`
+  (Python surumu Web sekmesindeki ile ESLESMELI, bkz. Rev-109 sonrasi
+  yasanan sorun), (3) Web > Reload. reportlab kurulmasa BILE site
+  ACILACAK (sadece PDF butonlari 503 verir) - bu artik GARANTI.
 
 ================================================================================
 Rev-109 (2026-08-02) — Puantaj: Excel Ciktisi Eklendi (Aylik Bordro +
