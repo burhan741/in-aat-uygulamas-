@@ -6,7 +6,8 @@ Son Guncelleme: 02 Agustos 2026 (Rev-110)
 
 ================================================================================
 Rev-110 (2026-08-02) — Puantaj: Excel TAMAMEN KALDIRILDI, Yerine PDF
-Ciktisi Eklendi (reportlab, guvenli import deseni ile) (app.py'ye TASINDI)
+Ciktisi Eklendi (reportlab, guvenli import deseni ile) — CANLIDA
+DOGRULANDI, PDF CALISIYOR (kullanici onayi)
 ================================================================================
 * SEBEP: Rev-109'daki openpyxl'in dosya tepesindeki import'u canli siteyi
   komple cokertmisti (bkz. CLAUDE.md "Opsiyonel Kutuphaneler" kritik
@@ -55,12 +56,11 @@ Ciktisi Eklendi (reportlab, guvenli import deseni ile) (app.py'ye TASINDI)
   Onceki 3 regresyon testi (retroaktif ucret, NULL fallback, yedekleme) de
   tekrar calistirildi, hepsi hala PASS.
 * Mevcut hesaplama mantigina DOKUNULMADI - sadece okundu.
-* DEPLOY: **Bu Rev app_test.py'den app.py'ye TASINDI (yerelde hazir)**.
-  Canliya yansimasi icin (1) app.py + requirements.txt PythonAnywhere'e
-  yuklenmeli, (2) reportlab yoksa `pip install --user reportlab`
-  (Python surumu Web sekmesindeki ile ESLESMELI, bkz. Rev-109 sonrasi
-  yasanan sorun), (3) Web > Reload. reportlab kurulmasa BILE site
-  ACILACAK (sadece PDF butonlari 503 verir) - bu artik GARANTI.
+* DEPLOY: **TAMAMLANDI VE DOGRULANDI (2026-08-02).** Kullanici app.py +
+  requirements.txt'i PythonAnywhere'e yukleyip reportlab kurulumu +
+  Reload yapti, PDF indirme CANLIDA CALISIYOR (kullanici onayi: "pdf
+  kismi calisiyor sorun yok"). Site cokmedi - Rev-109/110'daki guvenli
+  import deseni gercek senaryoda da dogrulanmis oldu.
 
 ================================================================================
 Rev-109 (2026-08-02) — Puantaj: Excel Ciktisi Eklendi (Aylik Bordro +
