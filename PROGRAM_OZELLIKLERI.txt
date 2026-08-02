@@ -2,7 +2,42 @@
                     INSAAT METRAJ PRO - TUM OZELLIKLER
 ================================================================================
 
-Son Guncelleme: 02 Agustos 2026 (Rev-108)
+Son Guncelleme: 02 Agustos 2026 (Rev-109)
+
+================================================================================
+Rev-109 (2026-08-02) — Puantaj: Excel Ciktisi Eklendi (Aylik Bordro +
+Haftalik Ozet) (app_test.py - test kopyasi)
+================================================================================
+* ISTEK: Haftalik/aylik ozetler Excel'e aktarilabilsin (openpyxl).
+* BAGIMLILIK: openpyxl requirements.txt'e eklendi (yeni dosya olusturuldu,
+  daha once yoktu - Flask de eklendi). CANLIYA DEPLOY ONCESI SUNUCUDA
+  `pip install --user openpyxl` CALISTIRILMASI GEREKIYOR - aksi halde
+  import hatasi ile app hic acilmaz.
+* GET /api/excel/aylik?ay=YYYY-MM — api_aylik() fonksiyonu DOGRUDAN
+  CAGRILIP (.get_json() ile) ayni veri kullanilir, hesaplama mantigi
+  TEKRAR YAZILMADI/DEGISTIRILMEDI. Baslikta ay + toplam hakedis; tablo
+  Ad Soyad/Ustalik/Gunluk Ucret/Yevmiye (gun)/Hakedis (TL); altta Yemek
+  Maliyeti + Civi Maliyeti. bordro_YYYY-MM.xlsx olarak iner.
+* GET /api/excel/haftalik — ayni sekilde api_haftalik() dogrudan cagirilir.
+  Tablo Ad Soyad/Bu Hafta Gelen Gun/Kalan Yevmiye (gun)/Odenecek (TL);
+  altta Yemek Kalan + Civi Kalan + GENEL TOPLAM (isci+yemek+civi kalani
+  toplami). haftalik_ozet_YYYY-MM-DD.xlsx olarak iner.
+* BICIM: Baslik satiri koyu lacivert dolgu + beyaz kalin yazi; para
+  sutunlari `#,##0 "TL"` formatinda saga yaslı.
+* DISKE YAZMA YOK: openpyxl workbook'u io.BytesIO() uzerinde olusturulup
+  send_file ile donduruluyor - PythonAnywhere'de dosya yazma izni sorunu
+  cikma riski yok.
+* ARAYUZ: "Aylik" panelinde "Goster" butonunun yanina "Excel Indir";
+  "Ozet" panelinin en ustune "Haftalik Excel Indir" butonu eklendi.
+* TEST KANITI: scratchpad/test_excel.py — .venv_test'e openpyxl kuruldu,
+  uretilen .xlsx dosyalari openpyxl.load_workbook ile GERI OKUNUP
+  basliklar/degerler/sayi formati/font dogrulandi (PASS). Onceki 3
+  regresyon testi de (retroaktif ucret, NULL fallback, yedekleme) tekrar
+  calistirildi, hepsi hala PASS.
+* Mevcut hesaplama mantigina DOKUNULMADI - sadece okundu (talep geregi).
+* DEPLOY: Bu Rev SADECE app_test.py'de. Canliya yansimasi icin (1)
+  PythonAnywhere Bash konsolunda `pip install --user openpyxl`, (2)
+  app.py'ye kopyalanip yuklenip Reload GEREKIYOR - henuz yapilmadi.
 
 ================================================================================
 Rev-108 (2026-08-02) — Puantaj: Yedekleme Sistemi Eklendi (Veritabani Indirme,
