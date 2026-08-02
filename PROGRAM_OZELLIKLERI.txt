@@ -2,7 +2,59 @@
                     INSAAT METRAJ PRO - TUM OZELLIKLER
 ================================================================================
 
-Son Guncelleme: 06 Temmuz 2026 (Rev-106)
+Son Guncelleme: 02 Agustos 2026 (Rev-107)
+
+================================================================================
+Rev-107 (2026-08-02) — Puantaj: Retroaktif Ucret Hatasi Duzeltildi + Turkce
+Sayi Formati + Vadesi Gecmis Hatirlatma + XSS/CSS Kucuk Duzeltmeler
+(app_test.py - test kopyasi, henuz app.py'ye/canliya yansitilmadi)
+================================================================================
+* KRITIK HATA (Kullanici raporu): puantaj.gunluk_ucret sutunu DB'de vardi
+  ama hicbir yerde yazilmiyor/okunmuyordu. Bakiye hesabi HER ZAMAN iscinin
+  GUNCEL ucretini kullaniyordu - bir isciye zam yapildiginda TUM GECMIS
+  gunleri de yeni ucretten yeniden hesaplaniyordu (retroaktif ucret hatasi).
+* COZUM:
+  - api_puantaj POST: INSERT'te o anki isci.gunluk_ucret puantaj satirina
+    yaziliyor (kilitleniyor). UPDATE'te ise KOSULSUZ EZILMIYOR -
+    COALESCE(gunluk_ucret,?) ile mevcut (NULL olmayan) deger korunuyor,
+    sadece migration-oncesi NULL kayitlar doldurulur. Boylece ayni gune
+    sonradan mesai/not eklemek o gunun ucretini degistirmiyor.
+  - isci_bakiye_hesapla, api_ozet/aylik: SQL'de artik her satir KENDI
+    COALESCE(puantaj.gunluk_ucret, isci.gunluk_ucret) degeriyle
+    carpiliyor (toplu SUM(gun)*guncel_ucret yerine per-row hesap).
+  - isci_detay zaten isci_bakiye_hesapla'yi cagirdigi icin otomatik duzeldi.
+* MIGRATION KARARI (kullanici onayli): Mevcut NULL gunluk_ucret'li eski
+  puantaj kayitlari init_db() icinde tek seferlik, idempotent bir UPDATE
+  ile o anki isci.gunluk_ucret'le backfill ediliyor (uygulama her
+  baslatildiginda calisir ama NULL kalmadiktan sonra hicbir etkisi olmaz).
+  UYARI: Gecmiste birden fazla ucret degisikligi oldugu iscilerde eski
+  gunler yanlislikla EN SON ucretten kalici olarak yaziliyor olabilir -
+  bu, kullanicinin bilerek kabul ettigi bir risk (alternatif: NULL+COALESCE
+  fallback idi, "guncel ucretle backfill et" secildi).
+  DEPLOY NOTU: Canliya app.py yuklendiginde bu UPDATE otomatik calisacak -
+  ayrica bir tetikleme GEREKMEZ.
+* /api/rapor/haftalik KALDIRILDI: frontend'de hicbir fetch cagrisi
+  bulunamadi (dead code, muhtemelen eski bir ekranin kalintisi).
+* Turkce sayi formati: parseTLInput(s) eklendi (nokta=binlik ayiraci,
+  virgul=ondalik) - odemeYap/yemekOde/civiOde/civiGiderEkle artik
+  "1.500" ve "1500,50" gibi girisleri dogru okuyor.
+* checkReminders(): fark<0 olan (vadesi gecmis) hatirlatmalar artik
+  banner'da "X gun gecikti" seklinde kirmizi vurgulu gosteriliyor
+  (once sadece gelecek tarihliler gosteriliyordu).
+* .stat.er CSS sinifi eklendi (kullaniliyordu ama tanimi yoktu).
+* XSS: escHtml(s) yardimci fonksiyonu eklendi, isci adi/ustalik/yapilan_is/
+  hatirlatma adi-aciklama gibi kullanici girdisi iceren TUM innerHTML
+  enjeksiyon noktalarina uygulandi (renderPuantaj, renderOzet,
+  renderIsciList, loadHatirlatmalar, checkReminders).
+* TEST KANITI: scratchpad/test_retroaktif_ucret.py (ucret degisikligi
+  sonrasi eski/yeni gun ayrimi, UPDATE'in eski gunu ezmedigi, aylik ozetin
+  per-row hesapladigi) + scratchpad/test_null_fallback.py (migration-oncesi
+  NULL kayit fallback + haftalik ozet crash etmiyor) - IZOLE test venv'i
+  (yeni_proje/pythonanywhere/.venv_test) ile calistirildi, HEPSI PASS.
+  py_compile + node --check (gomulu JS) ile syntax da dogrulandi.
+* DEPLOY: Bu Rev SADECE app_test.py'de (yerel test kopyasi). Canliya
+  yansimasi icin app.py'ye kopyalanip /home/burhan852/app.py'ye yuklenip
+  Web > Reload yapilmasi GEREKIYOR - henuz yapilmadi.
 
 ================================================================================
 Rev-106 (2026-07-06) — Puantaj: "Milat" Temizligi - 05.07.2026 Oncesi

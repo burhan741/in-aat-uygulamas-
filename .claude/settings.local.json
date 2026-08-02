@@ -30,7 +30,9 @@
       "WebFetch(domain:www.edermi.com)",
       "WebFetch(domain:chromewebstore.google.com)",
       "WebFetch(domain:ekspergpt.com)",
-      "WebFetch(domain:burhan852.pythonanywhere.com)"
+      "WebFetch(domain:burhan852.pythonanywhere.com)",
+      "PowerShell(python -m pip show flask 2>$null)",
+      "PowerShell(& \"E:\\\\�N�AAT METRAJ PRO\\\\.venv\\\\Scripts\\\\python.exe\" -m pip show flask 2>$null)"
     ]
   },
   "hooks": {

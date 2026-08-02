@@ -158,6 +158,23 @@ Flask uygulamalarında HTML şablonu Python `'''...'''` triple-quoted string ola
 
 **ZORUNLU DOĞRULAMA (Rev-104'ten itibaren):** `pythonanywhere/app.py`'deki `HTML_TEMPLATE` içine JS eklerken/değiştirirken, `! python -m py_compile` yeterli DEĞİL (sadece Python syntax'ını kontrol eder, gömülü JS'i değil). Deploy öncesi mutlaka JS syntax'ını da doğrula: AST ile `HTML_TEMPLATE` string değerini çıkar, `<script>...</script>` içeriğini bir `.js` dosyasına yaz, `node --check dosya.js` çalıştır. Node bu makinede kurulu (`node --version` çalışıyor).
 
+## KRİTİK — Retroaktif Oran Hatası: "O Anki Değer" Her Zaman İşlem Satırına Kilitlenmeli (Rev-107, 2026-08-02)
+- **Genel kural (sadece puantaj değil, tüm modüller için geçerli):** Bir işlem/kayıt (puantaj günü, hakediş kalemi, sipariş satırı vb.) parent bir varlığın (işçi, malzeme, poz) O ANKİ değişken oranını (ücret/birim fiyat) referans alıyorsa, bu değer işlem KAYDEDİLDİĞİ ANDA o satıra kopyalanıp kilitlenmeli — hesaplama zamanında parent'tan CANLI okunmamalı. Aksi halde parent'ın değeri değiştiğinde (zam, fiyat güncellemesi) TÜM GEÇMİŞ kayıtlar sessizce yeniden hesaplanır.
+- **Somut örnek:** `pythonanywhere/app.py` puantaj tablosunda `gunluk_ucret` sütunu vardı ama hiç yazılmıyordu — bakiye hesabı hep `isci.gunluk_ucret` (güncel) kullanıyordu. İşçiye zam yapılınca geçmiş tüm günler yeni ücretten hesaplanıyordu.
+- **Çözüm deseni:** (1) INSERT'te o anki oranı satıra yaz. (2) UPDATE'te KOŞULSUZ ezme — `COALESCE(mevcut_deger, o_anki_deger)` ile sadece NULL/boş olanı doldur, kilitli değeri koru. (3) Hesaplama SQL'inde `SUM(miktar * COALESCE(satir.oran, parent.oran))` gibi PER-ROW çarpım kullan, `toplam_miktar * parent.oran` gibi toplu/agregat çarpım KULLANMA.
+- **Eski (migration-öncesi) NULL kayıtlar:** `COALESCE(satir.oran, parent.oran)` fallback yeterli — veri kaybı riski sıfır. Kullanıcı "güncel değerle backfill et" isterse (bu proje Rev-107'de böyle seçildi), backfill UPDATE'i `init_db()` içine idempotent (`WHERE oran IS NULL`) olarak koy — ayrı bir tetikleme endpoint'i gerekmez, uygulama her başladığında otomatik çalışır ve NULL kalmayınca etkisiz kalır.
+- **Kontrol listesi:** Yeni bir modülde "geçmişe dönük değişmemesi gereken bir tutar" görürsen (ücret, birim fiyat, kur, vergi oranı vb.) bu deseni uygula — canlı JOIN ile parent'tan okumak yerine işlem anında satıra kopyala.
+
+## Puantaj Flask Uygulaması İçin İzole Test Venv'i (Rev-107, 2026-08-02)
+- **Konum:** `yeni_proje/pythonanywhere/.venv_test` — sadece Flask + bağımlılıkları içerir, ana `.venv` (masaüstü PyQt uygulaması) ile KARIŞTIRILMAZ.
+- **Kullanım:** `& "E:\İNŞAAT METRAJ PRO\yeni_proje\pythonanywhere\.venv_test\Scripts\python.exe" scratchpad\test_xxx.py`
+- **Neden:** Ana `.venv`'e flask kurmak reddedildi (paylaşılan ortamı kirletme riski) — Flask mikroservisi için ayrı, tek amaçlı bir test ortamı kuruldu.
+- **Test deseni:** `app_test.py` (veya `app.py`) import edilip `app_module.DB_PATH` bir `tempfile.mktemp()` geçici dosyaya yönlendirilir, `init_db()` tekrar çağrılır, `app.test_client()` ile gerçek Flask route'ları POST/GET edilir — gerçek `puantaj.db` hiç kirlenmez.
+
+## `app_test.py` — `app.py`'nin Yerel Test Kopyası (2026-08-02)
+- `yeni_proje/pythonanywhere/app_test.py`, `app.py` ile birebir aynı başlayan, güncellemelerin önce denendiği bağımsız bir kopyadır.
+- Bir değişiklik `app_test.py`'de test edilip onaylandıktan SONRA `app.py`'ye taşınır ve ancak öyle canlıya (`/home/burhan852/app.py` + Reload) yansıtılır — `app_test.py`'deki değişiklikler kendiliğinden `app.py`'ye veya canlıya YANSIMAZ.
+
 ## Program Özellikleri Kaydı
 - Tüm modül/özellik/bugfix geçmişi: `E:\İNŞAAT METRAJ PRO\PROGRAM_OZELLIKLERI.txt`
 - Son sürüm: **Rev-102 (2026-07-06)**
