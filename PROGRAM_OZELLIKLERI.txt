@@ -2,7 +2,62 @@
                     INSAAT METRAJ PRO - TUM OZELLIKLER
 ================================================================================
 
-Son Guncelleme: 16 Agustos 2026 (Rev-111)
+Son Guncelleme: 16 Agustos 2026 (Rev-112)
+
+================================================================================
+Rev-112 (2026-08-16) — Kesim Optimizasyonu: Bagimsiz Cekirdek + Kullanilabilir
+Artik/Cop Fire Ayrimi + Desen Gruplama (Birlestirme Brief'i Tamamlandi)
+--------------------------------------------------------------------------------
+- Yeni dosya: app/core/kesim_optimizasyon.py — Saf Python cekirdek, PyQt/
+  AutoCAD bagimliligi YOK. FFD mantigi (ffd_yerlestir) demir_hesaplama_
+  window.py'deki eski _ffd_algoritma ile BIREBIR AYNI (200 rastgele test ile
+  parity dogrulandi). Uzerine eklenenler:
+  - Fire siniflandirma: esik_cm parametresine gore her cubugun artigi
+    kullanilabilir_artik (>= esik) / cop_fire (< esik) diye ayriliyor.
+    Esik EKRANDAN ayarlanabilir (proje bazinda).
+  - Desen gruplama: ayni kesim kombinasyonuna sahip cubuklar (DesenGrubu)
+    tek satirda birlestiriliyor (adet ile).
+  - Standart-disi parca edge-case duzeltmesi: bir parca standart boydan
+    uzunsa (kesim yapilamaz) artik negatif cikmiyordu eskiden (potansiyel
+    bug), simdi artik_cm=0.0 + standart_disi=True olarak isaretleniyor.
+- app/ui/demir_hesaplama_window.py guncellemeleri (calisanin USTUNE eklendi,
+  eski _ffd_algoritma metodu SILINMEDI — parity referansi olarak kaldi):
+  - Yeni QSpinBox: self.kesim_artik_esigi ("Kullanilabilir Artik Esigi",
+    varsayilan 30cm, 0-200cm araligi)
+  - _kesim_hesapla artik dogrudan _ffd_algoritma yerine kesim_optimizasyon.
+    coklu_cap_kesim_plani_hesapla() cagiriyor
+  - Kesim Plani tablosu: cubuk-bazli degil DESEN-bazli (8 kolon: Desen No,
+    Cap, Kesilen Parcalar, Cubuk Adedi, Kullanilan, Artik, Artik%, Durum
+    [SAKLA/cop]), renk kodlama kullanilabilir artik icin mavi
+  - Siparis Formu tablosu: "Kullanilabilir Artik (m)" ve "Cop Fire (m)"
+    kolonlari eklendi (9 kolon)
+  - Ozet bari: "Toplam Fire" -> "Kullanilabilir Artik" + "Cop Fire" olarak
+    ikiye ayrildi
+  - CSV export (_kesim_csv_aktar) yeni kolonlarla guncellendi, mevcut format
+    KORUNDU (sadece kolon eklendi)
+- app/core/kesim_besleme.py'ye 2 yeni fonksiyon: kesim_parcalarini_capa_
+  gore_grupla() (List[KesimParcasi] -> {cap:[boy_cm,...]}) ve
+  autocad_secimden_kesim_plani_uret() (rapor dict -> dogrudan {cap:CapSonucu}
+  — AutoCAD secimden kesim planina UCTAN UCA tek fonksiyon cagrisi)
+- Yedek: demir_hesaplama_window.py.bak alindi (degisiklik oncesi hali)
+- TEST KANITI (hepsi PASS):
+  - 200 rastgele girdiyle eski _ffd_algoritma vs yeni ffd_yerlestir parity
+  - Esik degisince siniflandirmanin monotonik degistigi (15cm artik: esik=30
+    -> cop, esik=10 -> kullanilabilir)
+  - Headless PyQt (QT_QPA_PLATFORM=offscreen) ile gercek DemirHesaplamaWindow
+    olusturuldu, manuel giris -> _kesim_hesapla -> tablolar -> CSV export
+    uctan uca calistirildi (CSV'de yeni kolonlar dogrulandi)
+  - AutoCAD adaptor -> cekirdek tam zincir: sahte DemirBilgisi listesi ->
+    rapor dict -> autocad_secimden_kesim_plani_uret() -> CapSonucu dogrulandi
+  - NOT (test surecinde bulunan, KOD HATASI DEGIL): headless testte
+    QMessageBox.information() modal cagrisi tiklama bekleyip sonsuza kadar
+    bloklaniyordu — bu gercek/interaktif kullanimda NORMAL beklenen davranis,
+    sadece otomatik test icin QMessageBox metodlari mock'landi.
+- Mimari: kesim_optimizasyon.py (saf cekirdek) <- kesim_besleme.py (adaptor,
+  AutoCAD bagimli) <- demir_hesaplama_window.py (UI). Cekirdek hicbir seye
+  bagimli degil, kural korundu.
+- YAPILMAYANLAR (bilerek, brief'te sonraki asama olarak isaretli): caplar-
+  arasi ikame, demir uzatma onerisi, stok hafizasi, Excel/PDF cikti.
 
 ================================================================================
 Rev-111 (2026-08-16) — Kesim Optimizasyonu: AutoCAD Kopru Adaptoru
