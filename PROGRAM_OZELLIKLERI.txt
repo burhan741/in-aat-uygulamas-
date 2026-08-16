@@ -2,7 +2,36 @@
                     INSAAT METRAJ PRO - TUM OZELLIKLER
 ================================================================================
 
-Son Guncelleme: 02 Agustos 2026 (Rev-110)
+Son Guncelleme: 16 Agustos 2026 (Rev-111)
+
+================================================================================
+Rev-111 (2026-08-16) — Kesim Optimizasyonu: AutoCAD Kopru Adaptoru
+(kesim_besleme.py) Eklendi
+--------------------------------------------------------------------------------
+- Yeni dosya: app/core/kesim_besleme.py — get_rebar_report_from_selection()
+  ve calculate_vertical_rebar_unified() ciktilarini (DemirBilgisi listesi)
+  kesim_optimizasyon.py'nin (henuz ayri dosyaya cikarilmadi, Rev-96 yol
+  haritasindaki bir sonraki adim) bekleyecegi duz List[KesimParcasi]
+  (cap:int mm, boy_cm:float, adet:int, eleman_tipi, kaynak_handle) formatina
+  cevirir. Cap bazinda gruplama BILEREK adaptorde YAPILMADI — cekirdek
+  tarafinda yapilacak (kullanici karari).
+- Iki fonksiyon: demirlerden_kesim_parcalari_uret() (DemirBilgisi listesi
+  alir) ve rapordan_kesim_parcalari_uret() (rapor dict'ini otomatik
+  "basarili"/"demirler" anahtarina gore ayirt eder).
+- KRITIK TESPIT: DemirBilgisi.boy alani AutoCAD metnindeki L= degerini
+  HICBIR EKLEME/CIKARMA YAPMADAN okur (autocad_connector.py satir
+  1616-1645, 2641) — bindirme/filiz payi dahil mi degil mi SADECE
+  cizim disiplinine bagli, kod bunu AYIRT EDEMEZ. Bu yuzden
+  boy_bindirme_dahil parametresi ZORUNLU (varsayilan yok) — caller
+  bilerek gecmeli, adaptor sessizce varsaymiyor.
+- birim parametresi ("cm"/"m") ile boy_cm her zaman santimetreye
+  normalize edilir (m verilirse *100).
+- Test: gercek import + demirlerden_kesim_parcalari_uret/rapordan_kesim_
+  parcalari_uret uctan uca calistirildi (gecersiz demir dogru atlandi,
+  birim="m" donusumu dogrulandi) — PASS.
+- Siradaki adim: kesim_optimizasyon.py'yi kullanicinin kendisi
+  guncelleyecek (cap int/mm, eleman_tipi'ne gore esnek/sabit boy
+  kurali — Rev-96 karari).
 
 ================================================================================
 Rev-110 (2026-08-02) — Puantaj: Excel TAMAMEN KALDIRILDI, Yerine PDF
