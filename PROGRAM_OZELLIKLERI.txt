@@ -2,7 +2,60 @@
                     INSAAT METRAJ PRO - TUM OZELLIKLER
 ================================================================================
 
-Son Guncelleme: 17 Agustos 2026 (Rev-115)
+Son Guncelleme: 17 Agustos 2026 (Rev-116)
+
+================================================================================
+Rev-116 (2026-08-17) — Demir Metrajı Ekranında "DEMİR EXCEL'E AKTAR" /
+"KESİM LİSTESİNE AKTAR" Butonları Görünmüyordu (Bugfix, KRİTİK)
+--------------------------------------------------------------------------------
+- BUG (kullanici ekran goruntusuyle bildirdi, c:\Users\USER\Desktop\2.png):
+  Demir Metrajı sekmesinde AutoCAD'den 111 demir okunup kata eklendikten
+  sonra, "DEMİR EXCEL'E AKTAR" ve "KESİM LİSTESİNE AKTAR" (Rev-114)
+  butonları ekranda hiç görünmüyordu — AutoCAD kutusu kat listesinden
+  hemen sonra kesiliyordu.
+- KOK NEDEN: metraj_analiz_window.py'de sol panel (left_panel/left_layout,
+  TÜM sekme içeriğini barındırır) hiçbir DIŞ QScrollArea içinde değildi.
+  Demir Metrajı alt-sekmesi kendi İÇ QScrollArea'sına (_demir_scroll) ve
+  acad_tab_widget'in setMinimumHeight(600) sınırına sahip. Toplam içerik
+  (Genel Ayarlar + AutoCAD kutusu + DXF/Excel butonları) pencere
+  yüksekliğini aştığında, dış scroll OLMADIĞI için Qt bu "minimum"
+  yüksekliği sessizce SIKIŞTIRIYOR (600'den daha az render ediyor) —
+  iç scroll'un viewport'u küçülüyor, kat sil/demir excel/kesim listesi
+  butonları viewport'un altında GİZLİ KALIYOR, kullanıcı bunu fark
+  edecek belirgin bir kaydırma çubuğu bile göremiyordu.
+- KANIT (tahmin değil, olculdu): headless test'te acad_tab_widget.height()
+  = 600 (minimum'a sabit) olmasına ragmen, ic icerik widget'inin gercek
+  ihtiyaci 568px + tab bar ~30px = pencerenin geri kalanina sigmadigi
+  icin butonlar mapTo() ile y=786 konumunda cikti — gorunur AutoCAD
+  kutusunun bittigi noktanin (ekran goruntusunde ~725-880 araligi)
+  disinda kaldigi dogrulandi.
+- COZUM: `_setup_ui()`'de `left_panel`, dogrudan `main_layout`'a
+  eklenmek yerine yeni bir DIS `QScrollArea` (`left_scroll`,
+  setWidgetResizable(True), dikey kaydirma acik) icine alinip oyle
+  eklendi. Artik icerik pencereden uzun oldugunda TEK ve belirgin bir
+  DIS kaydirma cubugu cikiyor; ic ice sikismis/gizli kaydirma sorunu
+  ortadan kalkti — acad_tab_widget artik dogal boyutuna (~600px+)
+  sikismadan render oluyor, ic _demir_scroll'un viewport'u da tum
+  icerigi (kat sil + demir excel + kesim listesi butonlari dahil)
+  gostermeye yetiyor.
+- DOGRULAMA: py_compile AST_OK, gercek import OK. Kullanicinin ekran
+  goruntusundeki SENARYO (bagli AutoCAD, "ASFAFASF" kati, 111 demir,
+  1920x1000 pencere) headless'ta BIREBIR yeniden uretildi — duzeltme
+  ONCESI ekran goruntusunde butonlar gorunmuyordu (kullanicinin
+  bildirdigi bugu dogruladi), duzeltme SONRASI ayni senaryoda hem
+  "DEMİR EXCEL'E AKTAR" hem "KESİM LİSTESİNE AKTAR" butonlari acikca
+  gorunuyor + sag kenarda tek dis kaydirma cubugu var. Rev-114'teki
+  "Kesim Listesine Aktar" uctan uca testi de bu degisiklikten sonra
+  tekrar calistirildi, hala PASS.
+- DURUSTLUK NOTU: Bu ortamda gercek AutoCAD'e canli baglanip GUI
+  otomasyonu yapma imkanim yok (masaustu uygulama, tarayici degil) —
+  kullanicinin bildirdigi sorunu GERCEK ekran goruntusunden okuyup
+  ayni veri senaryosunu (111 demir, ayni kat adi, ayni pencere boyutu)
+  headless ortamda birebir yeniden urettim ve duzeltmeyi bu sekilde
+  kanitladim. Kullanicinin kendi makinesinde gercek AutoCAD ciziminde
+  son onayi vermesi gerekiyor.
+- Test dosyalari: scratchpad/test_demir_excel_gorunurluk.py (gecici,
+  proje disinda).
 
 ================================================================================
 Rev-115 (2026-08-17) — Kesik Metin Bugfix: Sabit Genislik -> Esnek Boyutlama
