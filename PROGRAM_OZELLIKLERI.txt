@@ -29,14 +29,17 @@ Rev-115 (2026-08-17) — Kesik Metin Bugfix: Sabit Genislik -> Esnek Boyutlama
   startup_dialog.py (buyuk "▶ UYGULAMAYI BAŞLAT" butonu: setFixedSize->
   setMinimumWidth+setFixedHeight, kardes buton ile yukseklik hizasi
   korundu).
-- GERI ALINAN (kutu kaymasi tespit edildi, kullanici talimati geregi
-  revert edildi): sablon_sihirbazi.py :303 ve :317 (tarih_label,
-  sehir_label) — setMinimumWidth'e cevrilince her etiket kendi metnine
-  gore BAGIMSIZ genisledi, ayni formdaki (kapsam disi, dokunulmayan)
-  "Proje Adi:" etiketiyle hizasi bozuldu (giris kutulari farkli x'te
-  basladi). Orijinal setFixedWidth(120)'ye GERI DONDURULDU. Duzgun
-  cozum icin (butun 3 etiketi ortak/daha genis bir degere cekmek)
-  kullanici onayi gerekiyor — henuz yapilmadi.
+- KUTU KAYMASI TESPIT + DUZELTILDI (2 asamali): Once tarih_label/
+  sehir_label setMinimumWidth'e cevrilince, kapsam disi birakilan
+  "Proje Adi:" etiketiyle (hala setFixedWidth(120)) hizasi bozuldu
+  (giris kutulari farkli x'te basladi) — revert edilip kullaniciya
+  raporlandi. Kullanici "DUZELT" deyince duzgun cozum uygulandi: once
+  QFontMetrics/sizeHint ile 3 etiketin gercek font ile ihtiyac duydugu
+  genislik OLCULDU (Proje Adi:=120, Baslangic Tarihi:=204, Sehir
+  (Opsiyonel):=216px), sonra HER UC etiket de ayni ortak degere
+  (setMinimumWidth(230), +12px pay) cekildi — artik hicbiri kesilmiyor
+  VE ucu de ayni x'te hizali. Ekran goruntusuyle dogrulandi (giris
+  kutulari tam ayni x=290'da basliyor).
 - DOGRULAMA: 13 dosyanin tumunde py_compile AST_OK + gercek import testi
   (headless, QT_QPA_PLATFORM=offscreen) IMPORT_OK. Ayrica 6 bilesen icin
   GERCEK EKRAN GORUNTUSU alinip (QWidget.grab()) gorsel olarak dogrulandi:
