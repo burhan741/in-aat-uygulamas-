@@ -2,7 +2,35 @@
                     INSAAT METRAJ PRO - TUM OZELLIKLER
 ================================================================================
 
-Son Guncelleme: 16 Agustos 2026 (Rev-112)
+Son Guncelleme: 17 Agustos 2026 (Rev-113)
+
+================================================================================
+Rev-113 (2026-08-17) — Demir/Duvar Excel Buton Karisikligi Duzeltildi (Bugfix)
+--------------------------------------------------------------------------------
+- BUG: metraj_analiz_window.py'de "Kaba Insaat" sekmesinde iki ayri Excel
+  butonu var: "DEMIR EXCEL'E AKTAR" (icteki AutoCAD kutusunun kendi ic
+  scroll'unun EN ALTINDA, Demir Metraji alt-sekmesinde) ve genel
+  "EXCEL'E AKTAR" (dis sayfa scroll'unda, AutoCAD kutusu bittigi yerin HEMEN
+  ALTINDA, DXF/HESAPLA butonlarinin yaninda). Kullanici sayfayi asagi
+  kaydirinca AutoCAD kutusunun dibinde gordugu ilk (ve gorunur tek) "Excel'e
+  Aktar" yazili butona basiyor — ama bu, ic scroll'da saklanan demir butonu
+  degil, genel/duvar butonu oluyordu. Bu buton _export_to_excel() cagiriyor,
+  o da ilk sayfa olarak "Duvar Metraji" yaziyor -> "demir excel'e basinca
+  duvar metraji cikiyor" seklinde algilaniyordu.
+- KANIT: error_log.txt'te ayni oturumda "... katina 116 demir eklendi" (demir
+  toplama logu) ile 13 saniye sonra "Duvar malzeme siparisi hesaplandi" +
+  "Excel kaydedildi: .../metraj_analiz_sonuc.xlsx" (genel butonun varsayilan
+  dosya adi) satirlari ard arda cikti — "Demir metraji Excel: ..." logu (demir
+  butonunun kendi log satiri) o oturumda hic gorulmedi.
+- COZUM (sadece etiket/tooltip/renk, is mantigi/hesaplama DEGISMEDI):
+  - Genel buton adi " EXCEL'E AKTAR" -> " DUVAR/KIRIS EXCEL'E AKTAR" olarak
+    degistirildi, tooltip eklendi ("Bu buton DEMIR verisi DEGIL...").
+  - Rengi yesilden (demir butonuyla ayni tondaydi) maviye cevrildi, gorsel
+    karisikligi azaltmak icin.
+  - "DEMIR EXCEL'E AKTAR" butonuna da netlestirici tooltip eklendi.
+- Dogrulama: py_compile AST_OK, gercek import testi IMPORT_OK, eski pyc
+  silindi (kaynak syntax hatasiz oldugu icin guvenli).
+- Detay: CLAUDE.md "Ic Ice Scroll'da Benzer Isimli Buton Karisikligi" bolumu
 
 ================================================================================
 Rev-112 (2026-08-16) — Kesim Optimizasyonu: Bagimsiz Cekirdek + Kullanilabilir

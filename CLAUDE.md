@@ -102,6 +102,12 @@ Her geliştirilen programda **yerleşik kullanım kılavuzu** bulunmalıdır:
 
 # Bilinen Hatalar ve Kesin Kurallar
 
+## KRİTİK — İç İçe Scroll'da Benzer İsimli Buton Karışıklığı (Rev-113, 2026-08-17)
+- **Olay:** `metraj_analiz_window.py`'de "DEMİR EXCEL'E AKTAR" butonu, AutoCAD kutusunun kendi İÇ scroll'unun en altında (Demir Metrajı alt-sekmesinde); genel "EXCEL'E AKTAR" butonu ise DIŞ sayfa scroll'unda, AutoCAD kutusu bittiği yerin hemen altında duruyordu. Kullanıcı dış sayfayı kaydırınca gördüğü ilk "Excel'e Aktar" yazılı buton aslında demir değil duvar verisini yazan genel butondu — "demir excel'e basınca duvar metrajı çıkıyor" şikayeti buradan geldi.
+- **Teşhis yöntemi (işe yaradı):** Kod okuması (buton `.clicked.connect` hedefi) tek başına yeterli olmadı — kullanıcı "doğru butona bastım" dediği halde `error_log.txt`'teki gerçek log satırları (hangi fonksiyona özel log mesajının fiilen basıldığı + varsayılan dosya adı) hangi fonksiyonun GERÇEKTEN çalıştığını kanıtladı. Statik kod analizi "doğru" gösterse bile, canlı log kanıtı çelişiyorsa log'a güven.
+- **KURAL:** Aynı ekranda, biri iç scroll/iç sekme içinde saklı, diğeri dış scroll'da hemen erişilebilir konumda, birbirine çok benzer isimli ("EXCEL'E AKTAR" vs "DEMİR EXCEL'E AKTAR" gibi) iki buton olduğunda kullanıcı yanlış butona basma riski yüksektir. Çözüm: (1) genel/kapsamı geniş butonun adını içeriğini net yansıtacak şekilde değiştir (örn. "DUVAR/KİRİŞ EXCEL'E AKTAR"), (2) tooltip ekle, (3) renk paletini birbirinden ayır (aynı yeşil tonda iki buton olmasın).
+- **Kontrol listesi:** Yeni bir "X'E AKTAR" / "Excel" / "Kaydet" butonu eklerken, aynı panelde zaten var olan benzer butonlarla ismi/rengi çakışıyor mu diye kontrol et; çakışıyorsa ekleme aşamasında ayrıştır, sonradan bug raporu beklemeden.
+
 ## Windows / Locale Hatası
 - **ASLA** `strftime()` format string'inin içine emoji koyma.
   - ❌ `datetime.now().strftime("📅 %d %B %Y")`
@@ -449,7 +455,7 @@ PROMPT` — Claude'un kendi piyasa bilgisiyle değerleme yapar
 - **Gerçekçilik:** Claude'un eğitim verisi (Ağustos 2025) Türkiye piyasası için yeterince güvenilir. Kesin/yasal değerleme için SPK lisanslı uzman gerektiği rapora ekleniyor.
 
 ## Modül Durumları (2026-04-26 itibarıyla)
-- `metraj_analiz_window.py` — **ÇALIŞIYOR** (patch_metraj_analiz.py ile 17 fonksiyon düzeltildi)
+- `metraj_analiz_window.py` — **ÇALIŞIYOR** (patch_metraj_analiz.py ile 17 fonksiyon düzeltildi; Rev-113: demir/duvar Excel buton karışıklığı düzeltildi)
 - `ince_isler_3d_widget.py` — **ÇALIŞIYOR** (tümden yeniden yazıldı, 4-space PEP8)
 - `autocad_connector.py` — **ÇALIŞIYOR** (2783 satır, 39 metot, 4-space PEP8 — 4 agent ile tümden yeniden yazıldı)
 - `gantt_window.py` — **ÇALIŞIYOR** (Rev-15: tümden yeniden yazıldı, 4-space PEP8, 2515 satır)
