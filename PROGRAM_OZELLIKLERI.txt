@@ -2,7 +2,54 @@
                     INSAAT METRAJ PRO - TUM OZELLIKLER
 ================================================================================
 
-Son Guncelleme: 17 Agustos 2026 (Rev-114)
+Son Guncelleme: 17 Agustos 2026 (Rev-115)
+
+================================================================================
+Rev-115 (2026-08-17) — Kesik Metin Bugfix: Sabit Genislik -> Esnek Boyutlama
+--------------------------------------------------------------------------------
+- KAPSAM: Onceki envanter taramasinda tespit edilen 🔴/🟡 riskli 20 bilesen
+  (buton/etiket, dar setFixedWidth/setFixedSize ile metin taniyan), 13
+  dosyada duzeltildi. Tek-simge butonlar (✕/?/</>) ve metin tasimayan
+  bilesenlere (QComboBox/QSpinBox/QLineEdit/panel) DOKUNULMADI.
+- YONTEM: Butonlarda setFixedWidth() kaldirilip
+  setSizePolicy(QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Fixed) ile
+  metne gore esneme saglandi. Etiketlerde setFixedWidth()->setMinimumWidth()
+  donusumu (metin sigmiyorsa buyur, sigiyorsa ayni gorunur). QSizePolicy
+  importu olmayan 5 dosyaya (asistan_panel, demir_hesaplama_window,
+  dialogs, enflasyon_window, mermer_dialog) import eklendi.
+- DUZELTILEN DOSYALAR (13): ince_isler_3d_widget.py (isim_lbl, btn_yenile,
+  btn_temizle), sablon_sihirbazi.py (KategoriButon karti: setFixedSize->
+  setFixedWidth+setMinimumHeight; geri/ileri/iptal butonlari), ekap_window.py
+  (yardim, cek_btn), asistan_panel.py (sbd_getir/giris/sifirla_btn),
+  bugun_paneli.py (chip: setMinimumWidth; kaynak_label: setMaximumWidth
+  tamamen kaldirildi), bfa_window.py (btn_yenile), bi_dashboard_window.py
+  (yenile btn), demir_hesaplama_window.py (yardim_btn), dialogs.py
+  (poz_ara_btn), enflasyon_window.py (goster/kaydet btn), gantt_window.py
+  (emoji+metin "🔄 Süre" butonu), mermer_dialog.py (dxf_sec btn),
+  startup_dialog.py (buyuk "▶ UYGULAMAYI BAŞLAT" butonu: setFixedSize->
+  setMinimumWidth+setFixedHeight, kardes buton ile yukseklik hizasi
+  korundu).
+- GERI ALINAN (kutu kaymasi tespit edildi, kullanici talimati geregi
+  revert edildi): sablon_sihirbazi.py :303 ve :317 (tarih_label,
+  sehir_label) — setMinimumWidth'e cevrilince her etiket kendi metnine
+  gore BAGIMSIZ genisledi, ayni formdaki (kapsam disi, dokunulmayan)
+  "Proje Adi:" etiketiyle hizasi bozuldu (giris kutulari farkli x'te
+  basladi). Orijinal setFixedWidth(120)'ye GERI DONDURULDU. Duzgun
+  cozum icin (butun 3 etiketi ortak/daha genis bir degere cekmek)
+  kullanici onayi gerekiyor — henuz yapilmadi.
+- DOGRULAMA: 13 dosyanin tumunde py_compile AST_OK + gercek import testi
+  (headless, QT_QPA_PLATFORM=offscreen) IMPORT_OK. Ayrica 6 bilesen icin
+  GERCEK EKRAN GORUNTUSU alinip (QWidget.grab()) gorsel olarak dogrulandi:
+  SablonSihirbazi adim1 (kategori kartlari) + adim3 (form etiketleri),
+  StartupDialog (buton sirasi), GorevSatiri (KRITIK chip + asiri uzun
+  taseron adi ile stres testi — tam gorundugu dogrulandi), OdaSatiri
+  (asiri uzun oda adi ile stres testi), InceIsler3DPanel (Yenile/Temizle
+  butonlari). Test dosyalari: scratchpad/test_metin_import.py,
+  scratchpad/test_metin_gorsel.py (gecici, proje disinda).
+- YEDEK: Duzeltilen 13 dosyanin orijinali app/ui/*.py.bak_metin olarak
+  saklaniyor.
+- Eski .pyc onbellekleri (13 dosya icin) silindi (kaynak AST_OK oldugu
+  icin guvenli, bkz. CLAUDE.md "Stale Pyc Tuzagi" kurali).
 
 ================================================================================
 Rev-114 (2026-08-17) — Demir Metrajindan Kesim Listesine Dogrudan Aktarim

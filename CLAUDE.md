@@ -102,6 +102,12 @@ Her geliştirilen programda **yerleşik kullanım kılavuzu** bulunmalıdır:
 
 # Bilinen Hatalar ve Kesin Kurallar
 
+## KRİTİK — setFixedWidth/setMinimumWidth Dönüşümünde Form Hizası Kaymasi (Rev-115, 2026-08-17)
+- **Genel kural:** Bir QLabel/QPushButton'daki `setFixedWidth(N)` çağrısını kesik metni düzeltmek için `setMinimumWidth(N)`'e çevirirken, AYNI görsel sütunda (örn. bir form'da alt alta duran birkaç etiket) başka etiketler de varsa hepsini TUTARLI şekilde değiştir — sadece bazılarını değiştirip diğerlerini `setFixedWidth` sabit bırakma. Her etiket `setMinimumWidth` ile kendi metnine göre BAĞIMSIZ genişler; komşu satırdaki etiket hâlâ eski sabit genişlikteyse, satırların giriş kutuları farklı x konumunda başlar (kutu kayması).
+- **Somut örnek:** `sablon_sihirbazi.py`'de "Başlangıç Tarihi:" ve "Şehir (Opsiyonel):" etiketleri `setMinimumWidth(120)`'ye çevrildi ama aynı formdaki "Proje Adı:" etiketi kapsam dışı olduğu için `setFixedWidth(120)` olarak bırakıldı → üç satırın giriş kutuları hizasız oldu, ekran görüntüsüyle tespit edilip geri alındı.
+- **Doğru çözüm deseni:** Ya (a) sütundaki TÜM etiketleri aynı anda `setMinimumWidth`'e çevir (en uzun metne göre ortak bir taban değer seç), ya da (b) hiçbirine dokunma ve `QFormLayout` gibi otomatik hizalayan bir layout'a geçmeyi öner — kısmi/satır satır dönüşüm yapma.
+- **Doğrulama yöntemi (işe yaradı):** Headless PyQt (`QT_QPA_PLATFORM=offscreen`) ile gerçek widget'ı oluşturup `widget.grab()` ile PNG'e kaydedip Read tool ile görsel olarak incele — kod okuması tek başına hiza kaymasını yakalayamaz, sadece ekran görüntüsü yakalar.
+
 ## KRİTİK — İç İçe Scroll'da Benzer İsimli Buton Karışıklığı (Rev-113, 2026-08-17)
 - **Olay:** `metraj_analiz_window.py`'de "DEMİR EXCEL'E AKTAR" butonu, AutoCAD kutusunun kendi İÇ scroll'unun en altında (Demir Metrajı alt-sekmesinde); genel "EXCEL'E AKTAR" butonu ise DIŞ sayfa scroll'unda, AutoCAD kutusu bittiği yerin hemen altında duruyordu. Kullanıcı dış sayfayı kaydırınca gördüğü ilk "Excel'e Aktar" yazılı buton aslında demir değil duvar verisini yazan genel butondu — "demir excel'e basınca duvar metrajı çıkıyor" şikayeti buradan geldi.
 - **Teşhis yöntemi (işe yaradı):** Kod okuması (buton `.clicked.connect` hedefi) tek başına yeterli olmadı — kullanıcı "doğru butona bastım" dediği halde `error_log.txt`'teki gerçek log satırları (hangi fonksiyona özel log mesajının fiilen basıldığı + varsayılan dosya adı) hangi fonksiyonun GERÇEKTEN çalıştığını kanıtladı. Statik kod analizi "doğru" gösterse bile, canlı log kanıtı çelişiyorsa log'a güven.
