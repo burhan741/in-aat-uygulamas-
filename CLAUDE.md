@@ -455,7 +455,7 @@ PROMPT` — Claude'un kendi piyasa bilgisiyle değerleme yapar
 - **Gerçekçilik:** Claude'un eğitim verisi (Ağustos 2025) Türkiye piyasası için yeterince güvenilir. Kesin/yasal değerleme için SPK lisanslı uzman gerektiği rapora ekleniyor.
 
 ## Modül Durumları (2026-04-26 itibarıyla)
-- `metraj_analiz_window.py` — **ÇALIŞIYOR** (patch_metraj_analiz.py ile 17 fonksiyon düzeltildi; Rev-113: demir/duvar Excel buton karışıklığı düzeltildi)
+- `metraj_analiz_window.py` — **ÇALIŞIYOR** (patch_metraj_analiz.py ile 17 fonksiyon düzeltildi; Rev-113: demir/duvar Excel buton karışıklığı düzeltildi; Rev-114: "KESİM LİSTESİNE AKTAR" butonu — demir verisini AutoCAD'e ikinci kez bağlanmadan/Excel'e gitmeden Kesim Listesi'ne bellek-içi aktarır)
 - `ince_isler_3d_widget.py` — **ÇALIŞIYOR** (tümden yeniden yazıldı, 4-space PEP8)
 - `autocad_connector.py` — **ÇALIŞIYOR** (2783 satır, 39 metot, 4-space PEP8 — 4 agent ile tümden yeniden yazıldı)
 - `gantt_window.py` — **ÇALIŞIYOR** (Rev-15: tümden yeniden yazıldı, 4-space PEP8, 2515 satır)

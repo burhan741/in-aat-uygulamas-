@@ -2,7 +2,38 @@
                     INSAAT METRAJ PRO - TUM OZELLIKLER
 ================================================================================
 
-Son Guncelleme: 17 Agustos 2026 (Rev-113)
+Son Guncelleme: 17 Agustos 2026 (Rev-114)
+
+================================================================================
+Rev-114 (2026-08-17) — Demir Metrajindan Kesim Listesine Dogrudan Aktarim
+--------------------------------------------------------------------------------
+- KARAR (kullanici ile tartisildi): AutoCAD'e Kesim Listesi ekranindan ikinci
+  kez baglanmak veya Excel'e kaydedip geri okumak yerine, Demir Metrajinda
+  zaten toplanmis veriyi (self.demir_kat_verileri) BELLEK ICINDE dogrudan
+  Kesim Listesi'ne aktaran bir kopru secildi. Gerekce: ayni demirleri iki kez
+  AutoCAD'den okumak tutarsizlik riski tasir (iki okuma arasi cizim
+  degisebilir); Excel round-trip'te eleman_tipi (Kolon/Kiris/Doseme) etiketi
+  icin geri-okuma kodu yok, kaybolur.
+- app/ui/metraj_analiz_window.py: "Demir Metraji" alt-sekmesine yeni buton
+  "KESIM LISTESINE AKTAR" (self.btn_kesime_aktar) eklendi, DEMIR EXCEL
+  butonuyle ayni enable/disable mantigini paylasir (3 yerde setEnabled(True)).
+  Yeni metod _kesim_listesine_aktar(): tum katlardaki demirleri birlestirir,
+  kesim_besleme.demirlerden_kesim_parcalari_uret() ile donusturur,
+  DemirHesaplamaWindow.DEMIR_BIRIM_AGIRLIK'te olmayan caplari (orn. 6mm
+  etriye) atlayip kullaniciya bildirir, ana pencerenin open_demir_hesaplama()
+  metodunu (yoksa) cagirip/varsa mevcut pencereyi (isVisible() kontrolu)
+  yeniden kullanip Kesim Listesi tablosuna satir satir yazar, Kesim Listesi
+  sekmesine (index 3) otomatik gecer ve pencereyi one getirir.
+- Dogrulama: py_compile AST_OK, gercek import + metod varligi testi OK,
+  headless (QT_QPA_PLATFORM=offscreen) uctan uca test PASS — 3 demir (12mm
+  Kolon, 16mm Kiris, 6mm Etriye) verildi, 6mm dogru atlandi (desteklenmeyen
+  cap), 2 gecerli satir doğru cap/boy/adet/eleman_tipi ile Kesim Listesi
+  giris tablosuna yazildi, sekme otomatik Kesim Listesi'ne gecti.
+  Test dosyasi: scratchpad/test_kesim_aktar.py (gecici, proje disinda).
+- Bilinen sinirlama: kesim_optimizasyon.py cekirdegi eleman_tipi'ni HENUZ
+  esnek/sabit boy kuralina gore kullanmiyor (Not/Poz kolonunda sadece
+  goruntuleniyor) — bu, "kiris sabit boy" kuralinin gelecekteki entegrasyon
+  isi icin CLAUDE.md'de zaten planli.
 
 ================================================================================
 Rev-113 (2026-08-17) — Demir/Duvar Excel Buton Karisikligi Duzeltildi (Bugfix)
