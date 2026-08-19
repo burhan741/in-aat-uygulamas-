@@ -2,7 +2,31 @@
                     INSAAT METRAJ PRO - TUM OZELLIKLER
 ================================================================================
 
-Son Guncelleme: 19 Agustos 2026 (Rev-118)
+Son Guncelleme: 19 Agustos 2026 (Rev-119)
+
+================================================================================
+Rev-119 (2026-08-19) — "Temel Demir Hesabi" Sekmesinde Etiketler/Alanlar
+Sigmiyordu (Bugfix)
+--------------------------------------------------------------------------------
+- BUG: demir_hesaplama_window.py "Temel Demir Hesabi" sekmesinde (Cap/
+  Birim Agirlik/Boy/Adet alanlarinin oldugu sol kutu) "Demir Ozellikleri"
+  QGroupBox'i `setFixedWidth(340)` ile SABIT genislikteydi. Kullanicinin
+  sisteminde font/DPI ayari bu 340px'i asinca (buyuk font/yuksek DPI
+  olceklendirme), QFormLayout icerigi kutunun disina TASIYOR ama kutu
+  sabit genislikte oldugu icin klipleniyor — etiketler/degerler
+  okunamaz hale geliyordu.
+- KANIT (headless test, 13pt font simulasyonu): Ayni layout normal
+  fontta 340px'e sigarken, buyuk fontta gercek ihtiyac 642px cikti —
+  sabit 340px'te bu fark klip olarak gorunur, min-width'te kutu
+  otomatik 642px'e buyuyup icerigi sigdiriyor.
+- COZUM: `giris_group.setFixedWidth(340)` -> `setMinimumWidth(340)`.
+  Kutu artik icerige gore BUYUYEBILIYOR, kucultulmuyor (Rev-115 ailesi
+  kural: setFixedWidth yerine setMinimumWidth, ic. sadece TEK kutu
+  oldugu ve ayni sutunda hizalanmasi gereken baska sabit-genislikli
+  kardes etiket olmadigi icin Rev-115'teki "hepsini birlikte donustur"
+  riski burada gecerli degildi).
+- Test: scratchpad/test_temel_demir_genislik.py (buyuk font senaryosu,
+  klip yok + kutu sizeHint'e buyudu dogrulandi) + py_compile OK.
 
 ================================================================================
 Rev-118 (2026-08-19) — "Demir Hesaplama" Penceresi Singleton Degildi:
