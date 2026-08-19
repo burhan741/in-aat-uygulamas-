@@ -2,7 +2,50 @@
                     INSAAT METRAJ PRO - TUM OZELLIKLER
 ================================================================================
 
-Son Guncelleme: 19 Agustos 2026 (Rev-119)
+Son Guncelleme: 19 Agustos 2026 (Rev-120)
+
+================================================================================
+Rev-120 (2026-08-19) — Kesim Listesi'nde Cap Combobox'i Beyaz-Uzerine-Beyaz
+Gorunmez + Ust Buton Bari Klipleniyordu (Bugfix, KRITIK)
+--------------------------------------------------------------------------------
+- BUG (kullanici ekran goruntusuyle bildirdi, c:\Users\USER\Desktop\3.png):
+  "Kesilecek Parcalar" tablosunun "Cap (mm)" sutunundaki combobox'lar
+  BOMBOS gorunuyordu (12/10/8 vb. secili oldugu halde metin gorunmuyordu).
+  Ayrica ust buton barindaki metinler ("Toplu Hesap'tan Aktar", "Kesim
+  Plani Hesapla", "Kullanilabilir Artik Esigi" vb.) kesik/okunmaz
+  cikiyordu.
+- KOK NEDEN 1 (Cap gorunmezligi): app/ui/styles.py'deki GLOBAL koyu tema
+  (QApplication.setStyleSheet) QComboBox icin `color: #ffffff` (beyaz
+  metin) tanimliyor. demir_hesaplama_window.py'nin KENDI (daha yakin/
+  oncelikli) stil sayfasi ise QComboBox icin sadece `background: white`
+  (beyaz zemin) tanimliyor, `color` HIC belirtmiyordu. Qt stil kaskadinda
+  belirtilmeyen ozellik en yakindaki tanimdan degil, DIGER (uzak/global)
+  tanimdan devraliniyor -> sonuc: beyaz metin + beyaz zemin = gorunmez
+  yazi. Spin box'larda metin gorunur kaldi cunku deger okuma farkli
+  bir render yolundan gecmedi (ayni kok neden ama etkisi combo'da daha
+  belirgindi).
+- KOK NEDEN 2 (buton bari klipleniyor): "Kesim Listesi" sekmesindeki
+  TEK SATIRLIK btn_bar 9 kontrol barindiriyordu (4 buton + 2 etiket +
+  2 spinbox + 2 buton daha). Pencere varsayilan 1050px acilinca veya
+  kullanici kucultunce, QHBoxLayout tum kontrolleri sigdiramayip
+  butonlari minimumSizeHint'e kadar sikistiriyordu -> QPushButton metni
+  wrap/elide ETMEDIGI icin harfler kesik gorunuyordu.
+- COZUM 1: demir_hesaplama_window.py'nin local QSS'ine
+  `QDoubleSpinBox, QSpinBox, QComboBox { ... color: #1a3a5c; }` VE
+  `QComboBox QAbstractItemView { background: white; color: #1a3a5c; }`
+  eklendi — artik hem kapali kutu hem acilan liste kendi rengini acikca
+  tasiyor, global temaya bagimli degil.
+- COZUM 2: Tek satirlik btn_bar iki satira bolundu: 1) satir_bar
+  (Aktar/Ekle/Sil/Temizle), 2) ayar_bar (Standart Cubuk Boyu, Kullanilabilir
+  Artik Esigi, Kesim Plani Hesapla, CSV Aktar). Hicbir satirda 5'ten
+  fazla kontrol yok, 1050px'te rahatca sigiyor.
+- TEST (kanit, tahmin degil): scratchpad/test_kesim_listesi_gorunum.py
+  — GERCEK global koyu tema (apply_dark_theme) + gercek pencere stili
+  birlikte yuklenip: (1) cap combobox'inin grab() piksel renklerinde
+  ARTIK birden fazla renk (metin+zemin kontrasti) tespit edildi (onceki
+  bug senaryosunda tek renk/beyaz-beyaz olurdu), (2) hicbir butonun
+  sag kenari sekme genisligini asmiyor (klip yok) — ikisi de PASS.
+- py_compile OK.
 
 ================================================================================
 Rev-119 (2026-08-19) — "Temel Demir Hesabi" Sekmesinde Etiketler/Alanlar
