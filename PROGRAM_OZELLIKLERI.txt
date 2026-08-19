@@ -2,7 +2,36 @@
                     INSAAT METRAJ PRO - TUM OZELLIKLER
 ================================================================================
 
-Son Guncelleme: 17 Agustos 2026 (Rev-116)
+Son Guncelleme: 19 Agustos 2026 (Rev-117)
+
+================================================================================
+Rev-117 (2026-08-19) — Kesim Optimizasyonu: TUM Eleman Tipleri "Sabit Boy"
+(Karar, kod degisikligi yok)
+--------------------------------------------------------------------------------
+- ONCEKI KARAR (2026-07-02, memory project_demir_kesim_optimizasyonu.md):
+  Kolon/perde/doseme donatisi "esnek" (TBDY'ye gore kritik bolge disinda
+  bindirmeli ek serbest, orn. 5.70m parca 6m kesilebilir), SADECE kiris
+  boy donatisi "sabit" (ek yeri dar bolgeyle kisitli, boy oynatilamaz)
+  olarak ayristirilmisti. Bu ayrimin kesim_optimizasyon.py'ye entegre
+  edilmesi planlanmisti.
+- YENI KARAR (kullanici, 2026-08-19): Ayrim KALDIRILDI — kiris/kolon/
+  perde/doseme HEPSI "sabit boy" muamelesi gorecek. Gerekce: kullaniciya
+  soruldugunda ("esnek-ek TBDY kuralindan tamamen mi vazgec, yoksa sadece
+  algoritmayi sadelestir mi") kullanici "sadece sadelestir" secenegini
+  onayladi.
+- KOD ETKISI: SIFIR. kesim_optimizasyon.py zaten hicbir eleman tipi icin
+  boy yuvarlama veya parca-arasi (iki cubuk birlestirme) bindirme
+  yapmiyordu — standart boyu asan her parca zaten standart_disi=True
+  (kesilemez, ozel siparis) olarak isaretleniyordu. Yani mevcut davranis
+  zaten "hepsi sabit" idi; eklenmesi planlanan esnek-ek ozelligi hic
+  yazilmadi, iptal edildi.
+- SAHA NOTU: TBDY'nin kolon/perde/dosemede bindirmeli ek serbestligi
+  fiziksel olarak hala gecerli/dogru (mevzuat degismedi) — sadece
+  YAZILIMIN bunu bir optimizasyon kazanci olarak simule etmesinden
+  vazgecildi. Ustalar sahada gerekirse yine de TBDY'ye uygun ek
+  yapabilir, program sadece bunu hesaba katip fire azaltma onerisi
+  URETMEYECEK.
+- Detay: memory project_demir_kesim_optimizasyonu.md guncellendi.
 
 ================================================================================
 Rev-116 (2026-08-17) — Demir Metrajı Ekranında "DEMİR EXCEL'E AKTAR" /

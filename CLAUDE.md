@@ -483,7 +483,7 @@ PROMPT` — Claude'un kendi piyasa bilgisiyle değerleme yapar
 - `claude_engine.py` — **ÇALIŞIYOR** (Rev-65: gayrimenkul_degerle ada_no/parsel_no; hakedis Türkçe key hatası düzeltildi)
 - `mermer_dialog.py` — **ÇALIŞIYOR** (Rev-56: DXF Metraj sekmesi + Yardım butonu eklendi)
 - `demir_hesaplama_window.py` — **ÇALIŞIYOR** (Rev-112: Kesim Listesi artık `kesim_optimizasyon.py` çekirdeğini kullanıyor — desen gruplama + kullanılabilir artık/çöp fire ayrımı, eşik ekrandan ayarlanabilir)
-- `kesim_optimizasyon.py` — **ÇALIŞIYOR** (Rev-112: yeni, saf Python kesim çekirdeği — PyQt/AutoCAD bağımsız, FFD + fire sınıflandırma + desen gruplama, 200 rastgele testle eski algoritmayla parity doğrulandı)
+- `kesim_optimizasyon.py` — **ÇALIŞIYOR** (Rev-112: yeni, saf Python kesim çekirdeği — PyQt/AutoCAD bağımsız, FFD + fire sınıflandırma + desen gruplama, 200 rastgele testle eski algoritmayla parity doğrulandı; Rev-117 kararı: kiriş/kolon/perde/döşeme HEPSİ "sabit boy" — eleman tipine göre esnek-ek/boy-yuvarlama ayrımı kasıtlı olarak eklenmedi, kod zaten bu davranışta)
 - `kesim_besleme.py` — **ÇALIŞIYOR** (Rev-111/112: AutoCAD `DemirBilgisi` → `KesimParcasi` → `kesim_optimizasyon` köprüsü, uçtan uca test edildi)
 - `pdf_metraj_window.py` / `pdf_metraj_engine.py` — **ÇALIŞIYOR** (Rev-67: PyMuPDF tabanlı fare ile metraj)
 - `csb_poz_engine.py` — **ÇALIŞIYOR** (Rev-70: SQLite tabanlı CŞB poz veritabanı, 70+ poz seed)
