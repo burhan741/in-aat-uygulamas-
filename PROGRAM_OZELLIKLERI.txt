@@ -2,7 +2,41 @@
                     INSAAT METRAJ PRO - TUM OZELLIKLER
 ================================================================================
 
-Son Guncelleme: 19 Agustos 2026 (Rev-117)
+Son Guncelleme: 19 Agustos 2026 (Rev-118)
+
+================================================================================
+Rev-118 (2026-08-19) — "Demir Hesaplama" Penceresi Singleton Degildi:
+Kesim Listesi'ne Aktarilan Veriler Kayboluyordu (Bugfix, KRITIK)
+--------------------------------------------------------------------------------
+- BUG: Kullanici AutoCAD'den demir aktardi ("KESIM LISTESINE AKTAR"),
+  log dogruladi (112/112 basarili, "atlanan cap: yok"), ama kullanici
+  Kesim Listesi sekmesini BOS gordu — "Kesim Plani Hesapla" ve "Siparis"
+  hicbir sey uretmedi.
+- KOK NEDEN: main_window.py open_demir_hesaplama() HER cagrildiginda
+  kosulsuz `self.demir_window = DemirHesaplamaWindow(self)` ile SIFIRDAN
+  yeni pencere olusturuyordu (singleton degil). metraj_analiz_window.py
+  _kesim_listesine_aktar() ise pencere zaten aciksa YENIDEN ACMAMA
+  mantigina guveniyordu. Akis: aktarim -> yeni pencere (112 satir dolu)
+  aciliyor -> Windows focus-stealing korumasi yuzunden bu pencere one
+  gelmeyebiliyor -> kullanici fark etmeden Araclar menusunden "Demir
+  Hesaplama"ya TEKRAR tikliyor -> bu direkt open_demir_hesaplama()'yi
+  cagirdigi icin `demir_window` referansi BOS bir pencereyle eziliyor,
+  dolu pencere sahipsiz kalip kapaniyor. Kullanici bos pencereyi goruyor.
+- COZUM: open_demir_hesaplama() artik singleton — mevcut pencere
+  gorunurse (isVisible()) sadece show()/raise_()/activateWindow() yapip
+  DONUYOR, yeniden olusturmuyor. Pencere kapaliysa (veya hic yoksa)
+  yeni olusturuyor. Ayni desen zaten metraj_analiz_window.py'nin
+  transfer fonksiyonunda vardi, artik iki taraf tutarli.
+- TEST (kanit, tahmin degil): scratchpad/test_demir_window_singleton.py
+  — headless PyQt (offscreen), 3 senaryo: (1) pencere yokken ac -> yeni
+  olusur, (2) pencere aciksa tekrar cagir -> AYNI obje id + 5 test satiri
+  KORUNUYOR, (3) pencere kapatilinca tekrar cagir -> YENI obje olusuyor.
+  Uc senaryo da PASS.
+- Ilgili onceki bug ailesi: CLAUDE.md "Rev-113 Ic Ice Scroll'da Benzer
+  Isimli Buton Karisikligi" — farkli kok neden (bu seferki: birden fazla
+  pencere instance'i / kaybolan referans), ayni sonuc sinifi (kullanici
+  "verim kayboldu" bug'i sanip aslinda dogru calisan bir adimin
+  goruntude kaybolmasidir).
 
 ================================================================================
 Rev-117 (2026-08-19) — Kesim Optimizasyonu: TUM Eleman Tipleri "Sabit Boy"
