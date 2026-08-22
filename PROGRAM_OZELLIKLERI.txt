@@ -2,7 +2,34 @@
                     INSAAT METRAJ PRO - TUM OZELLIKLER
 ================================================================================
 
-Son Guncelleme: 19 Agustos 2026 (Rev-120)
+Son Guncelleme: 22 Agustos 2026 (Rev-121)
+
+================================================================================
+Rev-121 (2026-08-22) — EKAP API ve Gayrimenkul Degerleme Modulleri Tamamen
+Kaldirildi (Kullanici Talebi)
+--------------------------------------------------------------------------------
+- Kullanici talebi: "ekap api ve gayrimenkule ait hersey" silinsin.
+- SILINEN DOSYALAR: app/ui/ekap_window.py, app/core/ekap_engine.py,
+  app/core/sahibinden_engine.py (Sahibinden.com cookie scraper),
+  asistan_panel.py.bak_metin, ekap_window.py.bak_metin,
+  test_ekap_result.txt, test_ekap_ssl.py.
+- main_window.py: "Ihale Degerlendirme" sekmesi (eski index 9) kaldirildi,
+  "Devlet Ihalesi" sekmesi index 10 -> 9 kaydi (sekme sayisi artik 0-9).
+- asistan_panel.py: Mod 5 "EKAP" ve Mod 7 "Degerleme" AI asistan
+  modlarindan cikarildi (Mulk Tipi/Il/Ilce/Ada-Parsel formu + Sahibinden
+  link ile otomatik doldurma ozelligi dahil, ~450 satir kod).
+- claude_engine.py: ekap_ihale_ara, emsal_karsilastir, gayrimenkul_degerle,
+  emlak_url_analiz araclari + GAYRIMENKUL_SISTEM_PROMPT (piyasa fiyat
+  tablolari) + sorgu_gayrimenkul_thread_olustur kaldirildi.
+- KORUNDU (kullanici istegi kapsami disinda): "Devlet Ihalesi" sekmesi
+  (Yaklasik Maliyet, Hakedis Kesintileri, SGK Isciligi, Fiyat Farki,
+  Birim Fiyat Analizi, Gecikme Cezasi, Teminat Yonetimi) — bu modul EKAP
+  API'sini hic kullanmiyordu, 4734 Kamu Ihale Kanunu araclarinin ayri
+  bir konteyneriydi.
+- Dogrulama: 3 ana dosya (main_window.py, asistan_panel.py,
+  claude_engine.py) icin py_compile + gercek import testi PASS. Repo
+  genelinde ekap/gayrimenkul/sahibinden icin son grep taramasi temiz.
+- Detay: E:\Inşaat Metraj Pro\CLAUDE.md Rev-121 kaydi.
 
 ================================================================================
 Rev-120 (2026-08-19) — Kesim Listesi'nde Cap Combobox'i Beyaz-Uzerine-Beyaz

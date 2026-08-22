@@ -102,6 +102,17 @@ Her geliştirilen programda **yerleşik kullanım kılavuzu** bulunmalıdır:
 
 # Bilinen Hatalar ve Kesin Kurallar
 
+## Rev-121 (2026-08-22) — EKAP API ve Gayrimenkul Değerleme Modülleri Tamamen Kaldırıldı
+- **Talep:** Kullanıcı "ekap apı ve gayrimenkule ait herşeyi sil" dedi.
+- **Silinen dosyalar:** `app/ui/ekap_window.py` (+`.bak_metin`), `app/core/ekap_engine.py`, `app/core/sahibinden_engine.py`, `app/ui/asistan_panel.py.bak_metin`, `test_ekap_result.txt`, `test_ekap_ssl.py`.
+- **main_window.py:** `_tabs_created['ekap']` kaydı kaldırıldı, "İhale Değerlendirme" placeholder tab'ı silindi, index==9 (EKAP) lazy-load bloğu kaldırıldı, "Devlet İhalesi" sekmesi index 10→9 olarak kaydırıldı (tab sırası artık 0-9, önceki 0-10 idi).
+- **asistan_panel.py:** Mod 5 "🏛️ EKAP" ve Mod 7 "🏠 Değerleme" `_MODLAR` listesinden çıkarıldı — **renumbering yapılmadı**, kalan modlar (0 Sohbet,1 Hesap,2 Analiz,3 Gantt,4 Hakediş,6 Saha) eski numaralarını korudu (5 ve 7 artık kullanılmıyor). Değerleme formu (Mülk Tipi/İl/İlçe/Ada-Parsel/Sahibinden link scraper — ~450 satır), `_ekap_ara_baslat`, `_degerl_*`, `_sbd_*`, `_gayrimenkul_aracli_basla`, `_guncelle_form_alanlari`, `_form_doldur_scrape` metodları tamamen silindi.
+- **claude_engine.py:** `GAYRIMENKUL_SISTEM_PROMPT` (130+ satır piyasa fiyat tablosu), `ekap_ihale_ara`/`emsal_karsilastir`/`gayrimenkul_degerle`/`emlak_url_analiz` araç tanımları + dispatch dalları + implementasyon metodları (`_arac_ekap_ihale_ara`, `_arac_emlak_url_analiz`, `_arac_emsal_karsilastir`, `_arac_gayrimenkul_degerle`), `sorgu_gayrimenkul_thread_olustur` — dosyanın sonundaki ~650 satır olduğu için dosya doğrudan Python ile satır 2960'ta kesildi (Edit tool ile onlarca küçük parça yerine).
+- **InsaatMetrajPro.spec:** `app.core.ekap_engine` ve `app.ui.ekap_window` hidden-import listesinden çıkarıldı.
+- **Doğrulama:** Her 3 ana dosya (`main_window.py`, `asistan_panel.py`, `claude_engine.py`) için `py_compile` + gerçek `import` testi (asistan_panel.py için `QApplication` + `QT_QPA_PLATFORM=offscreen` ile) yapıldı, hepsi PASS. Repo genelinde `ekap|EKAP|gayrimenkul|sahibinden` için son bir grep taraması temiz çıktı.
+- **Dokunulmadı (kasıtlı olarak KORUNDU):** `devlet_ihalesi_widget.py` ve "Devlet İhalesi" sekmesi (Yaklaşık Maliyet/Hakediş Kesintileri/SGK/Fiyat Farkı/Birim Fiyat/Gecikme Cezası/Teminat alt sekmeleri) — bu modül EKAP API'sini hiç kullanmıyordu, 4734 Kamu İhale Kanunu araçlarının kendi ayrı konteyneriydi, kullanıcının isteği bunu kapsamıyordu.
+- **Not:** Aşağıdaki Rev-55/56/61/63/65 girdileri artık kod tabanında karşılığı olmayan TARİHSEL kayıtlardır — yeni oturumlarda bu dosya/araç isimlerini önerirken önce dosyanın var olup olmadığını kontrol et.
+
 ## KRİTİK — Yerel QSS'te `background` Set Edip `color` Unutma → Global Koyu Temadan Beyaz Metin Miras Kalır, Beyaz-Üzerine-Beyaz Görünmez Yazı (Rev-120, 2026-08-19)
 - **Olay:** `app/ui/styles.py`'deki GLOBAL koyu tema (`QApplication.setStyleSheet`) `QComboBox { color: #ffffff; ... }` tanımlıyor. `demir_hesaplama_window.py`'nin kendi (pencereye özel, daha yakın) stil sayfası ise `QComboBox { background: white; ... }` tanımlıyor ama `color` HİÇ belirtmiyordu. Qt stil kaskadında bir widget'a en yakın stil sayfası SADECE kendi belirttiği property'leri geçersiz kılar — belirtmediği property (burada `color`) daha UZAK/global tanımdan miras kalmaya devam eder. Sonuç: beyaz metin (global) + beyaz zemin (yerel) = tamamen görünmez yazı. Kullanıcı "Kesim Listesi" tablosundaki Çap (mm) combobox'larını bomboş gördü, oysa değerler doğru atanmıştı (`currentText()` doğruydu) — sorun veri değil, salt render kontrastıydı.
 - **KURAL:** Bir pencereye özel (yerel) QSS içinde `background`/`background-color` set eden HER kural, aynı seçici için `color`'u da MUTLAKA açıkça belirtmeli — asla "global tema zaten hallediyordur" varsayımıyla `color`'u boş bırakma. Özellikle `QComboBox`, `QSpinBox`, `QDoubleSpinBox`, `QLineEdit`, `QTableWidget` gibi hem global koyu temada hem pencereye özel açık/light bir alt-temada aynı anda stillenen widget tiplerinde bu ikili tanım riski yüksek.
@@ -357,7 +368,7 @@ EXE modunda tüm yazılabilir dosyalar `%APPDATA%\QuantixPro\` altına yönlendi
 - Aktarım sonrası `refresh_visual_gantt` + `_yukle_is_listesi` ikisi de invoke edilir (sadece tablo değil görsel de güncellenir)
 - `gantt_guncellendi` sinyali artık `main_window._asistan_gantt_yenile()` ile bağlı
 
-## KRİTİK — EKAP v2 AES Güvenlik Headerları (Rev-56, 2026-04-05)
+## (Tarihsel — Rev-121'de modül SİLİNDİ) KRİTİK — EKAP v2 AES Güvenlik Headerları (Rev-56, 2026-04-05)
 - **26-byte boş yanıt kök nedeni:** EKAP v2 sunucusu, şifreli güvenlik headerları olmadan boş yanıt döndürüyor
 - **Zorunlu headerlar:** `X-Custom-Request-Guid`, `X-Custom-Request-Siv`, `X-Custom-Request-Ts`, `X-Custom-Request-R8id`
 - **Algoritma:** AES-CBC, PKCS7 padding, key=`b'Qm2LtXR0aByP69vZNKef4wMJ'`, IV=16 random byte (her istek)
@@ -366,7 +377,7 @@ EXE modunda tüm yazılabilir dosyalar `%APPDATA%\QuantixPro\` altına yönlendi
 - **Gerçek alan isimleri:** `ihaleAdi`, `idareAdi`, `ihaleTarihSaat`, `ihaleTip`, `ihaleTipAciklama`, `ihaleDurum`, `ihaleDurumAciklama`
 - **cryptography paketi** requirements.txt'te zorunlu — olmadan headerlar gönderilmez (fallback: sessizce atlanır)
 
-## EKAP Modülü Kuralları (Rev-55, 2026-04-04)
+## (Tarihsel — Rev-121'de modül SİLİNDİ) EKAP Modülü Kuralları (Rev-55, 2026-04-04)
 - **Demo veri YOK:** `demo_veri_uret()` ve demo butonu tamamen kaldırıldı — uygulama sadece gerçek API verisi gösterir
 - **İstatistik sekmesi:** `EKAPIstatistikThread` yıl bazlı sorgu → progress bar → özet + detay + firmalar tablosu
 - **Kazanan firma:** `EKAPSonucu.kazanan_firma` alanı API'den `kazananFirma`/`sozlesmeYapilacakFirma`/`istekliAdi` sırasıyla çeker; API dönmüyorsa "—"
@@ -468,7 +479,10 @@ self._gantt_engine.tasks[tid] = task
 - Düzeltme: `app/core/__init__.py`'de monkey-patch `_apply_carpan_fix()` ile aktif
 - Test: 2x8Ø12→adet=16 ✓ | 3x6Ø10→adet=18 ✓
 
-## Gayrimenkul Değerleme Modülü (Rev-65, 2026-04-11)
+## ~~Gayrimenkul Değerleme Modülü~~ — SİLİNDİ (Rev-121, 2026-08-22)
+Kullanıcı isteğiyle tamamen kaldırıldı: Mod 7 "Değerleme" formu (İl/İlçe/Mahalle/Fiyat/m²/Ada-Parsel vb.), Sahibinden Cookie Scraper (`sahibinden_engine.py`), `emsal_karsilastir`/`gayrimenkul_degerle` araçları, `GAYRIMENKUL_SISTEM_PROMPT`. Aşağıdaki bölüm sadece geçmiş referans için tutuluyor — kod artık yok.
+
+### (Tarihsel — artık geçerli değil) Gayrimenkul Değerleme Modülü (Rev-65, 2026-04-11)
 - **Mod 7 "🏠 Değerleme"** — `asistan_panel.py`'e eklendi
 - **Sistem Promptu:** `GAYRIMENKUL_SISTEM_
 PROMPT` — Claude'un kendi piyasa bilgisiyle değerleme yapar
@@ -490,10 +504,9 @@ PROMPT` — Claude'un kendi piyasa bilgisiyle değerleme yapar
 - `enflasyon_engine.py` — **ÇALIŞIYOR** (1-space → 4-space PEP8; TCMB EVDS API, cache mekanizması)
 - `tedarikci_window.py` / `database.py` — **ÇALIŞIYOR** (stale pyc fix; `fix_database_pyc.py` mevcut)
 - `main_window.py` — **ÇALIŞIYOR** (Rev-70: DevletIhalesiWidget index 11 lazy-load eklendi; Rev-118: `open_demir_hesaplama()` singleton yapıldı — tekrar tıklamada var olan pencere/veri korunuyor)
-- `ekap_window.py` — **ÇALIŞIYOR** (Rev-79: tamamen yeniden yazıldı — IhaleDegerlendirmeWindow; karar kartı + döküm tablosu + PDF)
-- `ekap_engine.py` — **ÇALIŞIYOR** (Rev-79: tamamen yeniden yazıldı — IhaleEngine + FizibiliteSonucu; eski ihale arama kaldırıldı)
-- `asistan_panel.py` — **ÇALIŞIYOR** (Rev-65: Mod 7 Ada/Parsel alanı + Tahmini Fiyat modu; Mülk Tipi ComboBox)
-- `claude_engine.py` — **ÇALIŞIYOR** (Rev-65: gayrimenkul_degerle ada_no/parsel_no; hakedis Türkçe key hatası düzeltildi)
+- ~~`ekap_window.py`~~ / ~~`ekap_engine.py`~~ — **SİLİNDİ** (Rev-121, 2026-08-22: kullanıcı isteğiyle EKAP API modülü tamamen kaldırıldı — İhale Değerlendirme sekmesi (index 9) main_window.py'den çıkarıldı, Devlet İhalesi sekmesi index 10→9 kaydı)
+- `asistan_panel.py` — **ÇALIŞIYOR** (Rev-121: Mod 5 "EKAP" ve Mod 7 "Değerleme" tamamen kaldırıldı — mod numaraları 0,1,2,3,4,6 olarak korundu, renumbering yapılmadı)
+- `claude_engine.py` — **ÇALIŞIYOR** (Rev-121: ekap_ihale_ara/emsal_karsilastir/gayrimenkul_degerle/emlak_url_analiz araçları + GAYRIMENKUL_SISTEM_PROMPT + sorgu_gayrimenkul_thread_olustur tamamen kaldırıldı)
 - `mermer_dialog.py` — **ÇALIŞIYOR** (Rev-56: DXF Metraj sekmesi + Yardım butonu eklendi)
 - `demir_hesaplama_window.py` — **ÇALIŞIYOR** (Rev-112: Kesim Listesi artık `kesim_optimizasyon.py` çekirdeğini kullanıyor — desen gruplama + kullanılabilir artık/çöp fire ayrımı, eşik ekrandan ayarlanabilir; Rev-119: "Temel Demir Hesabı" sekmesinde `setFixedWidth`→`setMinimumWidth` — büyük font/DPI'de etiketler klipleniyordu; Rev-120: Kesim Listesi'nde Çap combobox'ı beyaz-üzerine-beyaz görünmezdi (yerel QSS'te `color` eksikti) + üst buton barı 2 satıra bölündü)
 - `kesim_optimizasyon.py` — **ÇALIŞIYOR** (Rev-112: yeni, saf Python kesim çekirdeği — PyQt/AutoCAD bağımsız, FFD + fire sınıflandırma + desen gruplama, 200 rastgele testle eski algoritmayla parity doğrulandı; Rev-117 kararı: kiriş/kolon/perde/döşeme HEPSİ "sabit boy" — eleman tipine göre esnek-ek/boy-yuvarlama ayrımı kasıtlı olarak eklenmedi, kod zaten bu davranışta)
