@@ -2,7 +2,38 @@
                     INSAAT METRAJ PRO - TUM OZELLIKLER
 ================================================================================
 
-Son Guncelleme: 22 Agustos 2026 (Rev-123)
+Son Guncelleme: 22 Agustos 2026 (Rev-124)
+
+================================================================================
+Rev-124 (2026-08-22) — KRITIK: Standart Boyu Asan Demir Parcalari Artik
+Uyariliyor (Gercek Proje Verisiyle Dogrulandi)
+--------------------------------------------------------------------------------
+- Bulgu: data/insaat_metraj.db -> temel_demir_listesi tablosunda 404 gercek
+  kayittan 24'u (%6) 1200cm standart cubuk boyunu asiyor - en uc ornekler
+  4000cm (40m!) ve 3210cm (32m) BAG_KIRISI (BK1/BK6) donatilari. Teorik
+  degil, gercekte olusan bir senaryo oldugu dogrulandi.
+- Onceki hatali davranis: Bu tur parcalar "tek cubuk, kesim yapilamadi"
+  olarak isaretlenip Kesim Plani tablosunda diger normal desenlerle AYNI
+  gorunuyordu, "Durum" kolonunda sadece "cop" yaziyordu. 40m'lik bir
+  donatinin "1 adet standart (12m) cubuktan karsilanacakmis" gibi
+  gorunmesi fiziksel olarak imkansiz bir kesim/siparis planiydi.
+- Cozum:
+  * kesim_optimizasyon.py: DesenGrubu.standart_disi, CapSonucu
+    .standart_disi_adet + .standart_disi_boylar eklendi.
+  * demir_hesaplama_window.py: Kesim Plani tablosunda bu satirlar artik
+    KIRMIZI renkte "STANDART DISI" durum metniyle ayriliyor. Ekranin
+    ustunde yeni bir uyari bandi (kesim_uyari_label) toplam adet + ornek
+    boylar + "TS 500 bindirme eki gerekir, manuel kontrol edin" mesajiyla
+    beliriyor. Temizle butonu uyariyi sifirliyor. CSV export'a da
+    uyari metni eklendi.
+  * Otomatik bolme/bindirme YAPILMADI (bindirme boyu capa gore degisir,
+    TS 500 - otomatiklestirmek ayri bir karar), sadece GORUNUR kilindi.
+- Test: scratchpad/test_standart_disi.py (cekirdek mantik, gercek BK1/BK6
+  senaryosuna benzer veri + regresyon) + scratchpad/test_ui_standart_disi.py
+  (headless PyQt, gercek widget uzerinde uyari gorunurlugu + kirmizi renk +
+  normal desenlerin bozulmadigi dogrulandi) - ikisi de PASS. python main.py
+  tam baslatma testi de crash olmadan gecti.
+- Detay: E:\Inşaat Metraj Pro\CLAUDE.md Rev-124 kaydi.
 
 ================================================================================
 Rev-123 (2026-08-22) — Kesim Listesi "Kullanilabilir Artik Esigi" Varsayilani
