@@ -102,6 +102,12 @@ Her geliştirilen programda **yerleşik kullanım kılavuzu** bulunmalıdır:
 
 # Bilinen Hatalar ve Kesin Kurallar
 
+## Rev-123 (2026-08-22) — Kesim Listesi "Kullanılabilir Artık Eşiği" Varsayılanı 30cm → 50cm
+- **Karar gerekçesi (İnşaat Mühendisi analizi):** 30 cm'lik bir demir artığı sahada pratik olarak işe yaramaz — kapalı etriyeye yetmez (kolon/kiriş etriye çevresi genelde 100-140 cm), TS 500 bindirme ekine de yetmez (Ø16 için bindirme boyu ~65-80 cm, kalın çaplarda daha fazla). 30 cm eşik, gerçekte hurdaya gidecek parçaları rapor üzerinde "kazanılmış artık" gibi gösterip fire oranını olduğundan düşük yansıtıyordu.
+- **Yeni varsayılan: 50 cm** — kısa filiz demiri / pas payı takozu / küçük ek parçası olarak sahada gerçekten değerlendirilebilecek asgari boy. Tradeoff: fire oranı raporda görünür şekilde artar ama gerçek saha davranışını daha doğru yansıtır.
+- **Değişen dosya:** `app/ui/demir_hesaplama_window.py:763` — `self.kesim_artik_esigi.setValue(30)` → `setValue(50)`. Tek kaynak (`kesim_optimizasyon.py`'deki `esik_cm` parametresinin varsayılanı yok, her zaman bu spinbox'tan okunuyor) — başka hardcode edilmiş 30 değeri yok, doğrulandı.
+- **Not:** Eşik hâlâ tek sabit değer, çapa göre değişmiyor (Rev-117 kararıyla tutarlı). İnce çap (Ø8-10) ağırlıklı projede 40 cm'e çekilebilir, kalın çap (Ø20+) ağırlıklı projede 60-80 cm daha isabetli olabilir — kullanıcı ekrandan proje bazında ayarlayabiliyor, bu sadece varsayılan.
+
 ## Rev-122 (2026-08-22) — Yedek/Kopya Dosya Temizliği (23 Dosya, ~4,69 MB, Kalıcı Silme)
 - **Talep:** Kullanıcı proje genelinde `.bak`/`.bak2`/`.bak3`/`*_fixed.py`/`*_backup.py`/`*_debug.py`/`*_autopep8.py`/`temp_*.py` gibi desenlere uyan yedek/kopya dosyaların temizlenmesini istedi. Projede git YOK, silme kalıcı — bu yüzden önce liste sunuldu, açık onay alındıktan SONRA silindi.
 - **Süreç:** Her aday dosya için proje genelinde import/referans taraması yapıldı (`import X`, `from X import`, metin araması). İki dosya "kullanımda" çıkıp listeden çıkarıldı: `app/core/calculator_minimal.py` (main_window.py:36'da canlı fallback import) ve `.bak_metin`/`.bak_metin2` dosyaları (kullanıcı henüz test etmediği yeni metin yedekleri — kasıtlı olarak bekletildi, silinmedi).

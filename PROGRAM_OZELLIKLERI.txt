@@ -2,7 +2,26 @@
                     INSAAT METRAJ PRO - TUM OZELLIKLER
 ================================================================================
 
-Son Guncelleme: 22 Agustos 2026 (Rev-122)
+Son Guncelleme: 22 Agustos 2026 (Rev-123)
+
+================================================================================
+Rev-123 (2026-08-22) — Kesim Listesi "Kullanilabilir Artik Esigi" Varsayilani
+30cm -> 50cm (Muhendislik Karari)
+--------------------------------------------------------------------------------
+- Gerekce: 30 cm'lik demir artigi sahada pratik olarak ise yaramiyor —
+  kapali etriyeye yetmiyor (kolon/kiris etriye cevresi genelde 100-140 cm),
+  TS 500 bindirme ekine de yetmiyor (Ø16 icin bindirme boyu ~65-80 cm).
+  30 cm esik, gercekte hurdaya gidecek parcalari "kazanilmis artik" gibi
+  gosterip fire oranini oldugundan dusuk yansitiyordu.
+- Yeni varsayilan: 50 cm — kisa filiz demiri/pas payi takozu/kucuk ek
+  parcasi olarak sahada gercekten degerlendirilebilecek asgari boy.
+- Degisen: app/ui/demir_hesaplama_window.py satir 763,
+  self.kesim_artik_esigi.setValue(30) -> setValue(50). Tek kaynak
+  dogrulandi, baska hardcode edilmis 30 degeri yok.
+- Not: Esik hala tek sabit deger, capa gore degismiyor (Rev-117 karariyla
+  tutarli). Kullanici ekrandan proje bazinda degistirebiliyor, bu sadece
+  varsayilan deger.
+- Detay: E:\Inşaat Metraj Pro\CLAUDE.md Rev-123 kaydi.
 
 ================================================================================
 Rev-122 (2026-08-22) — Yedek/Kopya Dosya Temizligi (23 Dosya, ~4.69 MB,
