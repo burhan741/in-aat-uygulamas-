@@ -2,7 +2,46 @@
                     INSAAT METRAJ PRO - TUM OZELLIKLER
 ================================================================================
 
-Son Guncelleme: 22 Agustos 2026 (Rev-121)
+Son Guncelleme: 22 Agustos 2026 (Rev-122)
+
+================================================================================
+Rev-122 (2026-08-22) — Yedek/Kopya Dosya Temizligi (23 Dosya, ~4.69 MB,
+Kalici Silme, Kullanici Onayli)
+--------------------------------------------------------------------------------
+- Kullanici talebi: proje genelinde .bak/.bak2/.bak3/*_fixed.py/*_backup.py/
+  *_debug.py/*_autopep8.py/temp_*.py gibi desenlere uyan yedek/kopya
+  dosyalarin temizlenmesi. Projede git YOK, silme kalici oldugu icin once
+  3 listeli rapor (silinecek/bekletilecek/supheli) sunuldu, acik onay
+  alindiktan SONRA silindi.
+- Her aday dosya icin proje genelinde import/referans taramasi yapildi.
+  2 dosya "kullanimda" cikip listeden CIKARILDI:
+  * app/core/calculator_minimal.py — main_window.py:36'da canli fallback
+    import var, SILINMEDI.
+  * .bak_metin / .bak_metin2 dosyalari (11 adet) — henuz test edilmemis
+    yeni metin yedekleri, kasitli olarak BEKLETILDI, SILINMEDI.
+- SILINEN 23 DOSYA:
+  Kok dizin (13): autocad_connector_autopep8.py, autocad_connector_fullfix.py,
+    autocad_connector_pycfix.py, autocad_connector_work.py, fix_debug.py,
+    gantt_fixed_autopep8.py, main_window_fixed.py, maw_backup.py,
+    maw_cascade_backup.py, run_autopep8.py, temp_patched.py,
+    validate_fixed.py, mermer_fixed_tmp.py.
+  yeni_proje/ icinde (10): app/core/autocad_connector_FIXED.py.bak,
+    app/core/calculator_BACKUP_1space.py, app/core/database.py.bak,
+    app/core/database.py.bak2, app/ui/demir_hesaplama_window.py.bak,
+    app/ui/gantt_window.py.bak, app/ui/metraj_analiz_window.py.bak,
+    app/ui/metraj_analiz_window.py.bak3, ast_check_fixed.py,
+    database_fixed_debug.py.
+- Ilginc bulgu: calculator_BACKUP_1space.py hicbir Python kodunda import
+  edilmiyordu AMA InsaatMetrajPro.spec dosyasinin excludes=[...] listesinde
+  duruyordu (satir 170) — yani PyInstaller build'i bu dosyayi EXE'ye
+  bilerek DAHIL ETMIYORDU. Dosyanin olu agirlik oldugunun ekstra kaniti.
+- Dogrulama: Silme sonrasi "python main.py" offscreen modda calistirildi,
+  12 saniye crash olmadan ayakta kaldi, log'da "Temel moduller import
+  edildi" + "gui_uygulamasi() cagirildi" gorundu, error_log.txt'e hicbir
+  ERROR/Traceback dusmedi. Tek stderr ciktisi offscreen platformun
+  zararsiz font uyarisiydi.
+- Sonuc: 4.920.412 byte (~4.69 MB) diskte yer acildi.
+- Detay: E:\Inşaat Metraj Pro\CLAUDE.md Rev-122 kaydi.
 
 ================================================================================
 Rev-121 (2026-08-22) — EKAP API ve Gayrimenkul Degerleme Modulleri Tamamen
