@@ -2,7 +2,53 @@
                     INSAAT METRAJ PRO - TUM OZELLIKLER
 ================================================================================
 
-Son Guncelleme: 22 Agustos 2026 (Rev-124)
+Son Guncelleme: 25 Agustos 2026 (Rev-125)
+
+================================================================================
+Rev-125 (2026-08-25) — PythonAnywhere Puantaj (app_test.py): "Giderler"
+Sekmesi Kaldirildi, Yerine Bagimsiz "Mobil Vinc" Gelir-Gider Defteri Eklendi
+--------------------------------------------------------------------------------
+- Talep: Ana sayfadaki bos/kullanilmayan "Giderler" sekmesi kaldirilip
+  yerine mobil vinc isinden kazanilan (gelir) ve vince harcanan (gider:
+  yakit, bakim, tamir vb.) paralari takip eden, isci/puantaj hesaplarindan
+  TAMAMEN BAGIMSIZ yeni bir sekme istendi.
+- Kapsam: SADECE app_test.py (yerel test kopyasi) - henuz app.py'ye
+  (canliya) tasinmadi.
+- Yeni tablo: vinc_defter (id, tarih, tip['gelir'/'gider'], aciklama,
+  miktar, created_at) - init_db() icine CREATE TABLE IF NOT EXISTS ile
+  eklendi, mevcut tablolara dokunulmadi.
+- Yeni endpoint'ler: POST /api/vinc/ekle (tip+miktar sunucu tarafinda da
+  dogrulanir, gecersiz tip veya miktar<=0 icin 400 doner), GET /api/vinc
+  /liste (tarihe gore yeniden->eskiye, toplam_gelir/toplam_gider/net ile
+  birlikte), POST /api/vinc/sil (id ile siler).
+- UI: Sekme cubugu + alt navigasyonda "Giderler" -> "Mobil Vinc" (crane
+  emoji). Panelde 3 ozet kutusu (Toplam Gelir yesil, Toplam Gider kirmizi,
+  Net Kar/Zarar pozitifse yesil negatifse kirmizi - JS'te dinamik class
+  degisiyor), "+ Gelir Ekle"/"+ Gider Ekle" butonlari, liste (gelir yesil
+  +, gider kirmizi - isaretiyle, her satirda silme butonu). Para girisi
+  mevcut parseTLInput() (Turkce "1.500"/"1500,50" formati) ve fmtTL()
+  yardimcilariyla ayni sekilde calisiyor. Zero-arg modal fonksiyonlari
+  (vincGelirEkleModal/vincGiderEkleModal + paylasilan VINC_TIP degiskeni)
+  kullanildi - CLAUDE.md'deki bilinen "JS string icinde escape quote"
+  tuzagina hic girilmedi.
+- Eski "Giderler" ozelligi: ek_gider tablosu VE /api/gider,
+  /api/gider/<id> route'lari kasten SILINMEDI (kullanici onayiyla veri
+  kaybi riski olmadan sadece arayuzden cikarildi) - backend'de zararsiz,
+  cagrilmayan kod olarak duruyor. /api/yedek/json tablo listesine
+  vinc_defter eklendi (JSON yedek artik bu tabloyu da kapsiyor).
+- Test kaniti: (1) python -m py_compile app_test.py PASS, (2) node --check
+  ile HTML_TEMPLATE icinden AST'yle cikarilan JS ayrica dogrulandi PASS,
+  (3) scratchpad/test_vinc.py - app_test.py izole bir temp klasore
+  kopyalanip oradan import edildi (gercek proje puantaj.db'sine HIC
+  dokunulmadan), Flask test_client ile index sayfasinda "Mobil Vinc" var/
+  "Giderler" yok, gecersiz tip/negatif/sifir miktar 400, gelir+2 gider
+  eklenip liste/toplam/net/siralama dogrulandi, silme sonrasi toplamlar
+  guncellendi, mevcut /api/isci ve eski /api/gider route'unun bozulmadigi
+  ayrica kontrol edildi - 22/22 PASS.
+- DEPLOY BEKLIYOR: Degisiklikler sadece app_test.py'de. Canliya yansimasi
+  icin app_test.py -> app.py'ye tasinip /home/burhan852/app.py'ye
+  yuklenip Web > Reload yapilmasi gerekiyor.
+- Detay: E:\Inşaat Metraj Pro\CLAUDE.md Rev-125 kaydi.
 
 ================================================================================
 Rev-124 (2026-08-22) — KRITIK: Standart Boyu Asan Demir Parcalari Artik
