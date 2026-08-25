@@ -2,7 +2,35 @@
                     INSAAT METRAJ PRO - TUM OZELLIKLER
 ================================================================================
 
-Son Guncelleme: 25 Agustos 2026 (Rev-125)
+Son Guncelleme: 25 Agustos 2026 (Rev-126)
+
+================================================================================
+Rev-126 (2026-08-25) — PythonAnywhere Puantaj: "Bu Haftaki Toplam" Artik
+Civi Kalan Degil Civi Toplam Kullaniyor (app.py + app_test.py)
+--------------------------------------------------------------------------------
+- Talep: Kullanici civi (civi) odeme takibi yapmiyor, hep gider giriyor -
+  "Bu Haftaki Toplam"a civinin ODENMEMIS kismi (civi_kalan) degil, alinan
+  civinin TAMAMI (civi_toplam) gider olarak yansisin istendi.
+- Onceki davranis: Ekranda "Civi Alimi: 0 TL kalan / 31.250 TL toplam"
+  gorunuyordu, civi_kalan=0 oldugu icin (henuz odeme girilmemis olsa bile
+  bu ornekte 0 cikan bir senaryo tarif edildi) 31.250 TL toplama HIC
+  yansimiyordu.
+- Cozum (2 satir, JS loadOzet() icinde, hem app.py hem app_test.py'de):
+  * Ozet satiri artik sade "[civi_toplam] TL" (kirmizi) gosteriyor, eski
+    "X kalan / Y toplam" metni kaldirildi.
+  * buHaftaToplam = toplam_kalan (isci) + max(yemek_net,0) + civi_toplam
+    (onceden civi_kalan idi).
+- Bilincli DOKUNULMAYANLAR: /api/civi/ode, civi_odeme tablosu, "Civi Ode"
+  butonu, civi_kalan alaninin kendisi - hepsi duruyor (ileride odeme
+  takibi tekrar istenebilir).
+- Test: scratchpad/test_civi_toplam.py - hem app.py hem app_test.py'de
+  izole temp-kopya importuyla (gercek puantaj.db'ye dokunulmadan) 9/9
+  PASS: civi_toplam toplama giriyor, odeme yapilsa bile toplam
+  DEGISMIYOR (istenen davranis), /api/civi/ode hala calisiyor, eski
+  metin sablonu kalktigi dogrulandi. py_compile + node --check
+  (gomulu JS) PASS.
+- DEPLOY BEKLIYOR: Rev-125 (Mobil Vinc) ile ayni backlog'ta.
+- Detay: E:\Inşaat Metraj Pro\CLAUDE.md Rev-126 kaydi.
 
 ================================================================================
 Rev-125 (2026-08-25) — PythonAnywhere Puantaj (app_test.py): "Giderler"

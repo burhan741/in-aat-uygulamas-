@@ -102,6 +102,14 @@ Her geliştirilen programda **yerleşik kullanım kılavuzu** bulunmalıdır:
 
 # Bilinen Hatalar ve Kesin Kurallar
 
+## Rev-126 (2026-08-25) — Puantaj: "Bu Haftaki Toplam"da Çivi Artık `civi_kalan` Değil `civi_toplam` Kullanıyor (app.py + app_test.py, deploy bekliyor)
+- **Şikayet:** Kullanıcı çivi ödeme takibi yapmıyor (hep gider giriyor, hiç "Çivi Öde" tıklamıyor) — ekranda "Çivi Alımı: 0 TL kalan / 31.250 TL toplam" görünüyordu ve `civi_kalan=0` olduğu için 31.250 TL "Bu Haftaki Toplam"a hiç yansımıyordu. Not: `civi_kalan` sıfır değildi aslında (ödeme yoktu) — bu örnekte kullanıcı muhtemelen farklı bir senaryo tarif etti, gerçek kök neden zaten `civi_kalan`'ın "sadece ödenmemiş kısım" mantığında olması ve kullanıcının "tamamı gider sayılsın" istemesiydi.
+- **Kavramsal değişiklik:** Bu uygulamada çivi artık iki farklı şey: `civi_kalan` (= civi_toplam − civi_odenen, ödeme takibi yapılırsa anlamlı) hâlâ "Çivi Öde" butonunun görünürlüğü için kullanılıyor; ama "Bu Haftaki Toplam" hesabı artık `civi_toplam`'ın TAMAMINI kullanıyor — kullanıcı çivi ödemesini hiç girmese bile alınan çivinin tam bedeli toplama gider olarak yansır.
+- **Değişen 2 satır (JS, `loadOzet()` içinde, her iki dosyada aynı):** Özet satırı `'X kalan / Y toplam'` yerine sade `'[civi_toplam] TL'` (kırmızı/`er` sınıfı) gösteriyor; `buHaftaToplam = toplam_kalan + max(yNet,0) + civi_toplam` (önceden `civi_kalan` idi).
+- **Bilinçli olarak DOKUNULMADI:** `/api/civi/ode`, `civi_odeme` tablosu, "Çivi Öde" butonu, `civi_kalan` alanının kendisi — hepsi duruyor, ileride ödeme takibi tekrar isteniyor olabilir. Sadece "toplama hangi alan katılıyor" değişti.
+- **Test kanıtı:** `scratchpad/test_civi_toplam.py` — hem `app.py` hem `app_test.py` üzerinde (izole temp-kopya importu, gerçek `puantaj.db`'ye dokunulmadan) 9/9 PASS: `civi_toplam` toplama giriyor, ödeme yapılsa bile (civi_kalan düşse bile) toplam DEĞİŞMİYOR (istenen davranış — tam gideri her zaman yansıtıyor), `/api/civi/ode` hâlâ çalışıyor, eski "kalan / ... toplam" metin şablonu HTML'den kalktığı doğrulandı. `py_compile` + `node --check` (gömülü JS) PASS.
+- **DEPLOY BEKLİYOR:** Bu değişiklik de Rev-125 (Mobil Vinç) ile aynı deploy backlog'unda — `/home/burhan852/app.py`'ye yükleyip Web > Reload gerekiyor.
+
 ## Rev-125 (2026-08-25) — Puantaj (app_test.py): "Giderler" Sekmesi Kaldırıldı, "Mobil Vinç" Gelir-Gider Defteri Eklendi (SADECE app_test.py, deploy bekliyor)
 - **Talep:** Ana sayfadaki boş "Giderler" sekmesi kaldırılıp yerine mobil vinç işinden kazanılan (gelir) ve vince harcanan (gider: yakıt/bakım/tamir) paraları takip eden, işçi/puantaj/hakediş hesaplarından **tamamen bağımsız** yeni bir sekme eklendi.
 - **Yeni tablo:** `vinc_defter` (id, tarih, tip['gelir'/'gider'], aciklama, miktar, created_at) — `init_db()` içine `CREATE TABLE IF NOT EXISTS` ile eklendi, mevcut tablolara dokunulmadı.
