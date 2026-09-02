@@ -2,7 +2,64 @@
                     INSAAT METRAJ PRO - TUM OZELLIKLER
 ================================================================================
 
-Son Guncelleme: 02 Eylul 2026 (Rev-131, AŞAMA 4/4 — TAMAMLANDI)
+Son Guncelleme: 02 Eylul 2026 (Rev-132, COKLU TABLO DESTEGI eklendi)
+
+================================================================================
+Rev-132 (2026-09-02) — İstinat Demir Hesabı: ÇOKLU TABLO Desteği (kullanıcı geri bildirimi)
+(metraj_analiz_window.py — _autocad_poz_donati_oku dongu haline getirildi)
+--------------------------------------------------------------------------------
+- SORUN (kullanicinin gercek testinde ortaya cikti): Kullanici Rev-131
+  butonunu gercek projesinde denedi, "770 obje secildi... 554 metin okundu ->
+  3 satir x 5 sutun izgara" ciktisi geldi ve "SUTUN TESPITI: BASARISIZ" oldu.
+  Ham grid'e bakildiginda ayni baslik ("TOPLAM BOY (m) ŞEKİL ADET POZ BOY(m)
+  ÇAP(mm)") BIRDEN FAZLA KEZ tekrarlandigi gorulup teshis edildi: kullanici
+  TEK bir kutu ile BIRDEN FAZLA ayri "Poza Gore Donati Metraj Tablosu"nu
+  (farkli yapisal elemanlara ait, projede ~6 ayri tablo) BIRLIKTE secmisti.
+- KOK NEDEN: tablo_hucrelerini_kumele TEK TABLO varsayimiyla tasarlandi.
+  Birden fazla tablo ayni anda secilince, tablolar ARASI dev bosluk (fiziksel
+  olarak cizimde uzak konumlandirilmis ayri tablolar) ile tablo ICI gercek
+  satir/sutun bosluklari ayni oto-esik hesabina giriyor; _oto_esik_bul en
+  buyuk sicramayi (tablolar-arasi bosluk) esik secip, tablo ICI gercek
+  ayraclari (cok daha kucuk) "gurultu" sanip hepsini eritiyor -> 770 obje
+  birkaç dev hucreye sikisiyor.
+- COZUM (otomatik coklu-tablo ayirma DEGIL, kullanicidan sirali secim):
+  Tablolarin fiziksel sinirlarini guvenilir sekilde otomatik tespit etmek
+  (bosluk esigi tahmini gerektirir, kirilgan) yerine, kullanici tablolari
+  TEK TEK sectiriliyor:
+    - Yeni yardimci metod: _poz_donati_tek_tablo_oku(tablo_no) — TEK bir
+      get_poz_bazli_donati_tablosu() cagrisi yapar (tek tablo secimi icin),
+      basarili poz kayitlarini "T{tablo_no}-{poz_no}" seklinde ETIKETLEYIP
+      dondurur (farkli tablolardan gelen ayni "Poz 1" isimlerinin sapma
+      raporunda/Excel'de karismamasi icin).
+    - _autocad_poz_donati_oku() artik bir DONGU: her basarili turdan sonra
+      QMessageBox.question ile "Baska tablo var mi?" sorar (Evet -> bir
+      sonraki tabloyu sectirir, Hayir -> dongu biter). Basarisiz/atlanan bir
+      turda da (bos secim, sutun tespiti basarisiz + iptal) o ana kadar
+      BIRIKEN veri KAYBOLMAZ, kullaniciya devam edip etmeyecegi sorulur.
+    - Dongu bittiginde TUM tablolardan toplanan poz kayitlari TEK SEFERDE
+      poz_kayitlarindan_hesapla() + poz_kayitlarini_demir_bilgisine_cevir()
+      ile islenip TEK bir ozet mesaji + TEK bir kat ekleme islemi yapiliyor
+      (ozette "Islenen tablo sayisi: N" satiri eklendi).
+- Baslangic bilgilendirme mesaji guncellendi: "SADECE TEK BIR tabloyu secin
+  ... Birden fazla tablonuz varsa merak etmeyin, bu tablo islendikten sonra
+  'Baska tablo var mi?' diye soracagiz" notu eklendi. Sutun sirasi diyalog
+  metnine de "cok fazla/az sutun sayisi cikarsa muhtemelen birden fazla
+  tablo birlikte secildi, Iptal edip TEK tablo secin" ipucu eklendi.
+- Test: scratchpad/test_ui_istinat_demir_hesabi.py'ye test_coklu_tablo_dongusu
+  eklendi (4/4 PASS) — SahteConnector artik bir GRID KUYRUGU da kabul
+  edebiliyor (her cagride siradaki tabloyu dondurur), QMessageBox.question
+  "_SORU_YANITLARI" kuyruguyla mock'landi (Evet, sonra Hayir). 2 ayri tablo
+  (Ø18/Ø12 iceren + Ø16 iceren) sirayla islenip TEK kata 4 poz olarak dogru
+  biriktigi, poz etiketlerinin T1-/T2- ile ayristigi dogrulandi. Onceki 3 UI
+  testi + Asama 1/2/3'un tum testleri (11+9+9) regresyon icin tekrar
+  kosuldu, hepsi hala PASS. py_compile (her iki dosya) PASS.
+- KAPSAM DISI (bilincli, kullaniciya soruldu): Tablolarin fiziksel konumdan
+  OTOMATIK ayirt edilmesi (kullanici tek kutu cizip hepsini birden secebilsin)
+  denenmedi — bu, tablolar-arasi bosluk esigini guvenilir tahmin etmeyi
+  gerektirir ve kirilgan olurdu (farkli DWG'lerde tablo yerlesimi degisir).
+  Kullaniciya iki secenek sunuldu (tek tek sec vs. otomatik ayirma
+  gelistir), "birden fazla secme sansimiz olur mu" yaniti ile SIRALI SECIM
+  yolu (bu Rev) tercih edildi.
 
 ================================================================================
 Rev-131 (2026-09-02) — İSTİNAT DEMİR HESABI Butonu — AŞAMA 4/4 (TAMAMLANDI)

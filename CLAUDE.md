@@ -102,6 +102,13 @@ Her geliştirilen programda **yerleşik kullanım kılavuzu** bulunmalıdır:
 
 # Bilinen Hatalar ve Kesin Kurallar
 
+## Rev-132 (2026-09-02) — İstinat Demir Hesabı: ÇOKLU TABLO Desteği
+- **Olay:** Kullanıcı gerçek projede butonu denedi, 770 obje seçti → "3 satır x 5 sütun ızgara" + "SÜTUN TESPİTİ: BASARISIZ". Ham grid'de aynı başlık ("TOPLAM BOY (m) ŞEKİL ADET POZ...") birden fazla kez tekrarlanıyordu — kullanıcı **tek kutu ile birden fazla ayrı tabloyu birlikte** seçmişti (~6 tablo).
+- **Kök neden:** `tablo_hucrelerini_kumele` TEK TABLO varsayımıyla tasarlandı. Birden fazla tablo birlikte seçilince, tablolar-arası dev boşluk ile tablo-içi gerçek satır/sütun boşluğu aynı oto-eşik hesabına giriyor; `_oto_esik_bul` en büyük sıçramayı (tablolar-arası boşluk) eşik seçip tablo-içi gerçek ayraçları "gürültü" sanıp hepsini eritiyor.
+- **Çözüm (otomatik tablo-ayırma DEĞİL — kırılgan olurdu):** Kullanıcıya seçenek sunuldu ("tek tek seç" vs "otomatik ayırmayı geliştir"), kullanıcı "birden fazla seçme şansımız olur mu" diyerek **sıralı seçim**i seçti. `_autocad_poz_donati_oku()` artık döngü: her tablo TEK TEK seçtiriliyor (`_poz_donati_tek_tablo_oku`), her turdan sonra "Başka tablo var mı?" soruluyor, poz numaraları `T{tablo_no}-{poz_no}` ile etiketleniyor (karışmasın diye), döngü bitince TÜM tablolar TEK SEFERDE hesaplanıp TEK kat ekleme yapılıyor.
+- Test: `scratchpad/test_ui_istinat_demir_hesabi.py` → `test_coklu_tablo_dongusu` eklendi (4/4 PASS) — `SahteConnector` artık bir grid KUYRUĞU kabul ediyor, `QMessageBox.question` sıra-tabanlı mock'landı. Detay: `PROGRAM_OZELLIKLERI.txt` Rev-132.
+- **KURAL (genel):** Bir "kullanıcı kutu ile seçer" AutoCAD okuma aracı tasarlarken, kullanıcının aslında BİRDEN FAZLA ayrı öğeyi (tablo, grup vb.) tek seferde seçebileceğini varsay — ya açıkça "sadece TEK ... seçin" uyarısı ver, ya da döngüsel/sıralı seçim akışı kur. Otomatik çoklu-öğe ayırma (boşluk eşiği tahmini) kırılgan bir çözümdür, önce kullanıcıya sorulmalı.
+
 ## Rev-131 (2026-09-02) — İSTİNAT DEMİR HESABI Butonu — AŞAMA 4/4 (TAMAMLANDI)
 - **Aşama 3 gerçek AutoCAD ile doğrulandı** ("hesap ve tonaj çıktısı doğru geldi"). 4 aşamalı "Poza Göre Donatı Metraj Tablosu Okuma Aracı" projesi tamamlandı.
 - **Adlandırma kararı netleşti:** Kullanıcının "istinat demir hesabı" talebi bu YENİ aracın buton adı olarak uygulandı ("İSTİNAT DEMİR HESABI", mor, Demir Metrajı sekmesi, KOLON FİLİZİ OKU'nun yanında). Eski "ÇAP BAZLI TONAJ" ekranına (Rev-127) **dokunulmadı** — farklı veri kaynakları (biri çoklu-okuma birikimi, diğeri tek tablo okuması).
