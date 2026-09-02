@@ -102,6 +102,13 @@ Her geliştirilen programda **yerleşik kullanım kılavuzu** bulunmalıdır:
 
 # Bilinen Hatalar ve Kesin Kurallar
 
+## Rev-130 (2026-09-02) — Poza Göre Donatı Metraj Tablosu Okuma Aracı — AŞAMA 3/4
+- **Aşama 2 gerçek AutoCAD ile doğrulandı:** "SÜTUN TESPİTİ: OTOMATIK", 19 poz kaydı, kullanıcı "eşleşiyor" diye onayladı.
+- **Eklenen (Aşama 3):** `poz_kayitlarindan_hesapla()` (autocad_connector.py, saf fonksiyon) — çap bazlı kg/ton hesabı (`DEMIR_AGIRLIK_TABLOSU`) + her pozun hesaplanan boyunu (`adet×boy`) tablodaki hazır TOPLAM hücresiyle karşılaştırıp tolerans (yuvarlama farklarını eleyen `max(0.05m, %0.5)`) aşan sapmaları raporluyor.
+- `get_poz_bazli_donati_tablosu()` artık konsola "HESAP — ÇAP BAZLI TOPLAM" + "GENEL TOPLAM: ... kg | ... ton" + sapma raporu da basıyor (`"hesap"` anahtarı altında döner).
+- Test: `scratchpad/test_poz_donati_hesap.py` 8/8 PASS — gerçek sapma senaryosu YAKALANIYOR, küçük yuvarlama farkı YANLIŞ ALARM VERMİYOR. Aşama 1 (11/11) + Aşama 2 (9/9) regresyon PASS. Detay: `PROGRAM_OZELLIKLERI.txt` Rev-130.
+- **Sıradaki:** Kullanıcının gerçek tabloyla Aşama 3'ü (kg/ton + sapma raporu) onaylaması bekleniyor; sonra Aşama 4 (UI butonu + "istinat demir hesabı" adlandırma kararı).
+
 ## Rev-129 (2026-09-02) — Poza Göre Donatı Metraj Tablosu Okuma Aracı — AŞAMA 2/4
 - **Aşama 1 gerçek AutoCAD ile doğrulandı:** Kullanıcı `test_poz_donati_gercek_autocad.py`'yi gerçek çizimle çalıştırdı → 143 seçim, 103 metin, 21 satır x 8 sütun grid, gözle "doğru" onaylandı. Koordinat bazlı kümeleme gerçek veride çalışıyor.
 - **Eklenen (Aşama 2):** `cap_normalize_et`, `_baslik_normalize`, `_baslik_satirini_bul`, `grid_den_poz_kayitlarini_cikar` (hepsi saf, autocad_connector.py). **Kritik tasarım kararı:** çap-bazlı TOPLAM sütunlarının hangi çapa ait olduğu **header metninden değil, veri satırındaki ÇAP sütunuyla çapraz korelasyondan** çıkarılıyor — bu, ekran görüntüsündeki "TOPLAM BOY (m)" gibi çok-sütunlu birleşik üst başlığın gerçek konumunu bilmeye gerek bırakmıyor (2 satırlı iç içe header sorununu bypass ediyor).

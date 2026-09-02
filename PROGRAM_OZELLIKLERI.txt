@@ -2,7 +2,45 @@
                     INSAAT METRAJ PRO - TUM OZELLIKLER
 ================================================================================
 
-Son Guncelleme: 02 Eylul 2026 (Rev-129, AŞAMA 2/4 — devam ediyor)
+Son Guncelleme: 02 Eylul 2026 (Rev-130, AŞAMA 3/4 — devam ediyor)
+
+================================================================================
+Rev-130 (2026-09-02) — Poza Göre Donatı Metraj Tablosu Okuma Aracı — AŞAMA 3/4
+(autocad_connector.py — kg/ton hesabi + tablodaki hazir TOPLAM ile karsilastirma)
+--------------------------------------------------------------------------------
+- ONCEKI ASAMA (Rev-129) GERCEK AutoCAD ILE DOGRULANDI: Kullanici gercek
+  tabloyla test etti -> "SUTUN TESPITI: OTOMATIK", 19 poz kaydi cikti (Poz 1-11,
+  13-20 — Poz 12 tabloda yok, atlanan degil), her pozun adet/cap/boy + tablo-
+  toplam degeri AutoCAD'deki tabloyla "eslesiyor" diye onaylandi.
+- Bu Rev'de eklenen (SAF, COM bagimsiz) fonksiyon: poz_kayitlarindan_hesapla
+  (autocad_connector.py, grid_den_poz_kayitlarini_cikar'dan hemen sonra) —
+  her poz icin hesaplanan_boy=adet*boy, DEMIR_AGIRLIK_TABLOSU (TS 708) ile
+  agirlik_kg; capa gore gruplanip cap_ozeti + genel toplam (adet/boy_m/
+  agirlik_kg) + cubuk_adet (12m) uretir. Ayrica her pozun HESAPLANAN boyu,
+  tablodaki hazir TOPLAM hucresiyle (tablo_toplamlari) karsilastirilir —
+  fark toleranstan (max(0.05m, tablo_deger*%0.5) — yuvarlama farklarini
+  yanlis alarm olarak isaretlememek icin) buyukse "sapmalar" listesine
+  dusuyor, tabloyu dolduran kisinin adet/boy/toplamdan birini yanlis
+  girdigi satirlari yakalar.
+- get_poz_bazli_donati_tablosu() guncellendi: basarili poz kaydi varsa
+  otomatik olarak poz_kayitlarindan_hesapla()'yi cagirip sonucu "hesap"
+  anahtarinda donduruyor VE konsola "HESAP — CAP BAZLI TOPLAM" tablosu +
+  "GENEL TOPLAM: ... kg | ... ton" + sapma varsa "⚠ N POZDA SAPMA" (yoksa
+  "✓ Tum pozlarda hesaplanan boy, tablodaki TOPLAM ile uyusuyor") basiyor.
+- Test: scratchpad/test_poz_donati_hesap.py — 8/8 PASS. Kullanicinin gercek
+  dogrulanmis 7 poz verisiyle cap_ozeti/genel toplam/tonaj dogrulugu, gercek
+  (dogrulanmis) tabloda SIFIR sapma, kucuk yuvarlama farkinin (0.0012m)
+  YANLIS ALARM VERMEDIGI, gercek bir veri-girisi hatasinin (106.0 yerine
+  90.0 yazilmis gibi) DOGRU YAKALANDIGI, tablo_toplamlari bos oldugunda
+  sapma kontrolunun sessizce atlandigi, cubuk adedi ve bos liste durumlari
+  dogrulandi. Asama 1 (11/11) ve Asama 2 (9/9) testleri regresyon icin
+  tekrar kosuldu, hala PASS. py_compile PASS.
+- SIRADAKI (Asama 4, kullanici onayi ile devam edilecek): metraj_analiz_
+  window.py'ye buton (KOLON FILIZI OKU deseni: buton+enable-noktasi+handler),
+  sonucu mevcut "Demir Metrajı" kat akisina/Excel'e/Kesim Listesi'ne
+  baglama. "istinat demir hesabi" adlandirma karari bu asamada netlesecek.
+  Once kullanicinin GERCEK tabloyla Asama 3'u (kg/ton + sapma raporu
+  konsol ciktisi dogru mu) onaylamasi bekleniyor.
 
 ================================================================================
 Rev-129 (2026-09-02) — Poza Göre Donatı Metraj Tablosu Okuma Aracı — AŞAMA 2/4
