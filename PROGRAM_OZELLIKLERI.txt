@@ -2,7 +2,45 @@
                     INSAAT METRAJ PRO - TUM OZELLIKLER
 ================================================================================
 
-Son Guncelleme: 25 Agustos 2026 (Rev-126)
+Son Guncelleme: 02 Eylul 2026 (Rev-127)
+
+================================================================================
+Rev-127 (2026-09-02) — Akilli Metraj Analizi: "CAP BAZLI TONAJ" Tablosu Eklendi
+(metraj_analiz_window.py, Demir Metraji sekmesi)
+--------------------------------------------------------------------------------
+- Talep: Demir metrajini caplara (mm) gore ayirip toplam tonaji tek bakista
+  goren bir tablo istendi (kullanici referans olarak AutoCAD'den alinan bir
+  "Demir Metraj Tablosu" ekran goruntusu paylasti — o tablo aslinda poz bazli
+  bukum cetveliydi, kullanici sadece cap bazli tonaj ozetini istedigini
+  netlestirdi).
+- Yeni sinif: CapBazliTonajDialog(QDialog) — SarfiyatAyarlariDialog ile ayni
+  stil/tema. Tum katlarda o ana kadar toplanan demirleri (self.demir_kat_verileri)
+  cap'e gore gruplar, her cap icin: Adet, Toplam Boy (m), Birim Agirlik (kg/m,
+  TS 708 — DEMIR_BIRIM_AGIRLIK), Toplam Agirlik (kg), Toplam Agirlik (ton)
+  gosterir + GENEL TOPLAM satiri + kendi Excel'e Aktar butonu.
+- Yeni buton: "ÇAP BAZLI TONAJ" (mavi, Demir Metraji sekmesi altinda, DEMIR
+  EXCEL'E AKTAR / KESIM LISTESINE AKTAR butonlarinin altinda) — demir eklenene
+  kadar disabled, ilk basarili hesaplamadan sonra otomatik enabled (ayni 3
+  yerde btn_demir_excel/btn_kesime_aktar ile birlikte enable ediliyor).
+- Hesaplama saf fonksiyon olarak ayrildi: CapBazliTonajDialog._hesapla(demirler)
+  (staticmethod) — QDialog/QApplication olmadan da test edilebilir.
+- Test kaniti: scratchpad/test_cap_bazli_tonaj.py (3/3 PASS — bos liste, tek
+  cap, coklu cap + ayni capin farkli kalemlerinin dogru biriktigi elle
+  hesaplanmis degerlerle dogrulandi) + scratchpad/test_ui_cap_tonaj.py
+  (headless PyQt, offscreen — buton baslangicta disabled/veri sonrasi enabled,
+  dialog tablosu dogru cap/satir sayisiyla doluyor, bos durumda crash yok —
+  QMessageBox.warning/information exec() ile sonsuza kadar bloke ettigi icin
+  testte no-op'a monkeypatch edildi, bkz. asagidaki genel test notu). py_compile
+  PASS.
+- GENEL TEST NOTU (yeni): Headless (offscreen) PyQt testinde QMessageBox.warning/
+  information/question gibi .exec() cagiran modal fonksiyonlari cagiran bir kod
+  yolu test edilecekse, kullanicidan hicbir zaman tik gelmeyecegi icin cagri
+  SONSUZA KADAR bloke olur (timeout'a kadar hicbir cikti vermez). Cozum: testin
+  basinda `QMessageBox.warning = staticmethod(lambda *a, **k: None)` (ve
+  gerekiyorsa .information/.question) ile no-op'a cevir.
+- Dokunulmadi: mevcut per-hesaplama popup ("ÇAP BAZLI DAĞILIM" metni), Excel
+  export'taki kat bazli tablolar — bunlar ayri, bu yeni tablo TUM katlarin
+  BIRLESIK cap ozetini ayri bir ekranda gosteriyor.
 
 ================================================================================
 Rev-126 (2026-08-25) — PythonAnywhere Puantaj: "Bu Haftaki Toplam" Artik

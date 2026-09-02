@@ -102,6 +102,12 @@ Her geliştirilen programda **yerleşik kullanım kılavuzu** bulunmalıdır:
 
 # Bilinen Hatalar ve Kesin Kurallar
 
+## Rev-127 (2026-09-02) — Akıllı Metraj Analizi: "ÇAP BAZLI TONAJ" Tablosu Eklendi
+- **Talep:** Kullanıcı bir AutoCAD "Demir Metraj Tablosu" (poz bazlı büküm cetveli) ekran görüntüsü paylaştı; netleştirme sonrası istenen sadece "demir metrajını çaplara göre ayırıp toplam tonajı bulmak" çıktı — poz/büküm şekli krokisi İSTENMEDİ.
+- **Eklenen:** `metraj_analiz_window.py` → yeni `CapBazliTonajDialog(QDialog)` sınıfı + Demir Metrajı sekmesinde yeni "ÇAP BAZLI TONAJ" butonu (mavi, DEMİR EXCEL'E AKTAR / KESİM LİSTESİNE AKTAR altında). Tüm katlardaki `demir_kat_verileri` çapa göre gruplanıp Adet/Toplam Boy(m)/Birim Ağırlık(kg/m, TS 708)/Toplam Ağırlık(kg)/Toplam Ağırlık(ton) + GENEL TOPLAM + kendi Excel export'u gösteriliyor. Hesaplama `CapBazliTonajDialog._hesapla()` (staticmethod) olarak UI'dan bağımsız, test edilebilir.
+- **Test:** `scratchpad/test_cap_bazli_tonaj.py` (3/3, saf hesaplama) + `scratchpad/test_ui_cap_tonaj.py` (headless PyQt, buton enable/disable akışı + dialog tablo doğruluğu) — hepsi PASS. Detay: `PROGRAM_OZELLIKLERI.txt` Rev-127.
+- **GENEL TEST DERSİ (yeni):** Headless (offscreen) PyQt testinde `QMessageBox.warning/information/question` gibi `.exec()` çağıran modal fonksiyonları tetikleyen bir kod yolu test edilirse, kullanıcıdan hiçbir zaman tık gelmeyeceği için çağrı **sonsuza kadar bloke olur** (arka planda asılı kalır, timeout'a kadar çıktı vermez). Test başında `QMessageBox.warning = staticmethod(lambda *a, **k: None)` (gerekirse `.information`/`.question` de) ile no-op'a çevir — aksi halde PowerShell komutu 120s timeout'a takılıp arka plana düşer.
+
 ## Rev-126 (2026-08-25) — Puantaj: "Bu Haftaki Toplam"da Çivi Artık `civi_kalan` Değil `civi_toplam` Kullanıyor (app.py + app_test.py, deploy bekliyor)
 - **Şikayet:** Kullanıcı çivi ödeme takibi yapmıyor (hep gider giriyor, hiç "Çivi Öde" tıklamıyor) — ekranda "Çivi Alımı: 0 TL kalan / 31.250 TL toplam" görünüyordu ve `civi_kalan=0` olduğu için 31.250 TL "Bu Haftaki Toplam"a hiç yansımıyordu. Not: `civi_kalan` sıfır değildi aslında (ödeme yoktu) — bu örnekte kullanıcı muhtemelen farklı bir senaryo tarif etti, gerçek kök neden zaten `civi_kalan`'ın "sadece ödenmemiş kısım" mantığında olması ve kullanıcının "tamamı gider sayılsın" istemesiydi.
 - **Kavramsal değişiklik:** Bu uygulamada çivi artık iki farklı şey: `civi_kalan` (= civi_toplam − civi_odenen, ödeme takibi yapılırsa anlamlı) hâlâ "Çivi Öde" butonunun görünürlüğü için kullanılıyor; ama "Bu Haftaki Toplam" hesabı artık `civi_toplam`'ın TAMAMINI kullanıyor — kullanıcı çivi ödemesini hiç girmese bile alınan çivinin tam bedeli toplama gider olarak yansır.
@@ -539,7 +545,7 @@ PROMPT` — Claude'un kendi piyasa bilgisiyle değerleme yapar
 - **Gerçekçilik:** Claude'un eğitim verisi (Ağustos 2025) Türkiye piyasası için yeterince güvenilir. Kesin/yasal değerleme için SPK lisanslı uzman gerektiği rapora ekleniyor.
 
 ## Modül Durumları (2026-04-26 itibarıyla)
-- `metraj_analiz_window.py` — **ÇALIŞIYOR** (patch_metraj_analiz.py ile 17 fonksiyon düzeltildi; Rev-113: demir/duvar Excel buton karışıklığı düzeltildi; Rev-114: "KESİM LİSTESİNE AKTAR" butonu — demir verisini AutoCAD'e ikinci kez bağlanmadan/Excel'e gitmeden Kesim Listesi'ne bellek-içi aktarır)
+- `metraj_analiz_window.py` — **ÇALIŞIYOR** (patch_metraj_analiz.py ile 17 fonksiyon düzeltildi; Rev-113: demir/duvar Excel buton karışıklığı düzeltildi; Rev-114: "KESİM LİSTESİNE AKTAR" butonu — demir verisini AutoCAD'e ikinci kez bağlanmadan/Excel'e gitmeden Kesim Listesi'ne bellek-içi aktarır; Rev-127: "ÇAP BAZLI TONAJ" butonu — tüm katların demirini çapa göre gruplayıp toplam ağırlık/tonaj gösteren ayrı dialog)
 - `ince_isler_3d_widget.py` — **ÇALIŞIYOR** (tümden yeniden yazıldı, 4-space PEP8)
 - `autocad_connector.py` — **ÇALIŞIYOR** (2783 satır, 39 metot, 4-space PEP8 — 4 agent ile tümden yeniden yazıldı)
 - `gantt_window.py` — **ÇALIŞIYOR** (Rev-15: tümden yeniden yazıldı, 4-space PEP8, 2515 satır)
