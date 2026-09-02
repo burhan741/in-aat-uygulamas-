@@ -102,6 +102,15 @@ Her geliştirilen programda **yerleşik kullanım kılavuzu** bulunmalıdır:
 
 # Bilinen Hatalar ve Kesin Kurallar
 
+## Rev-131 (2026-09-02) — İSTİNAT DEMİR HESABI Butonu — AŞAMA 4/4 (TAMAMLANDI)
+- **Aşama 3 gerçek AutoCAD ile doğrulandı** ("hesap ve tonaj çıktısı doğru geldi"). 4 aşamalı "Poza Göre Donatı Metraj Tablosu Okuma Aracı" projesi tamamlandı.
+- **Adlandırma kararı netleşti:** Kullanıcının "istinat demir hesabı" talebi bu YENİ aracın buton adı olarak uygulandı ("İSTİNAT DEMİR HESABI", mor, Demir Metrajı sekmesi, KOLON FİLİZİ OKU'nun yanında). Eski "ÇAP BAZLI TONAJ" ekranına (Rev-127) **dokunulmadı** — farklı veri kaynakları (biri çoklu-okuma birikimi, diğeri tek tablo okuması).
+- `metraj_analiz_window.py`: `self.btn_poz_donati` + `_autocad_poz_donati_oku()` handler — **KOLON FİLİZİ OKU deseni birebir**: buton+enable-noktası(AutoCAD bağlantısı)+handler. Başlık bulunamazsa (`sutun_tespiti=="basarisiz"`) AutoCAD'e tekrar seçtirmeden `QInputDialog.getText` ile sütun sırası soruyor (proje brief'inin "başlık yoksa sor" kararı).
+- `autocad_connector.py`: yeni saf fonksiyon `poz_kayitlarini_demir_bilgisine_cevir()` — poz kayıtlarını mevcut `DemirBilgisi` formatına çeviriyor (BOY metre→cm, TOPLAM_BOY metre kalıyor — proje geneli birim konvansiyonuna uyumlu), hem otomatik hem manuel yolda ortak kullanılıyor.
+- Test: `scratchpad/test_ui_istinat_demir_hesabi.py` 3/3 PASS (headless, sahte connector). Aşama 1/2/3 testleri (11+9+9) regresyon PASS. Detay: `PROGRAM_OZELLIKLERI.txt` Rev-131.
+- **GENEL TEST DERSİ (Y-ekseni versiyonu, Rev-128'deki X-ekseni "BİLİNEN SINIR"ın aynısı):** Yeni bir sentetik test grid'i yazarken **en az 2 veri satırı** kullan — tek satırlık veride satır kümelemesinin "gürültü vs gerçek satır aralığı" ayrımı için sinyali olmuyor, hücreler yanlışlıkla birden fazla "satıra" bölünebiliyor (production'da nadir ama YENİ test yazarken unutma).
+- **Durum:** Kod tarafı tamamlandı ve doğrulandı; kullanıcının gerçek uygulamada (main.py) butonu deneyip nihai onayı bekleniyor.
+
 ## Rev-130 (2026-09-02) — Poza Göre Donatı Metraj Tablosu Okuma Aracı — AŞAMA 3/4
 - **Aşama 2 gerçek AutoCAD ile doğrulandı:** "SÜTUN TESPİTİ: OTOMATIK", 19 poz kaydı, kullanıcı "eşleşiyor" diye onayladı.
 - **Eklenen (Aşama 3):** `poz_kayitlarindan_hesapla()` (autocad_connector.py, saf fonksiyon) — çap bazlı kg/ton hesabı (`DEMIR_AGIRLIK_TABLOSU`) + her pozun hesaplanan boyunu (`adet×boy`) tablodaki hazır TOPLAM hücresiyle karşılaştırıp tolerans (yuvarlama farklarını eleyen `max(0.05m, %0.5)`) aşan sapmaları raporluyor.
@@ -567,7 +576,7 @@ PROMPT` — Claude'un kendi piyasa bilgisiyle değerleme yapar
 - **Gerçekçilik:** Claude'un eğitim verisi (Ağustos 2025) Türkiye piyasası için yeterince güvenilir. Kesin/yasal değerleme için SPK lisanslı uzman gerektiği rapora ekleniyor.
 
 ## Modül Durumları (2026-04-26 itibarıyla)
-- `metraj_analiz_window.py` — **ÇALIŞIYOR** (patch_metraj_analiz.py ile 17 fonksiyon düzeltildi; Rev-113: demir/duvar Excel buton karışıklığı düzeltildi; Rev-114: "KESİM LİSTESİNE AKTAR" butonu — demir verisini AutoCAD'e ikinci kez bağlanmadan/Excel'e gitmeden Kesim Listesi'ne bellek-içi aktarır; Rev-127: "ÇAP BAZLI TONAJ" butonu — tüm katların demirini çapa göre gruplayıp toplam ağırlık/tonaj gösteren ayrı dialog)
+- `metraj_analiz_window.py` — **ÇALIŞIYOR** (patch_metraj_analiz.py ile 17 fonksiyon düzeltildi; Rev-113: demir/duvar Excel buton karışıklığı düzeltildi; Rev-114: "KESİM LİSTESİNE AKTAR" butonu — demir verisini AutoCAD'e ikinci kez bağlanmadan/Excel'e gitmeden Kesim Listesi'ne bellek-içi aktarır; Rev-127: "ÇAP BAZLI TONAJ" butonu — tüm katların demirini çapa göre gruplayıp toplam ağırlık/tonaj gösteren ayrı dialog; Rev-131: "İSTİNAT DEMİR HESABI" butonu — Poza Göre Donatı Metraj Tablosu'nu koordinat bazlı okuyup kg/ton hesaplayan ve tablodaki hazır TOPLAM ile karşılaştıran araç, gerçek AutoCAD verisiyle uçtan uca doğrulandı)
 - `ince_isler_3d_widget.py` — **ÇALIŞIYOR** (tümden yeniden yazıldı, 4-space PEP8)
 - `autocad_connector.py` — **ÇALIŞIYOR** (2783 satır, 39 metot, 4-space PEP8 — 4 agent ile tümden yeniden yazıldı)
 - `gantt_window.py` — **ÇALIŞIYOR** (Rev-15: tümden yeniden yazıldı, 4-space PEP8, 2515 satır)

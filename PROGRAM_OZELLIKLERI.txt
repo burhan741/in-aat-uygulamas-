@@ -2,7 +2,72 @@
                     INSAAT METRAJ PRO - TUM OZELLIKLER
 ================================================================================
 
-Son Guncelleme: 02 Eylul 2026 (Rev-130, AŞAMA 3/4 — devam ediyor)
+Son Guncelleme: 02 Eylul 2026 (Rev-131, AŞAMA 4/4 — TAMAMLANDI)
+
+================================================================================
+Rev-131 (2026-09-02) — İSTİNAT DEMİR HESABI Butonu — AŞAMA 4/4 (TAMAMLANDI)
+(metraj_analiz_window.py — UI butonu + kat akisi entegrasyonu)
+--------------------------------------------------------------------------------
+- ONCEKI ASAMA (Rev-130) GERCEK AutoCAD ILE DOGRULANDI: Kullanici "hesap ve
+  tonaj ciktisi dogru geldi" diye onayladi. Boylece Asama 1-2-3'un UCU UCUNA
+  gercek veriyle calistigi kanitlandi.
+- ADLANDIRMA KARARI (netlesti): Kullanicinin onceki mesajdaki "istinat demir
+  hesabi" talebi, bu yeni aracin BUTON ADI olarak uygulandi: "İSTİNAT DEMİR
+  HESABI" (mor renkli, Demir Metrajı sekmesinde KOLON FİLİZİ OKU'nun yaninda).
+  Mevcut, ayri "ÇAP BAZLI TONAJ" ekranina (Rev-127, tum katlarin BIRIKTIRILMIS
+  demirini ozetleyen ayri bir dialog) DOKUNULMADI — ikisi farkli veri
+  kaynaklarindan besleniyor (biri coklu AutoCAD okumasinin BIRIKMIS sonucu,
+  digeri TEK bir poz tablosunun dogrudan okunmasi), isim benzerligi kafa
+  karistirirsa ileride yeniden gozden gecirilebilir.
+- Eklenen (metraj_analiz_window.py, KOLON FİLİZİ OKU deseni birebir takip
+  edildi — buton+enable-noktasi+handler):
+    - self.btn_poz_donati (QPushButton, "İSTİNAT DEMİR HESABI") — demir_btn_row
+      icinde, btn_kolon_filizi'nin hemen yaninda.
+    - Enable noktasi: AutoCAD baglantisi kurulunca (btn_kolon_filizi ile AYNI
+      satirda) otomatik aktif oluyor.
+    - _autocad_poz_donati_oku() handler'i: acad_connector.get_poz_bazli_
+      donati_tablosu() cagirir; "sutun_tespiti"=="basarisiz" cikarsa (baslik
+      bulunamadi) AutoCAD'e TEKRAR sectirmeden, zaten okunan grid_ham
+      uzerinde QInputDialog.getText ile "sutun sirasi nedir?" sorup manuel
+      grid_den_poz_kayitlarini_cikar(sutun_sirasi=...) ile tekrar dener (proje
+      brief'i madde 1 karari — "Baslik YOKSA kullaniciya sor" BURADA
+      UYGULANDI). Basarili olursa: mesaj kutusunda ozet+cap dagilimi+sapma
+      raporu gosterir, DemirBilgisi listesini aktif kata ekler, Excel/Kesim
+      Listesi butonlarini enable eder — TAM OLARAK diger demir okuma
+      araclariyla (KOLON FİLİZİ OKU, DEMİR METRAJI AL) ayni akis.
+- Core tarafinda eklenen yeni SAF fonksiyon: poz_kayitlarini_demir_bilgisine_
+  cevir(poz_kayitlari_basarili) -> List[DemirBilgisi] (autocad_connector.py) —
+  poz kayitlarini mevcut DemirBilgisi formatina cevirir (BOY metre->cm,
+  TOPLAM_BOY metre olarak kalir — proje genelindeki birim konvansiyonuna
+  uyumlu), hem otomatik-baslik hem manuel-sutun-sirasi yolunda ORTAK
+  kullanilir (kod tekrari yok). get_poz_bazli_donati_tablosu() artik ust
+  seviyede get_kolon_filizi_from_table ile AYNI SEKILDE "basarili"/"cap_ozeti"/
+  "toplam_adet"/"toplam_boy_m"/"toplam_agirlik_kg"/"toplam_cubuk" alanlarini
+  da dolduruyor (UI'nin ortak kalibi kullanabilmesi icin).
+- Test: scratchpad/test_ui_istinat_demir_hesabi.py — 3/3 PASS (headless
+  offscreen PyQt, sahte AutoCADConnector ile): buton baslangicta disabled,
+  BASLIKLI tablo uctan uca (kata dogru DemirBilgisi ekleniyor, Excel/Kesim
+  butonlari enable oluyor), BASLIKSIZ tablo + manuel sutun sirasi diyalogu
+  uctan uca (QInputDialog mock'lanarak) dogrulandi. scratchpad/
+  test_poz_donati_hesap.py'ye poz_kayitlarini_demir_bilgisine_cevir icin yeni
+  test eklendi (9/9 PASS, cm/m birim donusumu + toplam agirlik tutarliligi).
+  Asama 1 (11/11) + Asama 2 (9/9) + Asama 3 (9/9) regresyon icin tekrar
+  kosuldu, hepsi hala PASS. py_compile PASS (hem autocad_connector.py hem
+  metraj_analiz_window.py).
+- GENEL TEST DERSI (yeni, Y-ekseni versiyonu): Onceki "BILINEN SINIR" (sifir-
+  jitter'da X-ekseni sutun kumelemesi yanilabilir) notunun AYNISI Y-ekseninde
+  de gecerli — TEK SATIRLIK bir test grid'inde (birden fazla veri satiri
+  olmadan) satir kumelemesinin "gurultu vs gercek satir araligi" ayrimi icin
+  hicbir sinyali olmuyor, hucreler yanlislikla birden fazla "satira"
+  bolunebiliyor. Bu, PRODUCTION kodunda nadir bir durum (gercek tablolar
+  cogunlukla birden fazla satir icerir) ama YENI bir sentetik test grid'i
+  yazarken EN AZ 2 veri satiri kullanmak gerekiyor — aksi halde test'in
+  KENDISI yanlis pozitif/negatif verebilir (bkz. test_poz_donati_gercek_
+  autocad.py'deki KUMELEME_X_ESIK/Y_ESIK mekanizmasi, ayni mitigasyon).
+- SONUC: "Poza Göre Donatı Metraj Tablosu Okuma Aracı / İstinat Demir Hesabı"
+  4 asamasi da TAMAMLANDI ve hem sentetik hem GERCEK AutoCAD verisiyle
+  dogrulandi. Kullanicinin gercek uygulamada (main.py) butonu deneyip nihai
+  onayi bekleniyor.
 
 ================================================================================
 Rev-130 (2026-09-02) — Poza Göre Donatı Metraj Tablosu Okuma Aracı — AŞAMA 3/4
