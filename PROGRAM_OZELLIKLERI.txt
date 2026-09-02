@@ -2,7 +2,63 @@
                     INSAAT METRAJ PRO - TUM OZELLIKLER
 ================================================================================
 
-Son Guncelleme: 02 Eylul 2026 (Rev-127)
+Son Guncelleme: 02 Eylul 2026 (Rev-128, AŞAMA 1/4 — devam ediyor)
+
+================================================================================
+Rev-128 (2026-09-02) — Poza Göre Donatı Metraj Tablosu Okuma Aracı — AŞAMA 1/4
+(autocad_connector.py — SADECE cekirdek kumeleme, HENUZ UI/hesap/entegrasyon YOK)
+--------------------------------------------------------------------------------
+- Amac: AutoCAD'deki "Poza Gore Donati Metraj Tablosu"nu (POZ/ADET/CAP/BOY/
+  SEKIL + cap bazli TOPLAM BOY sutunlari: O8/O12/O18...) kutu secimle okuyup
+  koordinat bazli satir/sutun kumeleme ile parse eden yeni bir arac. Kullanici
+  4 asamali bir plan verdi (koordinat kumeleme -> baslik/sutun esleme+onizleme
+  -> hesap+karsilastirma -> UI butonu); bu Rev SADECE Asama 1'i icerir.
+- KRITIK MIMARI KARAR: get_kolon_filizi_from_table'daki icerik-bazli (donati/
+  boy/kolon kovalari) yaklasim BURADA KULLANILMADI — o yontem sadece TEK saf
+  sayi sutunu (BOY) oldugu icin guvenli calisir; bu yeni tabloda ADET/CAP/BOY/
+  TOPLAM hepsi saf sayi oldugundan icerikten ayirt edilemezler. Bunun yerine
+  autocad_connector.py:821'de yazilmis ama hic KULLANILMAYAN
+  _read_entity_with_coords (X/Y okuma) temel alinip GERCEKTEN kullanildi.
+- Yeni MODUL SEVIYESI (COM/self bagimsiz, saf) fonksiyonlar
+  (autocad_connector.py, DEMIR_AGIRLIK_TABLOSU'nden hemen sonra):
+    - mtext_temizle(text) — MTEXT format kodlarini (\A1; \H..; \C..; {..} \P
+      \Sxxx^yyy;) temizler, duz TEXT icin zararsiz (degismeden doner).
+    - _oto_esik_bul(sirali_degerler) — 1B deger listesindeki en belirgin
+      oransal sicramayi (elbow) bulup kumeleme esigi olarak doner.
+    - _1d_kumele(degerler_ve_index, esik=None) — 1B kumeleme, kume merkezi
+      calisan ortalama ile guncellenir (hafif egik veriye dayanikli).
+    - tablo_hucrelerini_kumele(hucreler, y_esik=None, x_esik=None) — ANA
+      fonksiyon: (text,x,y) hucre listesini satir x sutun grid'ine kumeler
+      (satirlar yukaridan asagi, sutunlar soldan saga; bos hucreler None).
+- Yeni METOD: AutoCADConnector.get_poz_bazli_donati_tablosu(mesaj=...) —
+  kutu secim -> _read_entity_with_coords ile koordinatli okuma -> mtext_temizle
+  -> tablo_hucrelerini_kumele -> konsola izgara basar + {"grid","grid_ham",
+  "secim_sayisi","metin_sayisi"} dondurur. HENUZ baslik tespiti / alan esleme
+  / cap normalizasyonu / hesap YOK (bilerek — Asama 2/3'te eklenecek).
+- Test: scratchpad/test_poz_donati_kumele.py — 11/11 PASS. Ekran goruntusundeki
+  7 satirlik tabloya (POZ/ADET/CAP/BOY + 3 ayri TOPLAM-cap sutunu, bos hucreler
+  dahil) birebir benzeyen sentetik veriyle grid boyutu+hucre yerlesimi, MTEXT
+  temizligi, hafif gurultulu koordinatlarda dayaniklilik dogrulandi. py_compile
+  + gercek import testi (win32com kurulu olmadan da calisir, opsiyonel import)
+  PASS.
+- BILINEN SINIR (test ile dokumante edildi, gizlenmedi): Eger ayni sutundaki
+  TUM hucreler PIKSEL-MUKEMMEL ozdes X'te ise (sifir jitter — gercek AutoCAD'de
+  nadir ama LISP-uretimi tablolarda mumkun), oto-esik (_oto_esik_bul) esit
+  araliklarla dizilmis sutunlari (ornegin hepsi 100 birim arayla) YANLISLIKLA
+  BIRLESTIREBILIR — cunku "gurultu vs gercek ayrac" ayrimi icin en az bir kucuk
+  jitter populasyonu gerekir, sifir-jitter'da bu sinyal kaybolur. Mitigasyon:
+  boyle durumda x_esik/y_esik ELLE (gercek min sutun araliginin altinda bir
+  deger) verilmeli — test_grid_mukemmel_hizali_koordinatlarda_bilinen_sinir
+  bunu hem gosteriyor hem manuel esikle duzeldigini kanitliyor. GERCEK AutoCAD
+  tablosuyla test edilirken oto-esik yanlis sutun sayisi bulursa (cok az/cok
+  fazla sutun), ONCE bunu dusun.
+- SIRADAKI (Asama 2, kullanici onayi ile devam edilecek): baslik satiri tespiti
+  (POZ/ADET/CAP/BOY/TOPLAM kelimeleri) + sutun->alan eslemesi, baslik yoksa
+  kullaniciya sutun sirasi sorma dialogu, cap normalizasyonu (Ø18/φ18/Q18/D18
+  -> 18), onizleme+onay ekrani. UI butonu ve mevcut "CAP BAZLI TONAJ" ekraniyla
+  birlesme/isim degisikligi HENUZ YAPILMADI — kullanicinin "istinat demir
+  hesabi" adlandirma talebi Asama 4'te (UI entegrasyonu) netlestirilip
+  uygulanacak.
 
 ================================================================================
 Rev-127 (2026-09-02) — Akilli Metraj Analizi: "CAP BAZLI TONAJ" Tablosu Eklendi
