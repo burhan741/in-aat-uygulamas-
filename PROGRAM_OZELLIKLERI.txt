@@ -41,6 +41,17 @@ Rev-127 (2026-09-02) — Akilli Metraj Analizi: "CAP BAZLI TONAJ" Tablosu Eklend
 - Dokunulmadi: mevcut per-hesaplama popup ("ÇAP BAZLI DAĞILIM" metni), Excel
   export'taki kat bazli tablolar — bunlar ayri, bu yeni tablo TUM katlarin
   BIRLESIK cap ozetini ayri bir ekranda gosteriyor.
+- DUZELTME (ayni gun, ilk geri bildirim sonrasi): Kullanici "cap bazli tonaj
+  tusuna tiklanmiyor" bildirdi. Kok neden: buton, btn_demir_excel/btn_kesime_aktar
+  ile AYNI mantikla baslangicta disabled kodlanmisti — kullanici hicbir
+  AutoCAD demir hesaplamasi yapmadan (kat eklemeden/AutoCAD'e baglanmadan)
+  direkt yeni butonu denedi, buton donuk/tiklanamaz durumda kaldi, "calismiyor"
+  sanildi. Cozum: btn_cap_tonaj artik HER ZAMAN aktif (setEnabled(False)
+  kaldirildi, 3 ayri setEnabled(True) noktasi da gereksizlesip kaldirildi) —
+  veri yoksa tiklaninca zaten var olan guard clause (_cap_bazli_tonaj_goster
+  icindeki "Henuz demir metraji alinmis kat yok!" uyarisi) devreye giriyor.
+  Test: scratchpad/test_ui_cap_tonaj.py guncellendi — "veri olmadan da buton
+  aktif" + "veri eklendikten sonra da aktif" ikisi de PASS.
 
 ================================================================================
 Rev-126 (2026-08-25) — PythonAnywhere Puantaj: "Bu Haftaki Toplam" Artik
