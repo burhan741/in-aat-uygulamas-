@@ -2,7 +2,61 @@
                     INSAAT METRAJ PRO - TUM OZELLIKLER
 ================================================================================
 
-Son Guncelleme: 02 Eylul 2026 (Rev-128, AŞAMA 1/4 — devam ediyor)
+Son Guncelleme: 02 Eylul 2026 (Rev-129, AŞAMA 2/4 — devam ediyor)
+
+================================================================================
+Rev-129 (2026-09-02) — Poza Göre Donatı Metraj Tablosu Okuma Aracı — AŞAMA 2/4
+(autocad_connector.py — baslik tespiti + sutun->alan esleme + cap normalizasyonu)
+--------------------------------------------------------------------------------
+- ONCEKI ASAMA GERCEK AutoCAD ILE DOGRULANDI: Kullanici Rev-128'deki
+  scratchpad/test_poz_donati_gercek_autocad.py betigini gercek AutoCAD
+  cizimiyle calistirdi -> "Secim sayisi: 143, Metin sayisi: 103, Grid boyutu:
+  21 satir x 8 sutun" ve gozle "dogru" onayladi. Asama 1'in koordinat bazli
+  kumelemesi GERCEK VERIDE (sentetik degil) calistigi kanitlandi.
+- Bu Rev'de eklenen (SAF, COM bagimsiz) modul seviyesi fonksiyonlar:
+    - cap_normalize_et(text) — "18","Ø18","φ18","Q18","D18","ø 18 mm" -> 18
+      (int); sayi yoksa None. Regex \d+ ile ilk sayi dizisini ceker.
+    - _baslik_normalize(text) — Turkce karakterleri ASCII'ye katlar, "(mm)"/
+      "(m)" gibi parantez icini atar -> "ÇAP(mm)"->"CAP", "Boy (m)"->"BOY".
+    - _baslik_satirini_bul(grid) — ilk 5 satirda ADET+CAP+BOY (poz/sekil
+      bonus, zorunlu degil) ANAHTAR KELIMELERININ UCUNUN DE gectigi satiri
+      baslik olarak secer. Boyle bir satir yoksa (None,{}) doner (crash yok).
+    - grid_den_poz_kayitlarini_cikar(grid, sutun_sirasi=None) — ANA fonksiyon:
+      baslik bulunursa otomatik, bulunamaz+sutun_sirasi verilmisse manuel,
+      ikisi de yoksa temiz "basarisiz" sonuc doner. Cap-bazli TOPLAM
+      sutunlarinin (Ø8/Ø12/Ø18) HANGI CAPA AIT OLDUGU HEADER METNINDEN degil,
+      veri satirlarindaki CAP sutunuyla CAPRAZ KORELASYONDAN cikarilir (bir
+      toplam-sutunu hangi satirlarda doluysa, o satirlarin CAP degeri o
+      sutunun capidir) — boylece "TOPLAM BOY (m)" gibi cok-sutunlu birlesik
+      ust basliklarin ekranda TAM NEREYE oturdugunu bilmeye gerek KALMAZ.
+      Bir toplam-sutunu BIRDEN FAZLA farkli capta doluysa (veri hatasi/sutun
+      kaymasi belirtisi) sessizce yanlis atanmiyor, "belirsiz_toplam_
+      kolonlari" listesine dusuyor.
+- get_poz_bazli_donati_tablosu() guncellendi: artik x_esik/y_esik (Asama 1'in
+  manuel esik mitigasyonu disariya acildi) ve sutun_sirasi (baslik yoksa
+  elle sutun->alan) parametrelerini kabul ediyor; grid'i cikardiktan sonra
+  otomatik olarak grid_den_poz_kayitlarini_cikar()'i cagirip sonucu
+  "poz_kayitlari" anahtarinda donduruyor VE konsola "SUTUN TESPITI: OTOMATIK/
+  MANUEL/BASARISIZ" + sutun->alan haritasi + her poz icin "Poz X: N adet ØÇ
+  x Bm [tablo: Ø..=...]" onizlemesi basiyor.
+- Test: scratchpad/test_poz_donati_baslik_esleme.py — 9/9 PASS. cap_normalize_et
+  sembol varyasyonlari, baslik normalize, otomatik baslik tespiti + 7 poz
+  kaydinin (ekran goruntusu tablosuyla ayni) dogru cikarilmasi, toplam-sutunu
+  cap haritasinin dogrulugu, basliksiz tabloda MANUEL sutun_sirasi ile ayni
+  sonuc, baslik+sutun_sirasi ikisi de yokken temiz "basarisiz", bos grid, ve
+  KARMA CAPLI (hatali) bir toplam sutununun "belirsiz" isaretlenip sessizce
+  yanlis capa atanmadigi ayrica dogrulandi. Asama 1 testleri (11/11) regresyon
+  icin tekrar kosuldu, hala PASS. py_compile PASS.
+- scratchpad/test_poz_donati_gercek_autocad.py sadelestirildi: artik
+  get_poz_bazli_donati_tablosu()'nun x_esik/y_esik/sutun_sirasi parametrelerini
+  dogrudan kullaniyor (Asama 1'deki elle-esik kod tekrari kaldirildi), Asama 2
+  onizlemesini de gosteriyor. Kullanicinin bir sonraki gercek AutoCAD
+  testinde "SUTUN TESPITI: OTOMATIK" cikip cikmadigini ve her pozun
+  adet/cap/boy + tablo-toplam degerinin dogrulugunu onaylamasi bekleniyor.
+- SIRADAKI (Asama 3, kullanici onayi ile devam edilecek): adet x boy -> kg/ton
+  hesabi (DEMIR_AGIRLIK_TABLOSU ile), cap'e gore gruplama, tablodaki hazir
+  TOPLAM sutunuyla hesaplanan degerin karsilastirilip sapma uyarisi verilmesi.
+  UI butonu ve "istinat demir hesabi" adlandirma karari HALA Asama 4'te.
 
 ================================================================================
 Rev-128 (2026-09-02) — Poza Göre Donatı Metraj Tablosu Okuma Aracı — AŞAMA 1/4

@@ -102,6 +102,13 @@ Her geliştirilen programda **yerleşik kullanım kılavuzu** bulunmalıdır:
 
 # Bilinen Hatalar ve Kesin Kurallar
 
+## Rev-129 (2026-09-02) — Poza Göre Donatı Metraj Tablosu Okuma Aracı — AŞAMA 2/4
+- **Aşama 1 gerçek AutoCAD ile doğrulandı:** Kullanıcı `test_poz_donati_gercek_autocad.py`'yi gerçek çizimle çalıştırdı → 143 seçim, 103 metin, 21 satır x 8 sütun grid, gözle "doğru" onaylandı. Koordinat bazlı kümeleme gerçek veride çalışıyor.
+- **Eklenen (Aşama 2):** `cap_normalize_et`, `_baslik_normalize`, `_baslik_satirini_bul`, `grid_den_poz_kayitlarini_cikar` (hepsi saf, autocad_connector.py). **Kritik tasarım kararı:** çap-bazlı TOPLAM sütunlarının hangi çapa ait olduğu **header metninden değil, veri satırındaki ÇAP sütunuyla çapraz korelasyondan** çıkarılıyor — bu, ekran görüntüsündeki "TOPLAM BOY (m)" gibi çok-sütunlu birleşik üst başlığın gerçek konumunu bilmeye gerek bırakmıyor (2 satırlı iç içe header sorununu bypass ediyor).
+- `get_poz_bazli_donati_tablosu()` artık `x_esik`/`y_esik`/`sutun_sirasi` parametrelerini kabul ediyor ve otomatik olarak Aşama 2 önizlemesini konsola basıyor (`"poz_kayitlari"` anahtarı altında döner).
+- Test: `scratchpad/test_poz_donati_baslik_esleme.py` 9/9 PASS (ambiguous/karma-çaplı sütun tespiti dahil). Aşama 1 testleri (11/11) regresyon için tekrar PASS. Detay: `PROGRAM_OZELLIKLERI.txt` Rev-129.
+- **Sıradaki:** Aşama 3 (hesap + hazır TOPLAM sütunuyla karşılaştırma), Aşama 4 (UI butonu + "istinat demir hesabı" adlandırma kararı — hâlâ netleşmedi).
+
 ## Rev-128 (2026-09-02) — Poza Göre Donatı Metraj Tablosu Okuma Aracı — AŞAMA 1/4 (devam ediyor)
 - **Amaç:** AutoCAD'deki POZ/ADET/ÇAP/BOY/ŞEKİL + çap-bazlı TOPLAM sütunlu tabloyu kutu seçimle okuyup koordinat bazlı (X/Y) satır/sütun kümelemesiyle parse eden yeni araç. 4 aşamalı plan (kullanıcı verdi): (1) koordinat kümeleme çekirdeği, (2) başlık tespiti + sütun eşleme + önizleme, (3) hesap + karşılaştırma, (4) UI butonu. **Bu commit SADECE Aşama 1.**
 - **Mimari karar:** `get_kolon_filizi_from_table`'ın içerik-bazlı (donatı/boy/kolon kovaları) yaklaşımı KULLANILMADI — orada tek "saf sayı" sütunu (BOY) olduğu için güvenli, bu tabloda ADET/ÇAP/BOY/TOPLAM hepsi saf sayı, içerikten ayrılamaz. Bunun yerine `autocad_connector.py:821`'deki daha önce **hiç kullanılmayan** `_read_entity_with_coords` temel alındı.
