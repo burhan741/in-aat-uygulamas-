@@ -95,6 +95,29 @@ Rev-133 (2026-09-06) — Beton & Kalıp: LISP Kat Yüksekliği AŞAMA 1 Bug Fix 
   çağrısı olup olmadığını KONTROL ET — unutulursa komut "sessizce" gönderilir
   ama kullanıcı AutoCAD'i görmediği için hiçbir şey olmamış gibi algılar,
   bu da "çalışmıyor" bug raporuna yol açar (gerçekte kod çalışıyor olabilir).
+- EK BULGU 3 (pencere öne geldi ama kullanıcı "sonuç dosyası bulunamadı"
+  diyerek bildirdi — LISP hiç çalışmamış): `lisp_calistir()` `(load "...")`
+  ve komut adını (`c:KOLON-HACIM`) İKİ AYRI `SendCommand` çağrısıyla,
+  aralarında sabit 0.2 sn bekleyerek gönderiyordu. Dosya yüklemesi (özellikle
+  Türkçe karakterli/uzun bir yoldan, örn. "İNŞAAT METRAJ PRO") bu sürede
+  bitmezse AutoCAD, henüz tanımlanmamış "KOLON-HACIM" komutunu SESSİZCE
+  "Unknown command" olarak yok sayıyordu — LISP hiç çalışmıyor, `%TEMP%
+  \imp_metraj.txt` hiç yazılmıyordu, "Sonucu Oku" da haklı olarak "dosya
+  bulunamadı" diyordu. **Çözüm:** `(load ...)` ve fonksiyon çağrısı TEK bir
+  `(progn (load "yol") (c:komut-adi))` ifadesi içinde, TEK `SendCommand`
+  ile atomik olarak gönderiliyor — `progn` load bitmeden ikinci ifadeye asla
+  geçmez, race condition kökten kapandı. `c:` önekli defun'lar AutoLISP'te
+  doğrudan `(c:komut-adi)` şeklinde de çağrılabilir (case-insensitive,
+  standart AutoLISP davranışı) — komut satırına yazmaya gerek yok.
+  Test: `test_lisp_calistir_tam_yol` güncellendi — artık TEK komutun
+  gönderildiğini VE o komutun hem `(load ...)` hem `(c:kolon-hacim)` içerdiğini
+  doğruluyor (6/6 PASS toplam).
+- **KURAL (genel, önceki iki maddeyle birlikte "3'lü LISP ders paketi"):**
+  AutoCAD'e ardışık iki `SendCommand` gönderip aralarına sabit bir
+  `time.sleep()` koyarak "ikincisi zamanla yetişir" varsayımı YAPMA —
+  birincisinin (özellikle dosya I/O içeren `load` gibi) ne kadar süreceği
+  garanti değildir. Sıralı bağımlılığı olan LISP ifadelerini TEK
+  `SendCommand` içinde `(progn ...)` ile atomik gönder.
 
 ================================================================================
 Rev-132 (2026-09-02) — İstinat Demir Hesabı: ÇOKLU TABLO Desteği (kullanıcı geri bildirimi)
