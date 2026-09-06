@@ -102,6 +102,14 @@ Her geliştirilen programda **yerleşik kullanım kılavuzu** bulunmalıdır:
 
 # Bilinen Hatalar ve Kesin Kurallar
 
+## KRİTİK — pywin32 COM Retry'da Sadece com_error Yakalamak Yetmez (2026-09-06)
+- **Olay:** Kullanıcının AutoCAD bağlantısı "AutoCAD bulundu" logundan hemen sonra "Bağlantı hatası: <unknown>.ModelSpace" ile düştü — bu, `baglan()`'ın tanımladığı dostane hata mesajlarından biri DEĞİLDİ, ham bir Python hatasıydı.
+- **Kök neden:** `ActiveDocument`/`ModelSpace` retry döngüleri sadece `pywintypes.com_error`'ı yakalıyordu. pywin32'nin dinamik COM dispatch'i, tip kütüphanesi önbelleği (`gen_py`) çalışan AutoCAD sürümüyle uyuşmadığında `com_error` DEĞİL düz `AttributeError` (`"<unknown>.ModelSpace"`) fırlatır — bu yakalanmadığı için retry döngüsü İLK DENEMEDE terk ediliyor, 5 hak hiç kullanılmıyordu.
+- **Çözüm:** `baglan()`'daki 4 retry noktası artık `except (com_error, AttributeError):` ile ikisini birden yakalıyor.
+- **KURAL (genel, tüm pywin32/COM entegrasyonları için):** `except pywintypes.com_error:` TEK BAŞINA YETERLİ DEĞİL — dinamik dispatch tip uyuşmazlığında düz `AttributeError` da fırlayabilir. Bir COM çağrısı etrafında retry kuruyorsan ikisini birden yakala, aksi halde retry mekanizması bazı gerçek hata tiplerinde sessizce hiç devreye girmemiş gibi davranır.
+- **Kullanıcı ortam notu:** Bu hatanın kök nedeni genelde `%LOCALAPPDATA%\Temp\gen_py\` klasöründeki ESKİ COM tip önbelleğidir (AutoCAD güncellemesi sonrası oluşur) — kod artık toleranslı ama kalıcı çözüm için bu klasörün silinip AutoCAD+programın yeniden başlatılması önerilir.
+- Test: `scratchpad/test_baglan_attributeerror_retry.py`. Detay: `PROGRAM_OZELLIKLERI.txt` (2026-09-06 ek düzeltme).
+
 ## Rev-134 Aşama 2 (2026-09-06) — Kolon Yazısından Toplu Okuma: AutoCAD Entegrasyonu + Önizleme
 - Aşama 1 (saf regex çekirdeği) onay bekliyordu, kullanıcı "artık sadece text okuyacak, dikdörtgen alan seçeceğim, S/P ile başlayanları okuyacak" diyerek teyit edip devam onayı verdi.
 - `AutoCADConnector.get_kolon_beton_yazidan()` eklendi — mevcut `get_kolon_filizi_from_table`'ın seç→oku→sınıflandır→renklendir iskeleti temel alındı. Kutu seçimiyle bölgedeki TÜM TEXT/MTEXT okunuyor, Aşama 1'in `kolon_yazisini_ayristir()` ile ayrıştırılıyor, renklendiriliyor (kolon=YEŞİL, kiriş=SARI/atlandı, tanımsız=GRİ, ayrıştırılamayan=KIRMIZI).

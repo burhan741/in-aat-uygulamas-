@@ -2,7 +2,18 @@
                     INSAAT METRAJ PRO - TUM OZELLIKLER
 ================================================================================
 
-Son Guncelleme: 06 Eylul 2026 (Rev-134 Aşama 2, Kolon Yazı-Tabanlı Metraj)
+Son Guncelleme: 06 Eylul 2026 (AutoCAD Bağlantı — AttributeError Retry Fix)
+
+================================================================================
+EK DÜZELTME (2026-09-06) — AutoCAD Bağlantısı: "<unknown>.ModelSpace" AttributeError Retry'ı Öldürüyordu
+(autocad_connector.py — baglan())
+--------------------------------------------------------------------------------
+- **Olay:** Kullanıcının log'unda "AutoCAD bulundu: AutoCAD.Application.24" başarıyla görünüyor, ama hemen ardından "Bağlantı hatası: <unknown>.ModelSpace" ile bağlantı düşüyordu. Bu, `baglan()`'ın tanımladığı dostane hata mesajlarından (`"AutoCAD ModelSpace'e erişilemiyor!..."`) BİRİ DEĞİLDİ — ham, biçimlendirilmemiş bir Python hatasıydı.
+- **Kök neden:** `ActiveDocument`/`ModelSpace` için yazılmış 5 denemelik retry döngüleri sadece `pywintypes.com_error`'ı yakalıyordu. pywin32'nin dinamik (late-bound) COM dispatch'i, tip kütüphanesi önbelleği (`gen_py` cache) çalışan AutoCAD sürümüyle uyuşmadığında `com_error` DEĞİL düz `AttributeError` (`"<unknown>.ModelSpace"` formatında) fırlatır — bu retry döngüsünün `except com_error:` bloğunca YAKALANMIYORDU, ilk denemede döngüyü tamamen terk edip dışarı sızıyor, en dıştaki genel `except Exception` bloğuna düşüp ham haliyle loglanıyordu.
+- **Çözüm:** `baglan()` içindeki 4 retry noktası (`Visible=True`, `ActiveDocument` alma, `ModelSpace` alma + fallback re-Dispatch) artık `except (com_error, AttributeError):` ile ikisini birden yakalıyor — bir AttributeError artık retry'ı öldürmüyor, 5 deneme hakkı gerçekten kullanılıyor.
+- **Kullanıcı tarafında ek adım gerekebilir:** Bu hatanın kök nedeni genelde pywin32'nin `%LOCALAPPDATA%\Temp\gen_py\` klasöründeki ESKİ/uyumsuz COM tip önbelleğidir (AutoCAD güncellemesi sonrası oluşur). Kod artık bu durumda daha toleranslı (retry ediyor, sessizce çökmüyor) ama KÖK NEDENİ tam çözmek için kullanıcının bu klasörü silip AutoCAD+programı yeniden başlatması önerildi.
+- Test: `scratchpad/test_baglan_attributeerror_retry.py` — sahte AutoCAD Application/Document nesneleriyle (`ActiveDocument` 1 kez, `ModelSpace` 2 kez AttributeError verip 3. denemede başarılı olacak şekilde kurgulandı) `baglan()`'ın artık bu senaryoda BAŞARIYLA bağlandığı doğrulandı — düzeltme öncesi bu senaryo ilk denemede ham AttributeError ile patlıyordu. `py_compile` + gerçek pencere kurulum testi PASS.
+- **KURAL (genel, pywin32/COM entegrasyonlarında):** `except pywintypes.com_error:` YETERLİ DEĞİL — pywin32'nin dinamik dispatch'i tip uyuşmazlığında düz `AttributeError` da fırlatabilir. Bir COM özelliği/metodu üzerinde retry mantığı kuruyorsan `except (com_error, AttributeError):` ile ikisini birden yakala, aksi halde "retry" kodu bazı gerçek dünya hata tiplerinde HİÇ ÇALIŞMAMIŞ gibi davranır (ilk denemede sessizce/açıklanamaz şekilde başarısız olur).
 
 ================================================================================
 Rev-134 (2026-09-06) — Kolon Beton/Kalıp: Yazı Tabanlı Toplu Okuma — AŞAMA 2/4
