@@ -76,6 +76,25 @@ Rev-133 (2026-09-06) — Beton & Kalıp: LISP Kat Yüksekliği AŞAMA 1 Bug Fix 
   ("Kaba İnşaat","LISP Araçları"), Kaba İnşaat alt sekme sayısı==2
   ("Demir Metrajı","Beton & Kalıp"), `w.show()` sonrası tab bar
   `isVisible()==True` — pencere hatasız kuruldu.
+- EK BULGU 2 (kullanıcı "beni autocad'e götürmüyor" diye bildirince ortaya
+  çıktı): `lisp_calistir()` komutu AutoCAD'e SendCommand ile gönderiyordu
+  AMA AutoCAD penceresini hiç öne getirmiyordu. Projede DİĞER TÜM AutoCAD
+  aksiyonları (`get_beton_kalip_boyutlar`, DXF okuma, kolon filizi vb. —
+  toplam 6 çağrı noktası) komut göndermeden önce `_autocad_one_getir()`
+  çağırıyor (Visible=True + WindowState maximize + win32gui SetForegroundWindow
+  ile pencereyi öne getirir) — sadece `lisp_calistir` bu adımı atlıyordu.
+  Sonuç: LISP komutu muhtemelen AutoCAD'e gerçekten gidiyordu ama AutoCAD
+  arka planda/simge durumunda kalınca kullanıcı hiçbir şey görmüyor, `ssget`
+  seçim istemine cevap veremiyordu ("çalışmıyor" izlenimi).
+  Çözüm: `lisp_calistir()` başına `self._autocad_one_getir()` çağrısı eklendi
+  — artık diğer tüm AutoCAD aksiyonlarıyla aynı davranışı gösteriyor.
+  Test: `test_lisp_calistir_pencereyi_one_getiriyor` eklendi (6/6 PASS toplam),
+  `_autocad_one_getir`'in gerçekten çağrıldığı monkeypatch ile doğrulandı.
+- **KURAL (genel):** Bu projede bir AutoCAD COM aksiyonu (SendCommand/ssget
+  içeren HERHANGİ bir metod) eklerken, o metodun başında `_autocad_one_getir()`
+  çağrısı olup olmadığını KONTROL ET — unutulursa komut "sessizce" gönderilir
+  ama kullanıcı AutoCAD'i görmediği için hiçbir şey olmamış gibi algılar,
+  bu da "çalışmıyor" bug raporuna yol açar (gerçekte kod çalışıyor olabilir).
 
 ================================================================================
 Rev-132 (2026-09-02) — İstinat Demir Hesabı: ÇOKLU TABLO Desteği (kullanıcı geri bildirimi)
