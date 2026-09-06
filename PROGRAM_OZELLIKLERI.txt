@@ -118,6 +118,31 @@ Rev-133 (2026-09-06) — Beton & Kalıp: LISP Kat Yüksekliği AŞAMA 1 Bug Fix 
   birincisinin (özellikle dosya I/O içeren `load` gibi) ne kadar süreceği
   garanti değildir. Sıralı bağımlılığı olan LISP ifadelerini TEK
   `SendCommand` içinde `(progn ...)` ile atomik gönder.
+- EK BULGU 4 (kat yüksekliği doğrulandıktan SONRA — "kolon kesitlerini
+  okuyamıyor 0 giriyor"): `kolon_hacim.lsp` tek yöntemle (`vlax-curve-getArea`)
+  alan okuyordu. Bu fonksiyon SADECE tam KAPALI (Closed=Yes) eğrilerde
+  güvenilir çalışır — sahada çizilen bir polyline görsel olarak kapalı
+  görünse bile "Closed" bayrağı set edilmemişse (Kapat/Close komutu
+  kullanılmadan son nokta üstüne çizilmişse) sessizce hata verip alan=0
+  döner, `(if (> alan 0) ...)` bloğu hiç çalışmaz, o kolon toplama hiç
+  girmez. **Çözüm:** `kolon_hacim.lsp` VE `kalip_alan.lsp`'nin döşeme
+  alanı hesabı — ikisi de aynı riski taşıyordu — artık 2 yöntemli:
+  önce `vlax-curve-getArea`, o başarısız/0 dönerse `vla-get-Area` (COM Area
+  özelliği, bazı LWPOLYLINE durumlarında ilkinin başarısız olduğu yerde
+  çalışabiliyor) deneniyor. İkisi de başarısızsa artık SESSİZCE 0 sayılmıyor
+  — hangi obje (`entget` DXF grup 0 tipi) hangi nedenle atlandığı AutoCAD
+  komut satırına yazdırılıyor + JSON çıktısına `atlanan_sayisi` eklendi +
+  Python UI (`_lisp_sonuc_goster`) bu sayıyı varsa uyarı satırı olarak
+  gösteriyor. Parantez dengesi `scratchpad/check_lisp_parens.py` ile
+  doğrulandı (ikisi de OK).
+- **KURAL (genel, AutoLISP geometri okuma):** Kapalı bir eğri/polyline'ın
+  alanını okurken TEK yönteme (`vlax-curve-getArea`) güvenme — çizim
+  disiplini/kullanıcı hatasına (Closed bayrağı unutulmuş polyline) karşı
+  kırılgan, hata sessizce 0'a düşer. `vla-get-Area` COM özelliğini ikinci
+  yöntem olarak dene, ikisi de başarısızsa objeyi SESSİZCE atlama — hangi
+  objenin neden atlandığını (tip + olası sebep) kullanıcıya bildir. Bu,
+  Rev-124'teki "standart dışı parça sessizce cop sayılıyordu" dersiyle
+  aynı aile: bir hesaplamanın "0/başarısız" dalı asla sessiz kalmamalı.
 
 ================================================================================
 Rev-132 (2026-09-02) — İstinat Demir Hesabı: ÇOKLU TABLO Desteği (kullanıcı geri bildirimi)
