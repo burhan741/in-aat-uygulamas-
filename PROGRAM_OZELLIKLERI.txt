@@ -62,6 +62,20 @@ Rev-133 (2026-09-06) — Beton & Kalıp: LISP Kat Yüksekliği AŞAMA 1 Bug Fix 
 - KAPSAM DIŞI (bu Rev'de dokunulmadı, brief'e göre sonraki aşamalar):
   Grup bazlı toplu seçim/hesap (Aşama 2), Python form + LISP ortak veri
   havuzu birleştirmesi (Aşama 3), kesişim/bindirme düşümü (hiç planlanmıyor).
+- EK BULGU (kullanıcı "nasıl test edeceğim" diye sorunca ortaya çıktı):
+  Kod düzeltmesi doğru olsa da, "LISP Araçları" sekmesi VE "Beton & Kalıp"
+  alt sekmesi önceki bir oturumda arayüzden TAMAMEN KALDIRILMIŞTI —
+  `kaba_insaat_sub_tabs`'a hiç `addTab` edilmemiş, sadece "Demir Metrajı"
+  görünürdü ("Tek sekme kaldığı için sekme çubuğunu gizle" yorumu vardı).
+  Yani test edecek buton fiilen EKRANDA YOKTU. Bu Rev'de her ikisi de tekrar
+  `addTab` edilip görünür yapıldı ("Kaba İnşaat" içinde artık 2 alt sekme:
+  Demir Metrajı + Beton & Kalıp; üst seviyede "LISP Araçları" sekmesi geri
+  geldi). "Hızlı Keşif" ve "Çoklu Kat Yönetimi" sekmeleri kasıtlı olarak
+  HÂLÂ GİZLİ bırakıldı — bu brief'in kapsamına girmiyor, gereksiz risk.
+  Doğrulama: headless PyQt testinde `acad_tab_widget.count()==2`
+  ("Kaba İnşaat","LISP Araçları"), Kaba İnşaat alt sekme sayısı==2
+  ("Demir Metrajı","Beton & Kalıp"), `w.show()` sonrası tab bar
+  `isVisible()==True` — pencere hatasız kuruldu.
 
 ================================================================================
 Rev-132 (2026-09-02) — İstinat Demir Hesabı: ÇOKLU TABLO Desteği (kullanıcı geri bildirimi)
