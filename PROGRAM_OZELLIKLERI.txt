@@ -2,7 +2,66 @@
                     INSAAT METRAJ PRO - TUM OZELLIKLER
 ================================================================================
 
-Son Guncelleme: 02 Eylul 2026 (Rev-132, COKLU TABLO DESTEGI eklendi)
+Son Guncelleme: 06 Eylul 2026 (Rev-133, LISP Kat Yuksekligi Bug Fix)
+
+================================================================================
+Rev-133 (2026-09-06) — Beton & Kalıp: LISP Kat Yüksekliği AŞAMA 1 Bug Fix (KRİTİK)
+(autocad_connector.py + metraj_analiz_window.py — _lisp_calistir_clicked)
+--------------------------------------------------------------------------------
+- SORUN (kod incelemesiyle tespit edildi, kullanıcı henüz gerçek AutoCAD ile
+  denemedi): "Beton & Kalıp" sekmesindeki LISP paneli (Kolon Beton Hacmi,
+  Kiriş Beton Hacmi, Kalıp Alanı, Duvar Alanı, Oda Alanı, Süpürgelik) UI'da
+  girilen "Kat Yüksekliği" değerini LISP'e HİÇ ULAŞTIRMIYORDU:
+  1) `self.acad_connector.lisp_calistir(tur, {"kat_yuksekligi": kat_yuk})`
+     çağrısı — `lisp_calistir(self, lsp_dosya_adi: str, bekle: float)` imzasına
+     göre 2. parametreye dict gönderiyordu → `time.sleep(dict)` TypeError →
+     `except` bloğunda SESSİZCE yutuluyordu (kullanıcıya hiç uyarı yok).
+  2) `*IMP_KAT_YUKSEKLIGI*` global'i hiçbir yerde `SendCommand` ile
+     ayarlanmıyordu → LISP her zaman kendi varsayılanı olan 3.0 m'yi
+     kullanıyordu. Kullanıcı 3.60 m girse bile hesap SESSİZCE 3.0 m ile
+     yapılıyordu (örn. bir kolon için %20 eksik beton metrajı).
+  3) `tur` (örn. "kolon_hacim") tam dosya yoluna hiç çevrilmiyordu — LISP'e
+     uzantısız/yolsuz gidiyordu, AutoCAD'in `(load ...)` çağrısı gerçek
+     dosya konumunu bulamazdı.
+- ÇÖZÜM:
+  - `autocad_connector.py`: yeni `sayisal_degisken_set(degisken_dict)` metodu
+    eklendi — `katman_degisken_set` katman adlarını (string) TIRNAK içinde
+    gönderdiği için sayısal değerler (kat yüksekliği, kiriş b/h) için
+    KULLANILAMAZ (LISP tarafında string atanır, aritmetik "bad argument
+    type: numberp" hatası verir). Yeni metod değeri TIRNAKSIZ gönderiyor:
+    `(setq *IMP_KAT_YUKSEKLIGI* 3.6)`. `lisp_tam_calistir()` imzasına
+    `sayisal_dict` parametresi eklendi (katman_dict'ten sonra, LISP
+    çalıştırılmadan önce sırayla set ediliyor).
+  - `metraj_analiz_window.py` `_lisp_calistir_clicked()`: `tur` artık
+    gerçek dosya sistemi yoluna çözülüyor (`app/lisp/<tur>.lsp`, EXE modunda
+    `sys._MEIPASS/app/lisp/<tur>.lsp` — `InsaatMetrajPro.spec` zaten tüm
+    `app/` klasörünü paketliyor, ek spec değişikliği gerekmedi). Dosya yoksa
+    kullanıcıya görünür `QMessageBox.critical` gösteriliyor. Kat yüksekliği
+    `sayisal_degisken_set` ile LISP'e set edildikten SONRA `lisp_calistir`
+    çağrılıyor. `lisp_calistir` `False` dönerse (bağlantı sorunu) artık
+    SESSİZCE yutulmuyor — görünür hata mesajı çıkıyor. Başarılı gönderimde
+    kullanıcıya "AutoCAD'e geçip seçimi tamamlayın, sonra Sonucu Oku'ya
+    tıklayın" bilgi mesajı gösteriliyor (LISP'in `ssget` ile interaktif
+    seçim beklediği, sonucun senkron dönmediği açıklığa kavuşturuldu).
+  - Bu tek düzeltme LISP panelindeki TÜM 6 komut türünü etkiliyor (aynı
+    handler paylaşılıyor) — sadece kolon/kalıp değil duvar_alan/oda_alan/
+    supurgelik de daha önce aynı sebeple hiç çalışmıyordu (path bug'ı).
+- TEST: `scratchpad/test_lisp_kat_yuksekligi_fix.py` (5/5 PASS, sahte
+  AutoCAD COM nesnesiyle) — sayısal değerin tırnaksız gittiği, `lisp_calistir`
+  tam yoldan doğru `(load ...)` + doğru `c:KOMUT-ADI` ürettiği, 6 LISP
+  türünün hepsinin gerçek dosyaya karşılık geldiği, `lisp_tam_calistir`
+  sırasının (sayısal set → load → komut) doğru olduğu doğrulandı.
+  `py_compile` + gerçek `import` (offscreen PyQt, `MetrajAnalizWindow` dahil)
+  PASS.
+- DURUM: Kod tarafı tamamlandı ve sahte-COM testleriyle doğrulandı. GERÇEK
+  AutoCAD ile doğrulama BEKLİYOR (brief'in "AŞAMA 1" onay adımı) — kullanıcı
+  UI'da kat yüksekliğini 3.0 dışında bir değere (örn. 3.60) ayarlayıp bir
+  kolon için LISP'i çalıştırıp sonucun `alan × 3.60` (3.0 değil) olduğunu
+  elle doğrulamalı. Bu onay gelmeden AŞAMA 2 (grup bazlı toplu otomasyon)
+  başlamayacak — [[project_beton_kalip_lisp_gruplama.md]].
+- KAPSAM DIŞI (bu Rev'de dokunulmadı, brief'e göre sonraki aşamalar):
+  Grup bazlı toplu seçim/hesap (Aşama 2), Python form + LISP ortak veri
+  havuzu birleştirmesi (Aşama 3), kesişim/bindirme düşümü (hiç planlanmıyor).
 
 ================================================================================
 Rev-132 (2026-09-02) — İstinat Demir Hesabı: ÇOKLU TABLO Desteği (kullanıcı geri bildirimi)
