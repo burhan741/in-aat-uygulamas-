@@ -2,10 +2,50 @@
                     INSAAT METRAJ PRO - TUM OZELLIKLER
 ================================================================================
 
-Son Guncelleme: 06 Eylul 2026 (Rev-134 Aşama 1, Kolon Yazı-Tabanlı Metraj)
+Son Guncelleme: 06 Eylul 2026 (Rev-134 Aşama 2, Kolon Yazı-Tabanlı Metraj)
 
 ================================================================================
-Rev-134 (2026-09-06) — Kolon Beton/Kalıp: Yazı Tabanlı Toplu Okuma — AŞAMA 1/4
+Rev-134 (2026-09-06) — Kolon Beton/Kalıp: Yazı Tabanlı Toplu Okuma — AŞAMA 2/4
+(autocad_connector.py: get_kolon_beton_yazidan + metraj_analiz_window.py: buton+önizleme)
+--------------------------------------------------------------------------------
+- Kullanıcı Aşama 1'i "artık sadece text okuyacak değil mi, dikdörtgen bir
+  alan seçeceğim, o da oradaki textlerden S/P ile başlayanları okuyacak"
+  diye teyit edip devam onayı verdi.
+- YENİ (COM) metod: `AutoCADConnector.get_kolon_beton_yazidan(mesaj)` —
+  `get_kolon_filizi_from_table`'ın seç→oku→sınıflandır→renklendir iskeleti
+  temel alındı. Kutu (window/crossing) seçimiyle bölgedeki TÜM TEXT/MTEXT
+  okunuyor, her biri `kolon_yazisini_ayristir()` (Aşama 1, saf) ile
+  ayrıştırılıyor, TEXT/MTEXT olmayan objeler (ör. AcDbLine) sessizce
+  atlanıyor. Renklendirme: kolon=YEŞİL, kiriş=SARI (atlandı), tanımsız=GRİ,
+  ayrıştırılamayan=KIRMIZI — kullanıcı AutoCAD ekranında hangi yazının
+  hangi kategoriye düştüğünü görsel olarak da doğrulayabiliyor.
+- Ortak özet metni üretimi `_kolon_yazi_ozet_metni()` adıyla ayrı bir saf
+  fonksiyona çıkarıldı — hem `kolon_yazilarini_toplu_ayristir()` (Aşama 1,
+  saf test) hem `get_kolon_beton_yazidan()` (COM, renklendirmeli) AYNI
+  mesaj metnini kullanıyor, ikisi arasında metin sürüklenmesi riski yok.
+- UI: "Beton & Kalıp" alt sekmesine "AutoCAD'den Ölç" butonunun altına yeni
+  mor "Kolon Yazısından Toplu Oku" butonu eklendi (`btn_bk_kolon_yazi`,
+  AutoCAD bağlantısı kurulunca `btn_bk_acad_olc` ile birlikte aktifleşiyor).
+  Handler `_beton_kalip_kolon_yazisindan_oku()` sadece bir ÖNİZLEME dialog'u
+  gösteriyor (Ad/En/Boy/Katman tablosu + atlanan kiriş/tanımsız/başarısız
+  özeti) — bilinçli olarak HENÜZ hesap yapmıyor, `beton_kalip_table`'a
+  yazmıyor (bu Aşama 3'ün işi, kat yüksekliği girişi gerektiriyor).
+- Test: `scratchpad/test_kolon_beton_yazidan_com.py` (3/3 PASS, sahte AutoCAD
+  COM) — karışık seçimde (kolon+kiriş+isimsiz+bozuk+TEXT-olmayan-obje) doğru
+  sınıflandırma VE doğru renklendirme (`entity.Color` değerleri) birlikte
+  doğrulandı; boş seçim güvenli boş sonuç döndürüyor; `bagli=False` iken
+  `ConnectionError` fırlatıyor. Aşama 1 testleri (13/13) hâlâ PASS
+  (ortak özet fonksiyonuna refactor sonrası regresyon yok). `py_compile` +
+  gerçek pencere kurulum testi (buton varlığı + `isEnabled()==False`
+  başlangıç durumu) PASS.
+- KAPSAM: SADECE Aşama 2 (AutoCAD toplu seçim + renklendirme + önizleme).
+  Aşama 3 (kat yüksekliği + hesap + `beton_kalip_table`'a yazma + toplam)
+  ve Aşama 4 (Excel + mevcut akışa bağlama) HENÜZ YAPILMADI — brief'in
+  kuralı gereği kullanıcının gerçek AutoCAD'de önizlemeyi onaylaması
+  bekleniyor.
+
+================================================================================
+Rev-134 Aşama 1 — Kolon Beton/Kalıp: Yazı Tabanlı Toplu Okuma — çekirdek
 (autocad_connector.py — kolon_yazisini_ayristir / kolon_yazilarini_toplu_ayristir)
 --------------------------------------------------------------------------------
 - GEREKÇE: Rev-133'ün debug kanıtı geometri yaklaşımını çürüttü — kolon
