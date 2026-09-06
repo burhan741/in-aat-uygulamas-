@@ -2,7 +2,51 @@
                     INSAAT METRAJ PRO - TUM OZELLIKLER
 ================================================================================
 
-Son Guncelleme: 06 Eylul 2026 (Rev-133, LISP Kat Yuksekligi Bug Fix)
+Son Guncelleme: 06 Eylul 2026 (Rev-134 Aşama 1, Kolon Yazı-Tabanlı Metraj)
+
+================================================================================
+Rev-134 (2026-09-06) — Kolon Beton/Kalıp: Yazı Tabanlı Toplu Okuma — AŞAMA 1/4
+(autocad_connector.py — kolon_yazisini_ayristir / kolon_yazilarini_toplu_ayristir)
+--------------------------------------------------------------------------------
+- GEREKÇE: Rev-133'ün debug kanıtı geometri yaklaşımını çürüttü — kolon
+  polyline'ları Closed=True, 4 köşeli, ama 1/50 ölçek + mm birim belirsizliği
+  yüzünden BoundingBox/Area 0.01×0.01 birim gibi anlamsız değerler veriyordu,
+  program çizim ölçeğini bilemediği için geometriden güvenilir boyut
+  çıkarılamıyor. Çözüm: kolon etiket yazısını oku ("SZ07 50/50") — gerçek
+  tasarım boyutu ölçekten bağımsız, demir metrajındaki "28Ø14" yazı-okuma
+  mantığının basit bir versiyonu.
+- YENİ (SAF, AutoCAD bağımsız) fonksiyonlar: `kolon_yazisini_ayristir(metin)`
+  — tek TEXT/MTEXT içeriğini "<ad> <en>/<boy>" (ad opsiyonel) olarak
+  ayrıştırır, `mtext_temizle()` (mevcut, Rev-128) ile format kodlarını
+  temizler; `kolon_yazilarini_toplu_ayristir(metinler)` — listeyi
+  kolonlar/kirisler_atlanan/tanimsizlar/basarisizlar olarak sınıflandırıp
+  Türkçe özet cümlesi üretir.
+- GÜVENLİK KATMANI (brief'in kesin kararı): isim ilk harfi S/P → "kolon",
+  K → "kiris" (hesaba KATILMAZ, sayaç + "N kiriş atlandı" mesajı), başka
+  harf VEYA İSİMSİZ → "tanimsiz" (kolon mu kiriş mi belirsiz, OTOMATİK
+  HESABA KATILMAZ). Böylece kullanıcı bir katın TÜM yazılarını (kolon+kiriş
+  karışık) tek kutuyla seçse bile kiriş kolon formülüyle yanlış hesaplanmaz.
+- **TESPİT EDİLEN TUTARSIZLIK (kullanıcıya bildirildi, GÜVENLİ yorum
+  uygulandı):** Brief'in "Kesinleşen kararlar" bölümü isimsiz "50/50"yi
+  "tanımsız"a koyup hesaba katmama diyor, ama "Yazı ayrıştırma" bölümü aynı
+  durumda "Kolon N" adı verip kolon gibi işleme yönünde okunabiliyordu — iki
+  bölüm çelişiyordu. Uygulanan yorum: isimsiz yazı HER ZAMAN "tanimsiz"
+  (hesaba katılmaz); "Kolon N"/"İsimsiz-N" SADECE o tanımsız kaydın ekranda
+  gösterileceği bir ETİKETTİR, sınıflandırmayı değiştirmez.
+- Test: `scratchpad/test_kolon_yazi_ayristirma.py` — 13/13 PASS. Brief'in
+  kendi örneği (`["SZ07 50/50","K12 30/60","bozuk"]` → 1 kolon/1 kiriş
+  atlandı/1 başarısız) + gerçekçi karışık senaryo (3 kolon, 2 kiriş, 2
+  tanımsız, 1 başarısız) + MTEXT format kodu temizliği + esnek boşluk/ayraç
+  + çoklu eşleşmede ilkinin alınması + Aşama 3'ün elle doğrulama örneği
+  (50/50 @3.0m → 0.75 m³ beton, 6.0 m² kalıp) doğrulandı. `py_compile` PASS.
+- KAPSAM: SADECE Aşama 1 (yazı okuma + regex çekirdeği, AutoCAD'siz test
+  edilebilir). AutoCAD toplu seçim/renklendirme/önizleme (Aşama 2), kat
+  yüksekliği + hesap + tabloya yazma (Aşama 3), Excel/mevcut akışa bağlama
+  (Aşama 4) HENÜZ YAPILMADI — brief'in kuralı gereği kullanıcı onayı
+  bekleniyor. Geometri tabanlı `get_beton_kalip_boyutlar` SİLİNMEDİ (brief'in
+  kararı — bazı çizimlerde işe yarayabilir, alternatif olarak duruyor),
+  içindeki geçici DEBUG print'leri henüz TEMİZLENMEDİ (brief'te "kalsın,
+  sonra temizlenir" notu var — Aşama 2+ sırasında temizlenecek).
 
 ================================================================================
 Rev-133 (2026-09-06) — Beton & Kalıp: LISP Kat Yüksekliği AŞAMA 1 Bug Fix (KRİTİK)
