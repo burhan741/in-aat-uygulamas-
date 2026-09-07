@@ -102,6 +102,12 @@ Her geliştirilen programda **yerleşik kullanım kılavuzu** bulunmalıdır:
 
 # Bilinen Hatalar ve Kesin Kurallar
 
+## Rev-134 devam (2026-09-07) — Kolon Yazı Regex: Boyut HER ZAMAN Parantez İçinde, Parantezsiz Regex Binlerce İlgisiz Objeyi Yanlış Sınıflandırıyordu
+- **Olay:** Gerçek çizimde doğrulanan format "SZ12 (50/50)" — parantez ZORUNLU. Eski regex parantezi opsiyonel görüyordu, bu yüzden kullanıcı bir katı kutuyla seçince (1023 obje) alakasız çizgi/donatı metinleri de "SAYI/SAYI" eşleşip KIRMIZI boyanıp "başarısız" sayılıyordu.
+- **Çözüm:** `_KOLON_YAZI_PATTERN` artık `\(...\)` zorunlu. `kolon_yazisini_ayristir()`'e `ilgisiz` alanı eklendi — parantezli SAYI/SAYI deseni hiç yoksa `ilgisiz=True`, çağıran (`kolon_yazilarini_toplu_ayristir`, `get_kolon_beton_yazidan`) bunu SESSİZCE atlıyor (boyamıyor, saymıyor) — sadece bilgi amaçlı `ilgisiz_sayisi` sayacına giriyor.
+- **KURAL (genel, "kutu ile toplu obje seçimi" araçlarında):** Kullanıcı 1000+ objeyi tek kutuyla seçebiliyorsa, "eşleşmedi" ile "ilgisiz/alakasız" durumlarını AYIR — ilgisiz objeleri renklendirme/loglama/sayma gibi O(n) maliyetli işlemlere sokma, sessizce atla. Regex'i olabildiğince SIKI (zorunlu ayraç/format) tasarla — gevşek regex (opsiyonel parantez gibi) gerçek sinyali gürültüye gömer.
+- Test: `scratchpad/test_kolon_yazi_ayristirma.py` 28/28 PASS. Detay: `PROGRAM_OZELLIKLERI.txt` (2026-09-07 ek düzeltme). **DURUM:** Kod hazır, kullanıcının gerçek çizimde (12 kolon bekleniyor) tekrar denemesi bekleniyor.
+
 ## KRİTİK — pywin32 COM Retry'da Sadece com_error Yakalamak Yetmez (2026-09-06)
 - **Olay:** Kullanıcının AutoCAD bağlantısı "AutoCAD bulundu" logundan hemen sonra "Bağlantı hatası: <unknown>.ModelSpace" ile düştü — bu, `baglan()`'ın tanımladığı dostane hata mesajlarından biri DEĞİLDİ, ham bir Python hatasıydı.
 - **Kök neden:** `ActiveDocument`/`ModelSpace` retry döngüleri sadece `pywintypes.com_error`'ı yakalıyordu. pywin32'nin dinamik COM dispatch'i, tip kütüphanesi önbelleği (`gen_py`) çalışan AutoCAD sürümüyle uyuşmadığında `com_error` DEĞİL düz `AttributeError` (`"<unknown>.ModelSpace"`) fırlatır — bu yakalanmadığı için retry döngüsü İLK DENEMEDE terk ediliyor, 5 hak hiç kullanılmıyordu.

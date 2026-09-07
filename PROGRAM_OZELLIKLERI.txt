@@ -2,7 +2,18 @@
                     INSAAT METRAJ PRO - TUM OZELLIKLER
 ================================================================================
 
-Son Guncelleme: 06 Eylul 2026 (AutoCAD Bağlantı — AttributeError Retry Fix)
+Son Guncelleme: 07 Eylul 2026 (Kolon Yazı Regex — Parantezli Format Düzeltmesi)
+
+================================================================================
+EK DÜZELTME (2026-09-07) — Kolon Yazı Regex: Doğrulanmış Format Parantez İçeriyor, Eski Regex 1000+ İlgisiz Objeyi Kırmızıya Boyuyordu
+(autocad_connector.py — _KOLON_YAZI_PATTERN, kolon_yazisini_ayristir, kolon_yazilarini_toplu_ayristir, get_kolon_beton_yazidan)
+--------------------------------------------------------------------------------
+- **Olay:** Aşama 2'nin gerçek AutoCAD testinde kullanıcı gerçek format örneği verdi: "SZ12 (50/50)" — boyut HER ZAMAN parantez içinde, eski regex'te (`(?:isim\s+)?SAYI/SAYI`, parantezsiz) bu form da yakalanıyordu ama parantez ZORUNLU değildi. Sonuç: kullanıcı bir katı kutuyla seçince (1023 obje gibi) çizgi/donatı gibi alakasız binlerce metin de "SAYI/SAYI" deseni içeriyormuş gibi eşleşip KIRMIZI'ya boyanıyor, "başarısız" sayılıp kullanıcıya gösteriliyordu — gerçek kolon sinyali gürültüye gömülüyordu.
+- **Çözüm:** `_KOLON_YAZI_PATTERN` artık ZORUNLU parantez arıyor: `([A-Za-z...][A-Za-z...0-9]*)?\s*\((\d+)\s*/\s*(\d+)\)`. `kolon_yazisini_ayristir()`'e yeni `ilgisiz` alanı eklendi — parantezli (SAYI/SAYI) deseni metinde HİÇ yoksa `ilgisiz=True` (çizgi/donatı etiketi vb., sınıflandırma denemesi bile yapılmaz); parantez var ama sayılar geçersizse (örn. 0/0) bu gerçek bir parse hatasıdır, `ilgisiz=False`.
+- `kolon_yazilarini_toplu_ayristir()` ve `get_kolon_beton_yazidan()` artık `ilgisiz=True` olan metinleri SESSİZCE atlıyor — hiçbir listeye eklemiyor, KIRMIZI'ya boyamıyor (1000+ obje için performans+görsel gürültü kazancı), sadece bilgi amaçlı `ilgisiz_sayisi` sayacına ekliyor. `basarisizlar` listesi artık sadece gerçek parse hatalarını (parantez var, sayı geçersiz) içeriyor.
+- Debug çıktısı eklendi: `get_kolon_beton_yazidan()` artık konsola "N ilgisiz metin sessizce atlandı" + "DEBUG — N kolon bulundu:" + her kolonun ad/boyutunu basıyor (kullanıcının gerçek çizimde 12 kolon varsa 12'sinin de bulunduğunu doğrulaması için).
+- Test: `scratchpad/test_kolon_yazi_ayristirma.py` 28/28 PASS — kullanıcının verdiği tam senaryo (`["SZ12 (50/50)", "P129 (30/180)", "SZ07 (40/60)", "KB110 (40/80)", "birsey", "3Ø12"]` → 3 kolon/1 kiriş atlanan/0 başarısız) + 1000 ilgisiz + 3 gerçek kolon büyük ölçek simülasyonu dahil.
+- **DURUM:** Kod hazır, kullanıcının gerçek AutoCAD çiziminde (12 kolon yazısı bekleniyor) tekrar denemesi bekleniyor.
 
 ================================================================================
 EK DÜZELTME (2026-09-06) — AutoCAD Bağlantısı: "<unknown>.ModelSpace" AttributeError Retry'ı Öldürüyordu
