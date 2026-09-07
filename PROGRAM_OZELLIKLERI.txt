@@ -2,7 +2,17 @@
                     INSAAT METRAJ PRO - TUM OZELLIKLER
 ================================================================================
 
-Son Guncelleme: 07 Eylul 2026 (Kolon Beton/Kalıp — Yazı Tabanlı Hesap AŞAMA 2/3 Tamamlandı)
+Son Guncelleme: 07 Eylul 2026 (Kolon Beton/Kalıp — cm->m Dönüşüm İncelemesi: Kod Zaten Doğru, Kök Neden Girilen Yükseklik)
+
+================================================================================
+EK İNCELEME (2026-09-07) — "12.000 m³ çıktı, doğrusu 13.79 m³" Şikayeti: cm->m Dönüşümü ZATEN DOĞRU, Kök Neden Girilen Kat Yüksekliği
+--------------------------------------------------------------------------------
+- **Kullanıcı şikayeti:** Kolon beton hesabında şişik sonuç, "cm->m dönüşümü atlanmış" teorisiyle bildirildi.
+- **İnceleme sonucu (kod okunarak + testle KANITLANDI, varsayımla değil):** `kolon_yazisini_ayristir()` zaten `en_m = en_cm/100.0` çeviriyor, `_beton_kalip_kolon_yazisindan_oku()` (Aşama 2/3, bir önceki güncelleme) zaten `en_m`/`boy_m` (metre) kullanıyor — cm değeri HİÇBİR hesap adımına çıplak girmiyor. `scratchpad/test_kolon_beton_hesap_asama2.py`'ye 3 farklı yükseklik (3.00/4.00/4.60 m) ile parametrik doğrulama eklendi: h=4.00m girilince tam olarak kullanıcının gördüğü "12.000 m³" (ve 96.000 m² kalıp) çıkıyor — yani "12.000" bir BUG DEĞİL, girilen yükseklik 4.00m olduğunda MATEMATİKSEL OLARAK DOĞRU sonuç. Kullanıcının beklediği 13.79 m³'e denk gelen yükseklik ise kendi hesabıyla da tutarlı şekilde ~4.60m (h=4.60 girilince beton=13.800 m³ çıkıyor, 13.79'a ~0.01 fark ölçüm/yuvarlama payı içinde).
+- **Kalıp tarafında kalan küçük fark normal:** h=4.60m'de formül kalıp=110.400 m² veriyor, kullanıcının beklediği 103.91 m²'den ~%6 farklı — bu, brief'in KAPSAM DIŞI bıraktığı "kiriş kesişimi düşümü" (kolonun üstten/alttan kirişle kesiştiği kısmın kalıptan düşülmesi) nedeniyle BEKLENEN bir sapmadır, cm->m ile ilgisi yoktur. Kullanıcı brief'te bunu bilerek kapsam dışı bırakmıştı ([[project_kolon_yazi_metraj]]).
+- **Yapılan tek değişiklik:** "Eklendi" onay mesajına kullanılan kat yüksekliğini AÇIKÇA yazan bir satır eklendi (`Kullanılan kat yüksekliği: X.XX m`) — kullanıcı yanlış yükseklik girip girmediğini ANINDA, tabloya bakmadan görebilsin diye. Hesap mantığında hiçbir değişiklik yapılmadı (zaten doğruydu).
+- **KURAL (genel):** Bir hesap sonucu "yanlış" görünüyorsa önce GİRDİYİ (bu örnekte kat yüksekliği) doğrula — kullanıcı "birim dönüşümü hatası" diye teşhis koysa bile, koddaki dönüşümü testle (farklı girdi değerleriyle parametrik) kanıtlamadan "düzelttim" deme; kanıt göstermek ("h=4.00 girilince zaten 12.000 çıkıyor, bug değil") kullanıcının kendi girdisini kontrol etmesini sağlar ve gerçek bugları taklit eden girdi hatalarından ayırır.
+- Test: `scratchpad/test_kolon_beton_hesap_asama2.py` 18/18 PASS (3 yükseklik senaryosu dahil).
 
 ================================================================================
 Rev-134 Aşama 2/3 (2026-09-07) — Kolon Beton/Kalıp: Kat Yüksekliği + Hesap + Önizleme + Tabloya Ekleme

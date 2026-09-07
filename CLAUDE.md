@@ -102,6 +102,9 @@ Her geliştirilen programda **yerleşik kullanım kılavuzu** bulunmalıdır:
 
 # Bilinen Hatalar ve Kesin Kurallar
 
+## Rev-134 Aşama 2/3 EK İNCELEME (2026-09-07) — "12.000 m³ çıktı, doğrusu 13.79" Şikayeti: Bug DEĞİL, Girilen Yükseklik
+Kullanıcı "cm->m dönüşümü atlanmış" teorisiyle bildirdi ama kod zaten `en_m=en_cm/100` kullanıyordu (bir önceki güncellemede doğru yazılmıştı). Testle (3 farklı yükseklik: 3.00/4.00/4.60m) KANITLANDI: h=4.00m girilince tam olarak kullanıcının gördüğü "12.000 m³" çıkıyor — yani girdi (kat yüksekliği) 4.00m'ydi, kullanıcının beklediği 13.79 m³ için gereken yükseklik ~4.60m. **KURAL:** Kullanıcı "birim dönüşümü hatası" diye teşhis koysa bile önce GİRDİYİ (bu örnekte yükseklik) doğrula, koddaki dönüşümü parametrik testle kanıtla — "zaten doğruydu" demek için görmezden gelme, KANIT (farklı girdilerle test sonucu) göster. Küçük çözüm: "Eklendi" mesajına kullanılan kat yüksekliğini açıkça yazan satır eklendi, kullanıcı yanlış girip girmediğini anında görsün. Kalıptaki ~%6 kalan fark (110.4 vs 103.91) kesişim düşümünün kapsam dışı bırakılmasından — cm/m ile ilgisi yok. Test: `scratchpad/test_kolon_beton_hesap_asama2.py` 18/18 PASS. Detay: `PROGRAM_OZELLIKLERI.txt`.
+
 ## Rev-134 Aşama 2/3 TAMAMLANDI (2026-09-07) — Kolon Beton/Kalıp Hesabı
 Gerçek çizimde 12 kolon (SZ01-SZ12, 50/50) doğru bulundu. Önizleme dialoguna kat yüksekliği (m) eklendi (mevcut `kat_yuksekligi_spin` cm değerinden öntanımlı), her kolon `_beton_kalip_hesapla_eleman("Kolon",...)` ile hesaplanıp (aynı boyuttakiler Adet ile gruplanarak) `beton_kalip_table`'a ekleniyor. Test: `scratchpad/test_kolon_beton_hesap_asama2.py` 12/12 PASS (12 kolon@3.00m -> 9.000 m³ beton, 72.000 m² kalıp doğrulandı). Detay: `PROGRAM_OZELLIKLERI.txt` Rev-134 Aşama 2/3. **DURUM:** Kod hazır, kullanıcının gerçek çizimde denemesi bekleniyor.
 
