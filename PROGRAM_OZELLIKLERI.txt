@@ -2,7 +2,19 @@
                     INSAAT METRAJ PRO - TUM OZELLIKLER
 ================================================================================
 
-Son Guncelleme: 07 Eylul 2026 (Kolon Yazı Regex — Parantezli Format Düzeltmesi)
+Son Guncelleme: 07 Eylul 2026 (Kolon Beton/Kalıp — Yazı Tabanlı Hesap AŞAMA 2/3 Tamamlandı)
+
+================================================================================
+Rev-134 Aşama 2/3 (2026-09-07) — Kolon Beton/Kalıp: Kat Yüksekliği + Hesap + Önizleme + Tabloya Ekleme
+(metraj_analiz_window.py: _beton_kalip_kolon_yazisindan_oku)
+--------------------------------------------------------------------------------
+- **Doğrulandı:** Gerçek çizimde Aşama 1 (12 kolon SZ01-SZ12, hepsi 50/50) doğru bulundu.
+- **Eklendi:** Önizleme dialoguna kat yüksekliği (m) alanı eklendi — mevcut "Genel Ayarlar" grubundaki `kat_yuksekligi_spin` (cm) değerinden öntanımlı doluyor, kullanıcı dialog içinde TEK SEFERDE (tüm kolonlar için ortak) değiştirebiliyor; değiştikçe tablo canlı yeniden hesaplanıyor.
+- Her kolon için beton/kalıp mevcut `_beton_kalip_hesapla_eleman("Kolon", ...)` formülüyle hesaplanıyor (YENİDEN YAZILMADI, aynı formül Kalıp Alanı Analizi'nde de kullanılıyor) — önizleme tablosu kolon kolon (Ad, Boyut, Beton m³, Kalıp m²) + en altta TOPLAM satırı gösteriyor.
+- Onay sonrası aynı boyuttaki (en_cm, boy_cm) kolonlar TEK satırda gruplanıp (Adet alanıyla) mevcut `beton_kalip_table`'a ekleniyor — 12 özdeş kolon tek satır (Adet=12) olarak, farklı boyutlar ayrı satır olarak giriyor. Mevcut toplam/Excel akışı DEĞİŞMEDİ, sadece yeni satır(lar) ekleniyor.
+- Test: `scratchpad/test_kolon_beton_hesap_asama2.py` — headless PyQt (QDialog.exec + QMessageBox no-op patch), 12/12 PASS: 12 kolon @ 3.00m -> Adet=12, Net Beton=9.000 m³, Kalıp=72.000 m² (elle doğrulanan beklenen değerlerle birebir); + farklı boyutlu kolon gruplama testi (2 kolon 50/50 + 1 kolon 30/60 -> 2 ayrı satır, adetler [1,2]) PASS.
+- Yedek: `metraj_analiz_window.py.bak_20260907_190919` alındı, değişiklik öncesi.
+- **DURUM:** Kod hazır ve test edildi, kullanıcının gerçek AutoCAD çiziminde denemesi bekleniyor. Aşama 4 (Excel'e aktar akışı zaten mevcut tablo üzerinden otomatik çalışıyor — ayrı bir iş kalmadı, dolayısıyla 4 aşamalı plan pratikte 3 aşamada tamamlandı).
 
 ================================================================================
 EK DÜZELTME (2026-09-07) — Kolon Yazı Regex: Doğrulanmış Format Parantez İçeriyor, Eski Regex 1000+ İlgisiz Objeyi Kırmızıya Boyuyordu

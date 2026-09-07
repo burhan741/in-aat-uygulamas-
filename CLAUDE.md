@@ -102,6 +102,9 @@ Her geliştirilen programda **yerleşik kullanım kılavuzu** bulunmalıdır:
 
 # Bilinen Hatalar ve Kesin Kurallar
 
+## Rev-134 Aşama 2/3 TAMAMLANDI (2026-09-07) — Kolon Beton/Kalıp Hesabı
+Gerçek çizimde 12 kolon (SZ01-SZ12, 50/50) doğru bulundu. Önizleme dialoguna kat yüksekliği (m) eklendi (mevcut `kat_yuksekligi_spin` cm değerinden öntanımlı), her kolon `_beton_kalip_hesapla_eleman("Kolon",...)` ile hesaplanıp (aynı boyuttakiler Adet ile gruplanarak) `beton_kalip_table`'a ekleniyor. Test: `scratchpad/test_kolon_beton_hesap_asama2.py` 12/12 PASS (12 kolon@3.00m -> 9.000 m³ beton, 72.000 m² kalıp doğrulandı). Detay: `PROGRAM_OZELLIKLERI.txt` Rev-134 Aşama 2/3. **DURUM:** Kod hazır, kullanıcının gerçek çizimde denemesi bekleniyor.
+
 ## Rev-134 devam (2026-09-07) — Kolon Yazı Regex: Boyut HER ZAMAN Parantez İçinde, Parantezsiz Regex Binlerce İlgisiz Objeyi Yanlış Sınıflandırıyordu
 - **Olay:** Gerçek çizimde doğrulanan format "SZ12 (50/50)" — parantez ZORUNLU. Eski regex parantezi opsiyonel görüyordu, bu yüzden kullanıcı bir katı kutuyla seçince (1023 obje) alakasız çizgi/donatı metinleri de "SAYI/SAYI" eşleşip KIRMIZI boyanıp "başarısız" sayılıyordu.
 - **Çözüm:** `_KOLON_YAZI_PATTERN` artık `\(...\)` zorunlu. `kolon_yazisini_ayristir()`'e `ilgisiz` alanı eklendi — parantezli SAYI/SAYI deseni hiç yoksa `ilgisiz=True`, çağıran (`kolon_yazilarini_toplu_ayristir`, `get_kolon_beton_yazidan`) bunu SESSİZCE atlıyor (boyamıyor, saymıyor) — sadece bilgi amaçlı `ilgisiz_sayisi` sayacına giriyor.
