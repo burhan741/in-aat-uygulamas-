@@ -2,7 +2,23 @@
                     INSAAT METRAJ PRO - TUM OZELLIKLER
 ================================================================================
 
-Son Guncelleme: 07 Eylul 2026 (Kolon Beton/Kalıp — 1000x Şişkinlik: DEBUG Eklendi, Gerçek AutoCAD Çıktısı Bekleniyor)
+Son Guncelleme: 07 Eylul 2026 (Kolon Beton/Kalıp — 1000x Şişkinlik: Toplama/Gösterim Zincirine Tam Debug Eklendi)
+
+================================================================================
+EK İNCELEME 3 (2026-09-07) — Kullanıcı Hesabın Doğru Olduğunu Doğruladı ("1.15/kolon, 13.80 toplam DOĞRU"); Sorun Toplama/Gösterimde mi Diye Tam Zincir Debug'landı
+--------------------------------------------------------------------------------
+- Kullanıcı EK İNCELEME 2'deki debug çıktısını inceleyip çekirdek hesabın (`_beton_kalip_hesapla_eleman`) doğru olduğunu (1.15 m³/kolon, 12 kolon->13.80 m³) teyit etti — ama tablo/ekranda hâlâ "13800" görünüyor. Yani sorun hesap DEĞİL, hesap SONUCU tabloya yazılırken/toplanırken/gösterilirken bir yerde bozuluyor (kullanıcının teorisi: Türkçe binlik/ondalık ayracı karışması — "." nokta binlik sanılıyor olabilir).
+- **Kod incelemesi (kör düzeltme yapılmadan önce):** Tabloya yazma (`veriler = [..., f"{beton:.3f}", ...]` + `QTableWidgetItem(deger)`) VE toplama (`_beton_kalip_toplamlar_guncelle`: `float(item.text())` — Python'un yerleşik `float()`'u HER ZAMAN "." ondalık ayracı bekler, LOCALE-BAĞIMSIZDIR, Türkçe sistem locale'inden etkilenmez) kod olarak incelendi — İKİSİ DE plain Python string/float işlemleri, Qt'nin/sistemin locale ayarından etkilenmez. Yani KOD OKUYARAK bir "." -> binlik ayracı karışması bulunamadı.
+- **Eklenen debug (kör düzeltme değil, tam zincir izleme):**
+  1. Tabloya yazmadan hemen ÖNCE: `beton`/`kalip`/`siparis`'in HAM float değeri + Python tipi.
+  2. Tabloya yazılacak TAM string listesi (`veriler`).
+  3. Hücreye yazıldıktan HEMEN SONRA aynı hücre GERİ OKUNUP karşılaştırılıyor (Qt'nin item text'ini kendi başına değiştirip değiştirmediğini yakalamak için).
+  4. `_beton_kalip_toplamlar_guncelle()` içinde HER hücrenin okunan ham metni + parse edilen float'ı satır satır.
+  5. Toplama bittikten SONRA, etikete yazılmadan ÖNCE ham toplam float değeri.
+  6. Etikete YAZILAN nihai metin (`bk_toplam_beton_label.text()`) doğrudan geri okunup yazdırılıyor.
+- **Test sonucu (sahte veriyle, 18/18 PASS):** Zincirin HER adımı (hesap->string->hücre->geri okuma->toplama->etiket) 9.0/9.000 (veya ilgili değer) olarak sorunsuz kaldı, hiçbir noktada bozulma YOK. Kod, kendi ürettiği veri ve kendi çalıştırdığı Qt widget'larıyla matematiksel olarak temiz.
+- **DURUM — sıradaki adım kesinlikle kullanıcıda:** Gerçek AutoCAD ortamında tekrar denenip TÜM `[DEBUG]`/`[DEBUG toplamlar_guncelle]` satırlarının konsol çıktısı (özellikle "Tabloya YAZILACAK HAM değerler", "Tablodan HEMEN GERİ OKUNAN" ve "Label'lara YAZILAN metin" satırları) paylaşılmalı. Bu üç satırdan HANGİSİNDE ilk kez "13800" belirdiği, bozulmanın TAM olarak nerede (yazma/render/toplama/farklı bir kod yolu) olduğunu kesin gösterecek.
+- **KURAL (genel):** Kullanıcı "hesap doğru ama gösterim yanlış" dediğinde, ARADAKİ HER DÖNÜŞÜM ADIMINI (yaz->oku->topla->formatla->göster) ayrı ayrı debug'la — "muhtemelen locale sorunu" gibi bir teoriyi KOD OKUYARAK çürütmek (Python `float()` locale-bağımsızdır) yeterli değildir, gerçek ortamda GÖZLEMLENEBİLİR kanıt (konsol çıktısı) olmadan "düzelttim" denemez.
 
 ================================================================================
 EK İNCELEME 2 (2026-09-07) — "13800 m³ (doğrusu 13.80)" Tam 1000 Kat Şişkinlik: DEBUG Print'leri Eklendi, Kör Düzeltme YAPILMADI
