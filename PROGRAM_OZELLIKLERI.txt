@@ -2,7 +2,16 @@
                     INSAAT METRAJ PRO - TUM OZELLIKLER
 ================================================================================
 
-Son Guncelleme: 07 Eylul 2026 (Kolon Beton/Kalıp — Aktif Kat + Mükerrer Engelleme: "1000x" Sorunu Gerçek Kök Neden — Tekrarlanan Okuma Birikmesiydi)
+Son Guncelleme: 11 Eylul 2026 (Kolon Beton/Kalıp — Son Debug Temizliği, Modül Kapanış)
+
+================================================================================
+Rev-135 (2026-09-11) — Kolon Beton/Kalıp: Son Debug Temizliği (Modül Fiilen TAMAMLANDI)
+(app/core/autocad_connector.py: get_beton_kalip_boyutlar)
+--------------------------------------------------------------------------------
+- Rev-134'te aktif kolon-yazı okuma yolundaki (`_beton_kalip_kolon_yazisindan_oku`, `_beton_kalip_hesapla_eleman`, `_beton_kalip_toplamlar_guncelle`) tüm [DEBUG] print'leri zaten temizlenmişti. Geriye SADECE terk edilmiş geometri-tabanlı eski yaklaşımda (`get_beton_kalip_boyutlar`, Rev-133'te BoundingBox/Area kök neden araştırması için eklenmişti) bir [DEBUG] bloğu kalmıştı — konsolu kirletiyordu.
+- Bu blok (selection_set.Count / ObjectName / Layer / GetBoundingBox / Closed / Coordinates ham çıktıları, hem `print` hem `logger.info`) tamamen silindi. Kullanıcıya faydalı mesajlar (">>> Seçilen obje: ...", ">>> BoundingBox: ... → ... m", ">>> Uzunluk: ... m" vb.) DOKUNULMADI, olduğu gibi kaldı.
+- Doğrulama: `py_compile` PASS, repo genelinde `[DEBUG]` için grep taraması artık SIFIR sonuç veriyor. Stale pyc silindi.
+- **DURUM — Kolon Yazı-Tabanlı Metraj modülü artık kapatıldı sayılıyor:** Aşama 1-4 tamamlandı, gerçek AutoCAD verisiyle uçtan uca doğrulandı, konsol temiz. Bilinen tek açık kalem: kolon kalıp alanı 4 tam yüzden hesaplanıyor, kirişe/başka kolona bitişen yüzler düşülmüyor → gerçek projeye göre ~%6 fazla çıkıyor. Kasıtlı olarak DÜZELTİLMEDİ (güvenli taraf — fazla malzeme siparişi eksikten iyidir), ama kiriş metrajı bu modüle entegre edildiğinde bu fark büyüyebilir, o zaman tekrar gündeme alınmalı.
 
 ================================================================================
 Rev-134 devam (2026-09-07) — Kolon Beton/Kalıp: Aktif Kat Mekanizması + Mükerrer Okuma Engelleme (GERÇEK KÖK NEDEN BULUNDU VE ÇÖZÜLDÜ)
