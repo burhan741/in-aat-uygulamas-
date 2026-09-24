@@ -2,7 +2,17 @@
                     INSAAT METRAJ PRO - TUM OZELLIKLER
 ================================================================================
 
-Son Guncelleme: 11 Eylul 2026 (Kolon Beton/Kalıp — Son Debug Temizliği, Modül Kapanış)
+Son Guncelleme: 24 Eylul 2026 (İhale Demir Metrajı — Aralıklı Donatı, AŞAMA 1/2 TAMAMLANDI)
+
+================================================================================
+Rev-136 Aşama 1/2 (2026-09-24) — İhale Demir Metrajı: Aralıklı Donatı (Ø/aralık) Okuma — Regex Çekirdeği + Adet Hesabı
+(app/core/autocad_connector.py: aralikli_donati_ayristir, aralikli_donati_adet_hesapla, aralikli_donati_hesapla)
+--------------------------------------------------------------------------------
+- **Amaç:** İhale/döşeme çizimlerinde adet yerine dağılım aralığıyla etiketlenen donatıları ("Ø14/20 L=500" = çap 14mm, her 20cm'de bir, çubuk boyu 500cm) okuyup kullanıcının gireceği dağılım mesafesinden (m) adedi hesaplayarak demir metrajına eklemek. Mevcut adetli format ("28Ø14 L=442") okuma araçlarından TAMAMEN AYRI — adet burada YOK, aralıktan türetiliyor.
+- **AŞAMA 1 (regex çekirdeği, SAF/AutoCAD bağımsız):** `_ARALIKLI_DONATI_PATTERN` + `aralikli_donati_ayristir()` — Ø sembolü varyasyonları (Ø/ø/Φ/φ/O/D/%%C) destekleniyor, MTEXT format kodları `mtext_temizle()` ile temizleniyor. Eski adetli format ("28Ø14 L=442") regex'te ZORUNLU "/" karakteri olmadığı için hiç eşleşmiyor — ayrım için ekstra dışlama kuralı gerekmedi, doğal olarak ayrışıyor.
+- **AŞAMA 2 (mesafe girişi + adet hesabı):** `aralikli_donati_adet_hesapla(aralik_cm, mesafe_m)` = ceil(mesafe_cm/aralik_cm)+1 (uç çubuk dahil, kullanıcı onaylı kural). `aralikli_donati_hesapla()` adet+toplam boy(m)+toplam ağırlık(kg) hesabını CM→M dönüşümünü TEK YERDE yaparak üretiyor (kolon betonundaki 1000-kat hatasının tekrarını önlemek için).
+- **Test:** `scratchpad/test_aralikli_donati.py` 21/21 PASS — brief'teki tüm örnekler (Ø14/20 L=500→cap=14/aralık=20/boy=500; mesafe=4m→adet=21→toplam_boy=105m→126.84kg; eski adetli formatın atlanması; MTEXT kod temizliği) birebir doğrulandı.
+- **DURUM:** Sadece Aşama 1/2 (çekirdek mantık) tamamlandı — henüz UI butonu, AutoCAD seçim akışı, önizleme dialogu ve aktif kata (`DemirBilgisi`) ekleme YOK. Kullanıcı brief'i "her aşama sonunda DUR" istediği için Aşama 3 (AutoCAD entegrasyonu) için onay bekleniyor.
 
 ================================================================================
 Rev-135 (2026-09-11) — Kolon Beton/Kalıp: Son Debug Temizliği (Modül Fiilen TAMAMLANDI)
