@@ -2,7 +2,18 @@
                     INSAAT METRAJ PRO - TUM OZELLIKLER
 ================================================================================
 
-Son Guncelleme: 24 Eylul 2026 (İhale Demir Metrajı — Aralıklı Donatı, AŞAMA 1/2 TAMAMLANDI)
+Son Guncelleme: 24 Eylul 2026 (İhale Demir Metrajı — Aralıklı Donatı, AŞAMA 3/3 TAMAMLANDI — kullanıcı gerçek AutoCAD testi bekleniyor)
+
+================================================================================
+Rev-136 Aşama 3/3 (2026-09-24) — İhale Demir Metrajı: Aralıklı Donatı — AutoCAD Seçim + Önizleme + Aktif Kata Ekleme
+(app/core/autocad_connector.py: get_aralikli_donati_yazidan; app/ui/metraj_analiz_window.py: AralikliDonatiOnizlemeDialog, _autocad_aralikli_donati_oku, _aralikli_donati_kat_satirlarini_yeniden_olustur)
+--------------------------------------------------------------------------------
+- **AutoCAD okuma:** `get_aralikli_donati_yazidan()` — `get_kolon_beton_yazidan()` ile birebir aynı iskelet (kutu seçim → TEXT/MTEXT oku → `aralikli_donati_ayristir()` ile ayrıştır). "ilgisiz" (desen hiç yok) metinler SESSİZCE atlanır (boyanmaz/sayılmaz), eşleşip geçersiz sayı içerenler (örn. Ø0/20) KIRMIZI boyanıp "basarisizlar"a girer, geçerli olanlar YEŞİL boyanır.
+- **Önizleme dialogu (`AralikliDonatiOnizlemeDialog`):** Kullanıcının talebi üzerine "sırayla sor" değil **tablo sütunu** yaklaşımı seçildi — her satırda bir `QDoubleSpinBox` (Mesafe m), değiştirildiğinde o satırın Adet/Toplam Boy/Toplam Ağırlık hücreleri CANLI güncellenir (`aralikli_donati_hesapla()` ile). Mesafesi 0 bırakılan satırlar "onaylı sonuç" listesine hiç girmez — kullanıcı zorla her satıra değer girmek zorunda değil. Alt bilgi etiketi kaç satırın "hazır" olduğunu ve canlı toplam kg'ı gösterir.
+- **Mükerrer engelleme (kullanıcı özel talebi):** `self.aralikli_donati_kayitlari: Dict[(kat_adi, handle), DemirBilgisi]` registry'si — AutoCAD `handle` (her TEXT objesi için biricik/stabil kimlik) anahtar olarak kullanılıyor. Aynı yazı tekrar okunup mesafe düzeltilirse ESKİ kayıt registry'de aynı anahtarla EZİLİR (yeni satır eklenmez). `_aralikli_donati_kat_satirlarini_yeniden_olustur(kat_adi)` o katın SADECE bu registry'de bilinen handle'lara ait satırlarını silip registry'den yeniden inşa eder — manuel eklenmiş veya başka araçlarla (Demir Metrajı Al, Kolon Filizi Oku vb.) eklenmiş satırlara DOKUNMAZ (bkz. CLAUDE.md Rev-134 dersinin bu araca uygulanması).
+- **UI:** Demir Metrajı sekmesinde "İhale Demir Metrajı" alt başlığı + "ARALIKLI DONATI OKU (Ø/ARALIK)" butonu (sarı/altın renk, mevcut butonlardan görsel olarak ayrışıyor — bkz. Rev-113 dersi: benzer isimli/renkli buton karışıklığı riskine karşı).
+- **Test:** `scratchpad/test_aralikli_donati_ui.py` 14/14 PASS (headless PyQt, offscreen) — dialog canlı hesap doğru (126.84 kg, 1000-kat şişme YOK), mesafe 0'a çekilince satır listeden çıkıyor, dedup rebuild senaryosu (aynı handle tekrar okunca BİRİKMİYOR, güncel değerle değişiyor, farklı handle ayrı ekleniyor, manuel/diğer-araç satırlarına dokunulmuyor) hepsi doğrulandı. Ayrıca `scratchpad/test_metraj_window_acilis.py` ile tam pencere açılışı (yeni widget'larla) hatasız test edildi.
+- **DURUM:** Kod tarafı (Aşama 1-3) tamamlandı ve headless testlerle doğrulandı. Kullanıcının GERÇEK AutoCAD'de denemesi bekleniyor — henüz canlı ortamda test edilmedi.
 
 ================================================================================
 Rev-136 Aşama 1/2 (2026-09-24) — İhale Demir Metrajı: Aralıklı Donatı (Ø/aralık) Okuma — Regex Çekirdeği + Adet Hesabı
