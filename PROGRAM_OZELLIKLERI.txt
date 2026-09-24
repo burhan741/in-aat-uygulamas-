@@ -2,10 +2,24 @@
                     INSAAT METRAJ PRO - TUM OZELLIKLER
 ================================================================================
 
-Son Guncelleme: 24 Eylul 2026 (İhale Demir Metrajı — Aralıklı Donatı, AŞAMA 3/3 TAMAMLANDI — kullanıcı gerçek AutoCAD testi bekleniyor)
+Son Guncelleme: 24 Eylul 2026 (İhale Demir Metrajı — Aralıklı Donatı, DÖNGÜSEL TEK-TEK SEÇİM MODU TAMAMLANDI — kullanıcı gerçek AutoCAD testi bekleniyor)
 
 ================================================================================
-Rev-136 Aşama 3/3 (2026-09-24) — İhale Demir Metrajı: Aralıklı Donatı — AutoCAD Seçim + Önizleme + Aktif Kata Ekleme
+Rev-136 Aşama 3 GÜNCELLEME (2026-09-24) — İhale Demir Metrajı: Kutu Seçim TERK EDİLDİ, Döngüsel Tek-Tek Seçim + Yeşil Boyama + Undo
+(app/core/autocad_connector.py: aralikli_donati_tek_obje_sec, aralikli_donati_isaretle, aralikli_donati_isaret_geri_al; app/ui/metraj_analiz_window.py: AralikliDonatiDonguPaneli)
+--------------------------------------------------------------------------------
+- **Neden değişti:** Kullanıcı "radye gibi dağınık donatıda aynı demiri iki kez sayma / bir demiri atlama" riskini belirtti — kutu ile TOPLU okuma (önceki `get_aralikli_donati_yazidan` + `AralikliDonatiOnizlemeDialog`) düzenli/gridli döşemede iyiydi ama dağınık radyede "hangileri okundu" belirsiz kalıyordu. Kullanıcı isteği doğrultusunda kutu seçim TAMAMEN KALDIRILDI, yerine döngüsel tek-tek seçim getirildi.
+- **Yeni akış:** Kullanıcı "Demir Seç" butonuna basar → AutoCAD'e geçer → TEK bir yazı seçer → program hemen `QInputDialog` ile dağılım mesafesi (m) sorar → onaylanınca obje YEŞİLE boyanır (`aralikli_donati_isaretle`, handle bazlı, orijinal renk `_orijinal_renkler` cache'inde saklanır) ve listeye eklenir → döngü otomatik "Demir Seç"e döner → kullanıcı "Bitti — Aktif Kata Ekle" diyene kadar sürer.
+- **Mükerrer koruma (görsel + mantıksal, kullanıcı özel talebi):** Aynı handle (bu oturumda VEYA bu katın registry'sinde önceden kayıtlı) tekrar seçilirse "Bu demir zaten eklendi, mesafesini güncellemek ister misiniz?" diye sorulur — Evet denirse aynı satır GÜNCELLENİR (ayrı satır eklenmez, mükerrer boyama da yapılmaz). Yeşil renk gözle "alınanları" gösterir, handle ise kesin/mantıksal kontrolü sağlar.
+- **Undo:** "Son Ekleneni Geri Al" son satırı listeden çıkarır ve `aralikli_donati_isaret_geri_al()` ile objeyi orijinal rengine döndürür (yanlış demir/yanlış mesafe girildiğinde düzeltme imkanı).
+- **İptal davranışı:** "İptal" ile çıkılırsa (onaydan sonra) bu oturumda boyanan TÜM objeler orijinal renklerine geri döndürülür — hiçbir şey kata eklenmediği için yanıltıcı yeşil iz kalmasın diye. "Bitti" ile çıkılırsa (kullanıcı tercihi, brief madde 6) yeşiller KALIR — hangi demirlerin alındığı çizimde görünür kalsın diye.
+- **AutoCAD connector:** `get_aralikli_donati_yazidan()` (kutu-toplu okuma) SİLİNDİ, yerine 3 metod: `aralikli_donati_tek_obje_sec()` (tek obje seç+ayrıştır, "bulundu"/"bos_secim"/"ilgisiz"/"gecersiz" durumları döner), `aralikli_donati_isaretle(handle)` (yeşile boya), `aralikli_donati_isaret_geri_al(handle)` (orijinal renge döndür, `HandleToObject` ile objeyi handle'dan yeniden bulur).
+- **UI:** `AralikliDonatiOnizlemeDialog` (kutu-toplu önizleme tablosu) SİLİNDİ, yerine `AralikliDonatiDonguPaneli` — canlı büyüyen tablo + "Demir Seç"/"Son Ekleneni Geri Al"/"Bitti"/"İptal" butonları + canlı toplam etiketi.
+- **Test:** `scratchpad/test_aralikli_donati_ui.py` TAMAMEN YENİDEN yazıldı (sahte connector ile) — 21/21 PASS: bos_secim/ilgisiz/gecersiz durumlarında satır eklenmiyor, mesafe girişinde iptal edilirse boyama yapılmıyor, aynı handle tekrar seçilince mükerrer uyarısı + güncelleme (birikme yok, TEK kez boyama), "Son Ekleneni Geri Al" doğru satırı silip rengi geri alıyor, önceki oturumdan bilinen (registry'deki) handle da mükerrer uyarısına giriyor. Dedup rebuild (kat yapısına ekleme) senaryosu da regresyon olarak tekrar doğrulandı.
+- **DURUM:** Kod tarafı tamamlandı ve headless testlerle doğrulandı. Kullanıcının GERÇEK AutoCAD'de (özellikle radye/dağınık donatı senaryosunda) denemesi bekleniyor.
+
+================================================================================
+Rev-136 Aşama 3/3 (2026-09-24, TARİHSEL — kutu-toplu seçim, SONRADAN TERK EDİLDİ) — İhale Demir Metrajı: Aralıklı Donatı — AutoCAD Seçim + Önizleme + Aktif Kata Ekleme
 (app/core/autocad_connector.py: get_aralikli_donati_yazidan; app/ui/metraj_analiz_window.py: AralikliDonatiOnizlemeDialog, _autocad_aralikli_donati_oku, _aralikli_donati_kat_satirlarini_yeniden_olustur)
 --------------------------------------------------------------------------------
 - **AutoCAD okuma:** `get_aralikli_donati_yazidan()` — `get_kolon_beton_yazidan()` ile birebir aynı iskelet (kutu seçim → TEXT/MTEXT oku → `aralikli_donati_ayristir()` ile ayrıştır). "ilgisiz" (desen hiç yok) metinler SESSİZCE atlanır (boyanmaz/sayılmaz), eşleşip geçersiz sayı içerenler (örn. Ø0/20) KIRMIZI boyanıp "basarisizlar"a girer, geçerli olanlar YEŞİL boyanır.
