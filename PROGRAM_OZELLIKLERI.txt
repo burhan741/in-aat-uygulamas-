@@ -5,6 +5,13 @@
 Son Guncelleme: 26 Eylul 2026 (Temel Kirişi (SBH) — TOPLU MOD: AutoCAD'den çıkmadan yazı + 2 kenar çizgisi + ENTER, gerçek AutoCAD testi bekleniyor)
 
 ================================================================================
+Rev-137 Düzeltme (2026-09-26) — Temel Kirişi: "Add.SelectOnScreen" Hatası + Öne Getirme Takılması
+- Hata: Yazı seçimi "AttributeError: Add.SelectOnScreen" ile düşüyordu. Kök neden: AutoCAD meşgulken (pencere büyütülüp yeniden çizilirken) pywin32 metot adı çözümlemesindeki reddi AttributeError'a çeviriyor; mevcut retry sadece com_error'ı yakaladığı için ilk denemede kaçıyordu. Selection set nesnesi doğruydu.
+- Çözüm: _mesgul_retry (AttributeError + RPC_E_CALL_REJECTED, 8 deneme, artan bekleme). SelectOnScreen retry'ı TÜM araçlarda aktif. Toplu moddaki tüm COM çağrıları bu korumada.
+- Takılma: Toplu modda AutoCAD öne getirme oturumda bir kez ve yeni hafif sürümle (_autocad_one_getir_hafif): WindowState sadece simge durumundaysa değişiyor, sabit bekleme yok (önceki ~1.7 sn → anlık). Diğer araçların öne getirme davranışı değişmedi.
+- Test: test_temel_kirisi_com.py 32/32 (meşgul AutoCAD taklidi dahil), test_temel_kirisi.py 48/48, test_temel_kirisi_ui.py 43/43, kolon 28/19/22 PASS.
+
+================================================================================
 Rev-137 Aşama 3b (2026-09-26) — Temel Kirişi: TOPLU MOD (İki Adımlı Gidip-Gel Akışının Yerine)
 (app/core/autocad_connector.py: temel_kirisi_toplu_baslat, temel_kirisi_kiris_oku, temel_kirisi_mesaj, temel_kirisi_uzunluk_sor, obje_isaretle_hizli, saf temel_kirisi_secim_degerlendir; app/ui/metraj_analiz_window.py: TemelKirisiDonguPaneli yeniden yazıldı)
 - Neden: eski akış her yazı/çizgi seçiminde AutoCAD <-> program arasında pencere geçişi yapıyordu (her adımda ~1 sn öne getirme + her boyamada tam Regen) — kullanıcı "takılıyor" dedi.
