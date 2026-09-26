@@ -2,7 +2,21 @@
                     INSAAT METRAJ PRO - TUM OZELLIKLER
 ================================================================================
 
-Son Guncelleme: 26 Eylul 2026 (Temel Kirişi (SBH) Beton+Kalıp — Aşama 1/2 çekirdek tamamlandı, kullanıcı onayı bekleniyor)
+Son Guncelleme: 26 Eylul 2026 (Temel Kirişi (SBH) Beton+Kalıp — Aşama 3 tamamlandı: iki adımlı seçim + çizgiden otomatik uzunluk, gerçek AutoCAD testi bekleniyor)
+
+================================================================================
+Rev-137 Aşama 3 (2026-09-26) — Temel Kirişi (SBH): İki Adımlı Döngüsel Seçim + Kenar Çizgisinden Otomatik Uzunluk + Sekme + Excel
+(app/core/autocad_connector.py: temel_kirisi_yazi_sec, temel_kirisi_cizgi_sec, cizim_birimi_oku, cizim_uzunlugu_metreye_cevir, obje_isaretle/obje_isaret_geri_al; app/ui/metraj_analiz_window.py: TemelKirisiDonguPaneli + "Kaba İnşaat > Temel Kirişi" alt sekmesi)
+- Yer: Akıllı Metraj Analizi > Kaba İnşaat > Temel Kirişi (Beton & Kalıp'ın yanında).
+- Akış: "TEMEL KİRİŞİ SEÇ" → panel → "Seçime Başla": (1) SBH yazısı seç → kesit okunur, yazı YEŞİL; (2) kenar çizgisi (LINE/POLYLINE) seç → entity.Length ile net uzunluk, çizgi YEŞİL → beton g×y×L, kalıp 2×y×L → otomatik sonraki kirişe geçer. Yazı adımında boş ENTER döngüyü durdurur. "TAMAMLANDI" tabloya ekler, yeşiller kalır.
+- Yanlış sıra: yazı beklerken çizgi (veya tersi) seçilirse uyarır, aynı adımı tekrarlar.
+- Elle yedek: çizgi okunamaz/Length 0/boş seçimde "Net (yüzden yüze) uzunluk girin" penceresi. Vazgeçilirse kiriş eklenmez, yazı rengi geri alınır.
+- BİRİM GÜVENLİĞİ (Rev-133/134 dersleri): Length çizim biriminde gelir. Sekmede "Çizim Birimi" (Otomatik=INSUNITS / mm / cm / m; INSUNITS tanımsızsa cm). Oturumdaki İLK çizgi "X birim = Y m, doğru mu?" diye teyit ettirilir; 50 m üstü / 0.10 m altı her değer ayrıca sorulur.
+- Mükerrer: aynı SBH yazısı (handle) oturumda veya tabloda varsa "güncellensin mi?" — ayrı satır açılmaz, kayıt üzerine yazılır. Aynı çizgi başka kirişte kullanıldıysa uyarır. Genişlik>yükseklik ise "sıra ters olabilir" sorusu.
+- Undo: son kirişi siler, yazı+çizgi rengini geri alır. İptal: bu oturumdaki tüm renkleri geri alır.
+- Sekme tablosu: Ad | Genişlik | Yükseklik | Uzunluk | Beton (m³) | Kalıp (m²) | Uzunluk Kaynağı (Çizgi/Elle/Elle (düzeltildi)). Uzunluk hücresi çift tıkla düzeltilebilir, beton/kalıp anında yeniden hesaplanır. Seçili Sil/Temizle çizimdeki yeşili de geri alır. Alt TOPLAM etiketi + "TEMEL KİRİŞİ EXCEL'E AKTAR" (TOPLAM satırlı).
+- Brief çelişkisi notu: brief'in "Yapılmayacaklar" bölümü "uzunluğu çizimden otomatik ölçme" diyordu, güncellenmiş Aşama 3 ise çizgiden otomatik okumayı istiyor — güncel Aşama 3 uygulandı.
+- Test: scratchpad/test_temel_kirisi_ui.py 37/37, scratchpad/test_temel_kirisi_com.py 12/12 (sahte COM), test_temel_kirisi.py 33/33; kolon regresyonları 28/19/22 PASS.
 
 ================================================================================
 Rev-137 Aşama 1/2 (2026-09-26) — Temel Kirişi (SBH) Beton + Kalıp Metrajı — Regex + Hesap Çekirdeği
