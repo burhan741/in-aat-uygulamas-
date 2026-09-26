@@ -5,6 +5,15 @@
 Son Guncelleme: 26 Eylul 2026 (Temel Kirişi (SBH) — TOPLU MOD: AutoCAD'den çıkmadan yazı + 2 kenar çizgisi + ENTER, gerçek AutoCAD testi bekleniyor)
 
 ================================================================================
+Rev-137 Düzeltme 2 (2026-09-26) — Temel Kirişi: Tek Seçimde Birden Fazla Kiriş + Üst Üste Çift Obje
+- Gerçek AutoCAD testinde: öne getirme 0.43 sn'ye indi, "AutoCAD meşgul" reddi otomatik tekrar denemeyle aşıldı (önceki düzeltme doğrulandı).
+- Yeni: ENTER'a basmadan birden fazla kiriş seçilirse (N yazı + 2N çizgi), her yazı kendisine EN YAKIN 2 kenar çizgisiyle otomatik eşleştirilip ayrı kiriş olarak eklenir; komut satırında "Tek seçimde N kiriş bulundu" yazar. Eşleşen çizgiler paralel değilse uyarı.
+- Yeni: Üst üste kopyalanmış çift çizgi/yazı (aynı uç noktalar / aynı konum) tekilleştirilir, satırda not olarak gösterilir.
+- Sayılar uyuşmazsa (ör. 2 yazı + 3 çizgi) seçim açık hata mesajıyla atlanır.
+- "Key not found" (ilk kullanımda seçim seti yok) log'da artık hata değil bilgi.
+- Test: test_temel_kirisi.py 58/58, test_temel_kirisi_com.py 35/35, test_temel_kirisi_ui.py 49/49 (gerçek log senaryosu birebir), kolon 28/19/22 PASS.
+
+================================================================================
 Rev-137 Düzeltme (2026-09-26) — Temel Kirişi: "Add.SelectOnScreen" Hatası + Öne Getirme Takılması
 - Hata: Yazı seçimi "AttributeError: Add.SelectOnScreen" ile düşüyordu. Kök neden: AutoCAD meşgulken (pencere büyütülüp yeniden çizilirken) pywin32 metot adı çözümlemesindeki reddi AttributeError'a çeviriyor; mevcut retry sadece com_error'ı yakaladığı için ilk denemede kaçıyordu. Selection set nesnesi doğruydu.
 - Çözüm: _mesgul_retry (AttributeError + RPC_E_CALL_REJECTED, 8 deneme, artan bekleme). SelectOnScreen retry'ı TÜM araçlarda aktif. Toplu moddaki tüm COM çağrıları bu korumada.
