@@ -2,7 +2,20 @@
                     INSAAT METRAJ PRO - TUM OZELLIKLER
 ================================================================================
 
-Son Guncelleme: 26 Eylul 2026 (Temel Kirişi (SBH) Beton+Kalıp — Aşama 3 tamamlandı: iki adımlı seçim + çizgiden otomatik uzunluk, gerçek AutoCAD testi bekleniyor)
+Son Guncelleme: 26 Eylul 2026 (Temel Kirişi (SBH) — TOPLU MOD: AutoCAD'den çıkmadan yazı + 2 kenar çizgisi + ENTER, gerçek AutoCAD testi bekleniyor)
+
+================================================================================
+Rev-137 Aşama 3b (2026-09-26) — Temel Kirişi: TOPLU MOD (İki Adımlı Gidip-Gel Akışının Yerine)
+(app/core/autocad_connector.py: temel_kirisi_toplu_baslat, temel_kirisi_kiris_oku, temel_kirisi_mesaj, temel_kirisi_uzunluk_sor, obje_isaretle_hizli, saf temel_kirisi_secim_degerlendir; app/ui/metraj_analiz_window.py: TemelKirisiDonguPaneli yeniden yazıldı)
+- Neden: eski akış her yazı/çizgi seçiminde AutoCAD <-> program arasında pencere geçişi yapıyordu (her adımda ~1 sn öne getirme + her boyamada tam Regen) — kullanıcı "takılıyor" dedi.
+- Yeni akış: "TEMEL KİRİŞİ SEÇ" → birim BİR KEZ sorulur (cm/mm/m, varsayılan INSUNITS) → AutoCAD bir kez öne gelir → her kiriş için: SBH yazısı + 2 kenar çizgisi (üst+alt) + ENTER → sonraki kiriş → boş ENTER ile panele dönüş. Her kirişte teyit sorusu YOK.
+- Uzunluk = 2 kenar çizgisinin ORTALAMASI. Beton = g×y×L_ort, kalıp = 2×y×L_ort. Yazı + 2 çizgi yeşile boyanır (tam Regen yerine sadece obje Update()).
+- Tüm geri bildirim AutoCAD komut satırında: "SBH-1 EKLENDİ: L=5.05 m, beton=..., kalıp=... (toplam N kiriş)", "GÜNCELLENDİ", "HATA: ... ATLANDI", "UYARI ...". Döngü sırasında hiç Qt penceresi açılmaz.
+- Seçim kuralları: tam 1 SBH yazısı şart (0 veya 2+ → atlanır); 2 çizgi → ortalama (aralarında %10'dan fazla fark → uyarı); 1 çizgi → kabul + uyarı; 3+ çizgi → atlanır; 0 çizgi/uzunluk okunamadı → AutoCAD komut satırından elle uzunluk (ESC = kiriş atlanır). 50 m üstü / 0.10 m altı → uyarı (birim şüphesi).
+- Mükerrer: aynı SBH yazısı (handle, oturumda veya tabloda) tekrar seçilirse kayıt GÜNCELLENİR (ayrı satır yok), artık kullanılmayan eski çizgilerin yeşili sökülür. Undo (panelde): son kirişin yazı+çizgi yeşili geri alınır. İptal: oturumdaki tüm yeşiller geri. TAMAMLANDI: yeşiller kalır.
+- Panelde uyarılı satırlar turuncu + tooltip, uyarı özeti etiketi. "Seçime Devam Et" ile döngüye kaldığı yerden dönülür.
+- Eski iki adımlı metotlar (temel_kirisi_yazi_sec/cizgi_sec, ilk-çizgi birim teyidi) KALDIRILDI. Teşhis logları ([TIMING]/[TEMEL KIRISI]/[COM_RETRY]) yeni akışta da aktif.
+- Test: scratchpad/test_temel_kirisi.py 48/48 (değerlendirme dahil), test_temel_kirisi_com.py 22/22 (sahte COM), test_temel_kirisi_ui.py 43/43 (headless); kolon regresyonları 28/19/22 PASS.
 
 ================================================================================
 Rev-137 TEŞHİS (2026-09-26) — Temel Kirişi: Sessiz Hata ve Takılma Teşhis Logları (davranış değişmedi)
