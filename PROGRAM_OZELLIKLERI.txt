@@ -5,6 +5,14 @@
 Son Guncelleme: 26 Eylul 2026 (Temel Kirişi (SBH) Beton+Kalıp — Aşama 3 tamamlandı: iki adımlı seçim + çizgiden otomatik uzunluk, gerçek AutoCAD testi bekleniyor)
 
 ================================================================================
+Rev-137 TEŞHİS (2026-09-26) — Temel Kirişi: Sessiz Hata ve Takılma Teşhis Logları (davranış değişmedi)
+- Temel kirişi seçim/işaretleme akışında yutulan tüm hatalar artık error_log.txt'ye "[TEMEL KIRISI] <fonksiyon> hata: ..." + traceback olarak düşüyor.
+- Her COM çağrısı (öne getirme adımları, SelectionSets, SelectOnScreen, Item, ObjectName/Handle/TextString, Length, HandleToObject, renk, Regen) "[TIMING] ... çağrılıyor / bitti, süre: X sn" ile loglanıyor.
+- _com_retry: "[COM_RETRY] deneme n/5 RPC_E_CALL_REJECTED" (tüm araçlarda), vazgeçme ve com_error dışı hatalar (temel kirişi akışında) loglanıyor.
+- Ayrıntılı loglar sadece temel kirişi akışı sırasında açık; diğer araçların log hacmi değişmedi.
+- Test: scratchpad/test_temel_kirisi_teshis_log.py 20/20 PASS; temel kirişi 37/12/33 ve kolon 28/19/22 regresyonları PASS.
+
+================================================================================
 Rev-137 Aşama 3 (2026-09-26) — Temel Kirişi (SBH): İki Adımlı Döngüsel Seçim + Kenar Çizgisinden Otomatik Uzunluk + Sekme + Excel
 (app/core/autocad_connector.py: temel_kirisi_yazi_sec, temel_kirisi_cizgi_sec, cizim_birimi_oku, cizim_uzunlugu_metreye_cevir, obje_isaretle/obje_isaret_geri_al; app/ui/metraj_analiz_window.py: TemelKirisiDonguPaneli + "Kaba İnşaat > Temel Kirişi" alt sekmesi)
 - Yer: Akıllı Metraj Analizi > Kaba İnşaat > Temel Kirişi (Beton & Kalıp'ın yanında).
