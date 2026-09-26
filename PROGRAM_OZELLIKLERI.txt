@@ -2,7 +2,18 @@
                     INSAAT METRAJ PRO - TUM OZELLIKLER
 ================================================================================
 
-Son Guncelleme: 24 Eylul 2026 (İhale Demir Metrajı — Aralıklı Donatı, DÖNGÜSEL TEK-TEK SEÇİM MODU TAMAMLANDI — kullanıcı gerçek AutoCAD testi bekleniyor)
+Son Guncelleme: 26 Eylul 2026 (Temel Kirişi (SBH) Beton+Kalıp — Aşama 1/2 çekirdek tamamlandı, kullanıcı onayı bekleniyor)
+
+================================================================================
+Rev-137 Aşama 1/2 (2026-09-26) — Temel Kirişi (SBH) Beton + Kalıp Metrajı — Regex + Hesap Çekirdeği
+(app/core/autocad_connector.py: _TEMEL_KIRISI_PATTERN, temel_kirisi_ayristir, temel_kirisi_hesapla; kolon_yazisini_ayristir'e "temel_kirisi" tipi)
+- Format: "SBH-1 (20/165)" = ad + (genişlik cm / yükseklik cm). Uzunluk çizimde yok, kullanıcı elle girecek (Aşama 3).
+- Beton m³ = g(m) × y(m) × L(m); Kalıp m² = 2 × y(m) × L(m) — SADECE 2 yan yüz (alt grobetona oturur, üst açık).
+- Sadece "SBH" ön ekli yazılar alınır; kolon (SZ/SB/P), kiriş (K), donatı yazıları "ilgisiz" döner. Başka kelime içindeki SBH (XSBH) alınmaz.
+- Güvenlik uyarıları (engellemez): genişlik > yükseklik ise "sıra ters olabilir"; uzunluk > 50 m ise "cm girilmiş olabilir" (Rev-134 1000-kat dersi).
+- ÖNEMLİ DÜZELTME: Kolon aracı "S ile başlayan = kolon" kuralıyla "SBH1 (20/165)" yazısını KOLON sayıyordu. Artık SBH yazıları tip="temel_kirisi" alıyor, kolon hesabına girmiyor (kiriş gibi atlanıyor/sarı boyanıyor). SB12/SZ07 kolon olarak kalmaya devam ediyor.
+- Test: yeni_proje/scratchpad/test_temel_kirisi.py 33/33 PASS (brief örneği: SBH-1, L=5 m → 1.65 m³ / 16.5 m²). Regresyon: kolon yazı 28/28, kolon hesap 19/19, aktif kat/mükerrer 22/22 PASS.
+- SIRADAKİ (Aşama 3): Akıllı Metraj Analizi'ne "Temel Kirişi" sekmesi, döngüsel tek-tek seçim + yeşil boyama + handle bazlı mükerrer koruma + undo + tablo + Excel.
 
 ================================================================================
 Rev-136 Aşama 3 GÜNCELLEME (2026-09-24) — İhale Demir Metrajı: Kutu Seçim TERK EDİLDİ, Döngüsel Tek-Tek Seçim + Yeşil Boyama + Undo
