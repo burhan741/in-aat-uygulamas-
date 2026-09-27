@@ -2,7 +2,20 @@
                     INSAAT METRAJ PRO - TUM OZELLIKLER
 ================================================================================
 
-Son Guncelleme: 26 Eylul 2026 (Temel Kirişi (SBH) — TOPLU MOD: AutoCAD'den çıkmadan yazı + 2 kenar çizgisi + ENTER, gerçek AutoCAD testi bekleniyor)
+Son Guncelleme: 27 Eylul 2026 (Temel Kirişi aracı gerçek AutoCAD'de çalışıyor — teşhis logları temizlendi)
+
+================================================================================
+Rev-138 (2026-09-27) — Temel Kirişi / Kolon Betonu / Aralıklı Donatı: Teşhis Log Temizliği
+- Temel kirişi aracı gerçek AutoCAD'de çalıştığı için Rev-137 TEŞHİS gürültüsü kaldırıldı:
+  39 adet [TIMING] zaman ölçümü (her COM çağrısı), _tk_zaman yardımcısı, ">>> BAŞLADI/<<< BİTTİ"
+  süre logları, selection set Name doğrulama logu, pencere sayısı / katman kilidi / geri_al bilgi logları.
+- Kolon yazıdan toplu okumadaki ">>> DEBUG — N kolon bulundu" konsol listesi kaldırıldı (özet satırı kaldı).
+- KORUNANLAR: kullanıcı mesajları (komut satırı "SBH-X EKLENDİ: L=..., beton=..., kalıp=..."),
+  gerçek hata logları (logger.error(..., exc_info=True) — _tk_hata ile yutulan hatalar temel kirişi/
+  işaretleme akışında loglanmaya devam eder), [COM_RETRY] AutoCAD meşgul uyarıları.
+  Kiriş başına ayrıntılı seçim satırı (kiris_oku) INFO→DEBUG'a indirildi.
+- Test: test_temel_kirisi 58/58, _com 35/35, _ui 49/49, kolon_yazi_ayristirma 28/28,
+  kolon_beton_aktif_kat_mukerrer 22/22, kolon_beton_hesap_asama2 19/19, aralıklı işaretle/geri al sahte COM 8/8 PASS.
 
 ================================================================================
 Rev-137 Düzeltme 2 (2026-09-26) — Temel Kirişi: Tek Seçimde Birden Fazla Kiriş + Üst Üste Çift Obje
