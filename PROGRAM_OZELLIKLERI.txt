@@ -5,6 +5,19 @@
 Son Guncelleme: 27 Eylul 2026 (Temel Kirişi aracı gerçek AutoCAD'de çalışıyor — teşhis logları temizlendi)
 
 ================================================================================
+Rev-140 (2026-09-27) — Genel Demir Metrajı: Debug Temizliği + KRİTİK 2x/3x Çift Çarpan Hatası
+- Konsol temizliği (get_rebar_report_from_selection): ">>> SEÇİLEN METİNLER (DEBUG)" listesi silindi;
+  obje başına "Faz2 eslesti", "BLOK [...] attrs", "Blok OK" satırları logger.debug'a indirildi;
+  "Blok parse edilemedi" logger.warning oldu. Kullanıcı özeti ("N metin objesi bulundu",
+  DEMİR METRAJ RAPORU, çap dağılımı, FORMAT DIŞI listesi) aynen duruyor.
+- HATA DÜZELTİLDİ: 2x/3x çarpanlı demir yazıları (perde "2x8Ø12 L=420") İKİ KEZ çarpılıyordu —
+  çekirdek regex çarpanı zaten uyguluyor, app/core/__init__.py'deki eski _apply_carpan_fix
+  monkey-patch'i bir kez daha çarpıyordu: 2x8Ø12 -> 32 adet (doğrusu 16), 3x -> 9 kat.
+  Patch kaldırıldı. Etki: Demir Metrajı sekmesinde çarpanlı yazılardan okunan tüm demirler
+  (ve onlardan beslenen Çap Bazlı Tonaj / Kesim Listesi) fazla çıkıyordu.
+- Test: scratchpad/test_genel_demir_secim.py 16/16 (sahte COM, metin+blok yolu, konsol içeriği).
+
+================================================================================
 Rev-139 Aşama 1/4 (2026-09-27) — Radye Temel Beton + Kalıp Sekmesi (elle giriş)
 - Akıllı Metraj Analizi > Kaba İnşaat > yeni "Radye Temel" alt sekmesi (Temel Kirişi'nin yanında).
 - Beton grubu: Alan (m², AutoCAD AREA ile ölçülen NET alan) + Kalınlık (m) -> Net Beton = alan × kalınlık.

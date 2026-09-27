@@ -102,6 +102,9 @@ Her geliştirilen programda **yerleşik kullanım kılavuzu** bulunmalıdır:
 
 # Bilinen Hatalar ve Kesin Kurallar
 
+## KRİTİK — Rev-140 (2026-09-27): 2x/3x Demir Çarpanı İKİ KEZ Uygulanıyordu (Monkey-Patch + Çekirdek)
+Genel demir metrajı debug temizliği sonrası yazılan ilk uçtan uca test (`scratchpad/test_genel_demir_secim.py`) yakaladı: "2x8Ø12" → 32 adet. Çekirdek (`get_rebar_report_from_selection`, regex grup 1) çarpanı zaten uyguluyordu; `app/core/__init__.py`'deki eski `_apply_carpan_fix` monkey-patch'i (çekirdek düzeltilmeden önce eklenmiş) ikinci kez çarpıyordu. Patch silindi. **KURAL:** Bir hatayı monkey-patch/post-process ile düzeltip sonra çekirdeği de düzeltirsen patch'i AYNI ANDA kaldır — ikisi birlikte çift uygular. Paket `__init__.py`'sinde gizli monkey-patch, kaynak okurken görünmez; bir metodun sonucu beklenenden farklıysa `__init__.py`'yi de kontrol et. **Ders 2:** Hiç testi olmayan bir aracı "temizlik" için bile değiştirdiğinde önce sahte COM ile uçtan uca test yaz — bu hata öyle bulundu. (CLAUDE.md "2x/3x Çarpan Kuralı" bölümündeki monkey-patch bilgisi artık geçersiz.) Aynı Rev: SEÇİLEN METİNLER (DEBUG) listesi silindi, obje başına blok/Faz2 print'leri logger.debug, "Blok parse edilemedi" logger.warning.
+
 ## Rev-139 Aşama 1/4 (2026-09-27) — Radye Temel Beton+Kalıp Sekmesi
 Kaba İnşaat > "Radye Temel" alt sekmesi (`_radye_sekmesi_olustur`), saf `radye_hesapla()` (autocad_connector.py, tüm girdiler METRE; iç boşluk çevresi kalıba EKLENİR). Kalınlık tek spinbox, beton+kalıp ortak. Spinbox'lar `valueChanged`'i oluşturulurken bağlanıyor → `_radye_hesapla_guncelle` `hasattr(self, "radye_sonuc_label")` guard'ı ile form tamamlanmadan çalışmıyor. Test: `yeni_proje/scratchpad/test_radye.py` 23/23. **DURUM:** Aşama 1 onayı bekleniyor.
 
@@ -656,7 +659,7 @@ self._gantt_engine.tasks[tid] = task
 
 ## AutoCAD Demir Metrajı — 2x/3x Çarpan Kuralı
 - `2x8Ø12` formatında: gerçek adet = 2×8 = **16** (eski kod sadece 8 buluyordu)
-- Düzeltme: `app/core/__init__.py`'de monkey-patch `_apply_carpan_fix()` ile aktif
+- Düzeltme: çekirdek regex'te (grup 1 = çarpan). ~~`app/core/__init__.py` monkey-patch~~ Rev-140'ta SİLİNDİ (çift çarpıyordu)
 - Test: 2x8Ø12→adet=16 ✓ | 3x6Ø10→adet=18 ✓
 
 ## ~~Gayrimenkul Değerleme Modülü~~ — SİLİNDİ (Rev-121, 2026-08-22)
