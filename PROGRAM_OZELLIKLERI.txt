@@ -2,7 +2,14 @@
                     INSAAT METRAJ PRO - TUM OZELLIKLER
 ================================================================================
 
-Son Guncelleme: 27 Eylul 2026 (Döşeme: dikdörtgen modu kaldırıldı, sadece sınırsız köşe tıklama)
+Son Guncelleme: 27 Eylul 2026 (Döşeme poligon rengi macenta)
+
+================================================================================
+Rev-147 (2026-09-27) — Döşeme Poligonu MACENTA (Yeşil Değil)
+- Diğer araçlar okunan objeyi yeşile boyadığı için döşeme poligonları karışıyordu. Döşeme poligonu artık
+  MACENTA (ACI 6) çiziliyor. Renk düzeni: yeşil = okundu/alındı, kırmızı = geçersiz (döşemede Aşama 3'te
+  boşluk), sarı = atlandı, macenta = döşeme alanı. Sabit: AutoCADConnector.DOSEME_RENK.
+- Test: test_doseme_poligon.py 53/53.
 
 ================================================================================
 Rev-146 (2026-09-27) — Döşeme: [D]ikdörtgen/[P]oligon Sorusu Kaldırıldı

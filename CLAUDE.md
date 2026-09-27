@@ -102,6 +102,9 @@ Her geliştirilen programda **yerleşik kullanım kılavuzu** bulunmalıdır:
 
 # Bilinen Hatalar ve Kesin Kurallar
 
+## Rev-147 (2026-09-27) — Döşeme Poligonu MACENTA
+`AutoCADConnector.DOSEME_RENK = MAGENTA (6)`. **KURAL (AutoCAD renk düzeni, tüm araçlar):** YEŞİL = okundu/alındı, KIRMIZI = geçersiz (döşemede boşluk poligonu), SARI = atlandı/kiriş, GRİ = tanımsız, MACENTA = döşeme alanı poligonu. Yeni araç eklerken bu anlamları çakıştırma.
+
 ## Rev-146 (2026-09-27) — Döşeme: Mod Sorusu Kaldırıldı, Sadece Köşe Tıklama
 Kullanıcı: "D moduna gerek yok, sadece P". `DosemeDonguPaneli._dongu` artık `doseme_mod_sor` çağırmıyor; `_poligon_al` 1. köşede ENTER/ESC'de `"bitti"` döner. `_dikdortgen_al` silindi (connector'daki `doseme_mod_sor`/`doseme_kose_al`/saf `dikdortgen_koseleri` kullanılmıyor ama duruyor). **Ders:** Kullanıcı "4 noktadan fazla seçebilmeliyim" dediğinde P modu zaten sınırsızdı — iki mod olması kafa karıştırdı; yeni etkileşimli araçta tek, sade akış tercih et.
 
