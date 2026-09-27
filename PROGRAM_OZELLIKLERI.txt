@@ -2,7 +2,27 @@
                     INSAAT METRAJ PRO - TUM OZELLIKLER
 ================================================================================
 
-Son Guncelleme: 27 Eylul 2026 (COM mesaj filtresi + döşeme COM sağlamlaştırma + OSMODE kuralı)
+Son Guncelleme: 27 Eylul 2026 (Döşeme Aşama 3/3: boşluk düşme)
+
+================================================================================
+Rev-149 (2026-09-27) — Döşeme Aşama 3/3: Boşluk Düşme (merdiven, şaft, asansör)
+- Aşama 2 gerçek AutoCAD'de doğrulandı (alanlar AREA ile tutuyor; COM filtresi 15 reddi kurtardı).
+- Her döşeme eklendikten hemen sonra komut satırı: "Boşluk (merdiven/şaft/asansör) ekle? [Evet/Hayir]
+  <Hayir>" — ENTER = Hayır. Evet -> boşluk köşeleri aynı yöntemle (sınırsız köşe, ENTER ile kapat);
+  sonra "Başka boşluk ekle?" diye tekrar sorulur.
+- Kontroller: boşluğun TÜM köşeleri döşemenin içinde olmalı VE kenarları döşeme kenarlarını kesmemeli
+  (L döşemede köşeler içeride olup kenar iç köşeden taşabilir); aynı döşemedeki başka boşlukla çakışmamalı
+  (içine/dışına/kesişen); toplam boşluk brüt alanı geçemez; kendini kesen boşluk alınmaz.
+- Boşluk KIRMIZI (ACI 1), METRAJ_DOSEME katmanında; handle'ları döşeme satırına bağlı. Tabloda boşluk
+  alanları toplanır, boşluk çevreleri kenar kalıbına eklenir.
+- Geri al: her boşluk ayrı adım (son boşluk önce); satırı geri almak döşeme + boşluk poligonlarını siler.
+  Mükerrer güncellemede eski boşluklar kaldırılır (mesajla bildirilir), güncellemeyi geri almak eski satırı
+  boşluklarıyla birlikte yeniden çizer. Pencerede satır silinince boşluk poligonları da silinir.
+- komut_satiri_evet_hayir(istem, varsayilan) — varsayılan verilirse boş ENTER onu seçer (perde kullanımı
+  aynen: cevap zorunlu).
+- Test: scratchpad/test_doseme_bosluk.py 32/32 (programsız: 6×5 + 2×2.5 boşluk koordinattan -> net 25,
+  beton 3.75, kenar 1.35, toplam 26.35; taşan/L-taşan/çakışan/aşan reddi; panel; <Hayir>) + tüm regresyonlar,
+  sistem Python 3.11'de de PASS. GERÇEK AutoCAD testi bekleniyor — programı yeniden başlatın.
 
 ================================================================================
 Rev-148 (2026-09-27) — AutoCAD "Arama aranan tarafından kabul edilmedi" (RPC_E_CALL_REJECTED) Düzeltmesi
