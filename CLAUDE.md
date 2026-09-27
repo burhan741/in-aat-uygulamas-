@@ -102,6 +102,9 @@ Her geliştirilen programda **yerleşik kullanım kılavuzu** bulunmalıdır:
 
 # Bilinen Hatalar ve Kesin Kurallar
 
+## Rev-141 (2026-09-27) — Radye Alt İlave ("Ø14/20 l=300") Aralıklı Donatıda Okunuyor + Mesafe cm Teyidi
+Regex değişikliği GEREKMEDİ (`_ARALIKLI_DONATI_PATTERN` zaten `[Ll]` + IGNORECASE). Bulunan risk: `AralikliDonatiDonguPaneli._demir_sec` mesafeyi METRE soruyor (max 500) ama çizimde dağılım cm yazılı ("400") — aynen girilirse sessizce 100 kat adet. `MESAFE_CM_SUPHE_M = 50` üstü teyit sorusu eklendi (Evet → /100). **KURAL:** Kullanıcının çizimden OKUYUP elle girdiği her sayı alanında, çizimdeki birim ile alanın birimi farklıysa büyük değer teyidi koy (Rev-134/137 ailesi). Test: `yeni_proje/scratchpad/test_radye_ilave_donati.py` 18/18.
+
 ## KRİTİK — Rev-140 (2026-09-27): 2x/3x Demir Çarpanı İKİ KEZ Uygulanıyordu (Monkey-Patch + Çekirdek)
 Genel demir metrajı debug temizliği sonrası yazılan ilk uçtan uca test (`scratchpad/test_genel_demir_secim.py`) yakaladı: "2x8Ø12" → 32 adet. Çekirdek (`get_rebar_report_from_selection`, regex grup 1) çarpanı zaten uyguluyordu; `app/core/__init__.py`'deki eski `_apply_carpan_fix` monkey-patch'i (çekirdek düzeltilmeden önce eklenmiş) ikinci kez çarpıyordu. Patch silindi. **KURAL:** Bir hatayı monkey-patch/post-process ile düzeltip sonra çekirdeği de düzeltirsen patch'i AYNI ANDA kaldır — ikisi birlikte çift uygular. Paket `__init__.py`'sinde gizli monkey-patch, kaynak okurken görünmez; bir metodun sonucu beklenenden farklıysa `__init__.py`'yi de kontrol et. **Ders 2:** Hiç testi olmayan bir aracı "temizlik" için bile değiştirdiğinde önce sahte COM ile uçtan uca test yaz — bu hata öyle bulundu. (CLAUDE.md "2x/3x Çarpan Kuralı" bölümündeki monkey-patch bilgisi artık geçersiz.) Aynı Rev: SEÇİLEN METİNLER (DEBUG) listesi silindi, obje başına blok/Faz2 print'leri logger.debug, "Blok parse edilemedi" logger.warning.
 

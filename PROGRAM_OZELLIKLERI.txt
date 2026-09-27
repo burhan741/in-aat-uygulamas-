@@ -5,6 +5,16 @@
 Son Guncelleme: 27 Eylul 2026 (Temel Kirişi aracı gerçek AutoCAD'de çalışıyor — teşhis logları temizlendi)
 
 ================================================================================
+Rev-141 (2026-09-27) — Aralıklı Donatı: Radye Alt İlave Formatı Doğrulandı + Mesafe Birimi Teyidi
+- "Ø14/20 l=300" (KÜÇÜK l) radye alt ilave formatı aralıklı donatı aracında DEĞİŞİKLİK GEREKMEDEN
+  okunuyor (regex zaten [Ll] + IGNORECASE). Doğrulanan: Ø14/20 l=300, Ø14/20 L=500, Ø12/15 l=320,
+  Ø26/20 l=250, %%c14/20 l=300, "l = 300" boşluklu, MTEXT biçim kodlu, sonunda açıklama olan yazı.
+- Adet: dağılım 4 m, aralık 20 cm -> ceil(400/20)+1 = 21; Ø14/20 l=300 -> 63 m, 76.10 kg.
+- YENİ: Dağılım mesafesi (m) diyalogunda 50 m ve üstü girilirse "cm mi girdiniz?" teyidi —
+  çizimdeki "400" metre alanına aynen yazılırsa 21 yerine 2001 adet çıkıyordu. Evet -> /100.
+- Test: scratchpad/test_radye_ilave_donati.py 18/18 PASS.
+
+================================================================================
 Rev-140 (2026-09-27) — Genel Demir Metrajı: Debug Temizliği + KRİTİK 2x/3x Çift Çarpan Hatası
 - Konsol temizliği (get_rebar_report_from_selection): ">>> SEÇİLEN METİNLER (DEBUG)" listesi silindi;
   obje başına "Faz2 eslesti", "BLOK [...] attrs", "Blok OK" satırları logger.debug'a indirildi;
