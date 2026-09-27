@@ -28,7 +28,7 @@ Rev-143 Aşama 3/4 (2026-09-27) — Perde: AutoCAD Döngüsü, Uç Düşümü, A
   Tek perde elle hesap formu yedek olarak duruyor (Düşülen Uçlar alanı eklendi).
 - Test: scratchpad/test_perde_yukseklik.py 21/21 (programsız: tam/net, döşeme 0, çevre 12 − 1.0 düşüm ×
   2.8 = 30.8 m²), test_perde_secim.py 52/52, test_perde.py 29/29 + radye/temel kirişi/aralıklı/genel
-  demir regresyonları PASS. GERÇEK AutoCAD testi bekleniyor.
+  demir regresyonları PASS. GERÇEK AutoCAD'de doğrulandı (hesap doğru).
 
 ================================================================================
 Rev-143 Aşama 2/4 (2026-09-27) — Perde Kesit Alanı AutoCAD'den Okuma
