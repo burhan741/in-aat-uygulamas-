@@ -5,6 +5,18 @@
 Son Guncelleme: 27 Eylul 2026 (Temel Kirişi aracı gerçek AutoCAD'de çalışıyor — teşhis logları temizlendi)
 
 ================================================================================
+Rev-139 Aşama 1/4 (2026-09-27) — Radye Temel Beton + Kalıp Sekmesi (elle giriş)
+- Akıllı Metraj Analizi > Kaba İnşaat > yeni "Radye Temel" alt sekmesi (Temel Kirişi'nin yanında).
+- Beton grubu: Alan (m², AutoCAD AREA ile ölçülen NET alan) + Kalınlık (m) -> Net Beton = alan × kalınlık.
+- Kalıp grubu: Dış Çevre (m, şimdilik elle) -> Toplam Çevre -> Net Kalıp = toplam çevre × kalınlık.
+  Kalınlık TEK yerde girilir, beton ve kalıp aynı değeri kullanır. Canlı hesap, alt satırda özet.
+- Saf çekirdek: autocad_connector.radye_hesapla(alan, kalınlık, dış_çevre, iç_boşluk_çevreleri) —
+  iç boşluk çevreleri kalıba EKLENİR (Aşama 2'de UI'a bağlanacak). Kalınlık > 3 m -> "cm girilmiş olabilir"
+  uyarısı; dış çevre 0 -> "kalıp eksik" uyarısı.
+- Test: scratchpad/test_radye.py 23/23 PASS (brief örneği 450×0.60 -> 270 m³, 90×0.60 -> 54 m²).
+- Sıradaki: Aşama 2 (iç boşluk ekleme), 3 (AutoCAD çevre çizgisi toplama), 4 (Excel).
+
+================================================================================
 Rev-138 (2026-09-27) — Temel Kirişi / Kolon Betonu / Aralıklı Donatı: Teşhis Log Temizliği
 - Temel kirişi aracı gerçek AutoCAD'de çalıştığı için Rev-137 TEŞHİS gürültüsü kaldırıldı:
   39 adet [TIMING] zaman ölçümü (her COM çağrısı), _tk_zaman yardımcısı, ">>> BAŞLADI/<<< BİTTİ"

@@ -102,6 +102,9 @@ Her geliştirilen programda **yerleşik kullanım kılavuzu** bulunmalıdır:
 
 # Bilinen Hatalar ve Kesin Kurallar
 
+## Rev-139 Aşama 1/4 (2026-09-27) — Radye Temel Beton+Kalıp Sekmesi
+Kaba İnşaat > "Radye Temel" alt sekmesi (`_radye_sekmesi_olustur`), saf `radye_hesapla()` (autocad_connector.py, tüm girdiler METRE; iç boşluk çevresi kalıba EKLENİR). Kalınlık tek spinbox, beton+kalıp ortak. Spinbox'lar `valueChanged`'i oluşturulurken bağlanıyor → `_radye_hesapla_guncelle` `hasattr(self, "radye_sonuc_label")` guard'ı ile form tamamlanmadan çalışmıyor. Test: `yeni_proje/scratchpad/test_radye.py` 23/23. **DURUM:** Aşama 1 onayı bekleniyor.
+
 ## Rev-138 (2026-09-27) — Teşhis Log Temizliği (Temel Kirişi / Kolon / Aralıklı Donatı)
 Temel kirişi gerçek AutoCAD'de çalışıyor → `_tk_zaman` ve 39 [TIMING] sarmalayıcı, BAŞLADI/BİTTİ süre logları, kolon ">>> DEBUG" print'i SİLİNDİ (temizlik betikle yapıldı: `with` satırı silinip gövde 4 boşluk sola alındı). KORUNDU: `_tk_hata` (ERROR+traceback, hâlâ `_tk_teshis` bayrağına bağlı — ortak COM yardımcıları kutu seçiminde binlerce kez çağrıldığı için koşulsuz yapılmadı), `_tk_teshis_modu` (artık sadece bayrak), [COM_RETRY], komut satırı "EKLENDİ" mesajları. `test_temel_kirisi_com.py` TIMING kontrolü "TIMING YOK" olarak tersine çevrildi. Not: `test_temel_kirisi_teshis_log.py` ve aralıklı donatı test dosyaları diskte YOK. Genel demir metrajındaki ">>> SEÇİLEN METİNLER (DEBUG)" konsol listesi kapsam dışı bırakıldı.
 
