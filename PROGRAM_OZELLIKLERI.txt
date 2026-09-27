@@ -5,6 +5,26 @@
 Son Guncelleme: 27 Eylul 2026 (Temel Kirişi aracı gerçek AutoCAD'de çalışıyor — teşhis logları temizlendi)
 
 ================================================================================
+Rev-142 (2026-09-27) — Aralıklı Donatı: Dağılım Mesafesi AutoCAD Ölçüsünden (DIMENSION)
+- Panelde yeni "Mesafe:" seçimi — "AutoCAD ölçüsünden (DIMENSION)" (varsayılan) / "Elle giriş" (eski akış
+  aynen) + "Ölçü birimi" (Otomatik INSUNITS / cm / mm / m).
+- Ölçü modu akışı (AutoCAD'den çıkmadan döngü): donatı yazısı seç + ENTER -> dağılım ölçüsü seç + ENTER
+  -> adet = ölçü ÷ aralık + 1, kg hesaplanır, tabloya eklenir, yazı + ölçü YEŞİL (Regen'siz hızlı boyama).
+  Geri bildirim AutoCAD komut satırında ("... EKLENDİ: mesafe 4.00 m (ölçü) -> 21 adet, 76.10 kg").
+  Yazı seçiminde boş ENTER döngüyü bitirir.
+- Ölçü değeri = Measurement × LinearScaleFactor (ekranda görünen değer; ölçekli çizim + DIMLFAC doğru).
+  Ölçü yazısı elle değiştirilmişse (TextOverride sayı, gerçek ölçüden farklı) hangisinin kullanılacağı sorulur.
+- Güvenlik: oturumdaki İLK ölçüde "400 cm -> 4.00 m, 21 adet. Doğru mu?" teyidi (Hayır -> birim yeniden
+  seçilir); 50 m üstü mesafe teyidi (Rev-141) ölçü modunda da geçerli.
+- Yanlış nesne (çizgi/yazı) veya açısal/yarıçap/koordinat ölçüsü -> komut satırında uyarı, tekrar seçim
+  (3 deneme); ölçü seçiminde boş ENTER veya okunamama -> o donatı için elle mesafe girişi.
+- Mükerrer yazı -> satır güncellenir, eski ölçünün rengi geri alınır. Undo/İptal -> yazı + ölçü rengi geri;
+  aynı ölçü birden fazla ilavede kullanılıyorsa rengi son kullanan satır gidince geri alınır.
+- Tabloya "Mesafe Kaynağı" sütunu (ölçü/elle). Yeni: olcu_mesafesi_ayikla(), aralikli_donati_olcu_sec(),
+  komut_satiri_mesaj().
+- Test: scratchpad/test_aralikli_olcu.py 42/42 PASS (sahte COM + headless panel). Gerçek AutoCAD testi bekleniyor.
+
+================================================================================
 Rev-141 (2026-09-27) — Aralıklı Donatı: Radye Alt İlave Formatı Doğrulandı + Mesafe Birimi Teyidi
 - "Ø14/20 l=300" (KÜÇÜK l) radye alt ilave formatı aralıklı donatı aracında DEĞİŞİKLİK GEREKMEDEN
   okunuyor (regex zaten [Ll] + IGNORECASE). Doğrulanan: Ø14/20 l=300, Ø14/20 L=500, Ø12/15 l=320,

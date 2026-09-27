@@ -102,6 +102,9 @@ Her geliştirilen programda **yerleşik kullanım kılavuzu** bulunmalıdır:
 
 # Bilinen Hatalar ve Kesin Kurallar
 
+## Rev-142 (2026-09-27) — Aralıklı Donatı: Mesafe AutoCAD Ölçüsünden (DIMENSION)
+`AralikliDonatiDonguPaneli` artık iki modlu (`mod_combo`: ölçüden [varsayılan] / elle). Ölçü modu `_demir_sec` içinde boş ENTER'a kadar `_tek_tur(olcu_modu=True)` döngüsü; elle mod tek tur (eski davranış). Connector: `aralikli_donati_olcu_sec()` (hafif öne getirme, `OLCU_UZUNLUK_TIPLERI` = Aligned/Rotated/Arc), saf `olcu_mesafesi_ayikla()`, genel `komut_satiri_mesaj()`. **KURAL (DIMENSION okuma):** `Measurement` ölçekten bağımsız DEĞİL — ham geometrik uzunluktur; ekranda görünen = `Measurement × LinearScaleFactor`. Ayrıca `TextOverride` ("<>" içermiyorsa) görünen sayıyı tamamen değiştirebilir → farklıysa kullanıcıya sor. Açısal ölçünün Measurement'ı RADYANDIR, mesafe olarak kullanma. Ortak ölçü renk geri alma referans sayımlı (`_olcu_rengi_geri_al_kullanilmiyorsa`). Test: `yeni_proje/scratchpad/test_aralikli_olcu.py` 42/42; `test_radye_ilave_donati.py` panel kısmı artık `MOD_ELLE` seçiyor. **DURUM:** Gerçek AutoCAD testi bekleniyor.
+
 ## Rev-141 (2026-09-27) — Radye Alt İlave ("Ø14/20 l=300") Aralıklı Donatıda Okunuyor + Mesafe cm Teyidi
 Regex değişikliği GEREKMEDİ (`_ARALIKLI_DONATI_PATTERN` zaten `[Ll]` + IGNORECASE). Bulunan risk: `AralikliDonatiDonguPaneli._demir_sec` mesafeyi METRE soruyor (max 500) ama çizimde dağılım cm yazılı ("400") — aynen girilirse sessizce 100 kat adet. `MESAFE_CM_SUPHE_M = 50` üstü teyit sorusu eklendi (Evet → /100). **KURAL:** Kullanıcının çizimden OKUYUP elle girdiği her sayı alanında, çizimdeki birim ile alanın birimi farklıysa büyük değer teyidi koy (Rev-134/137 ailesi). Test: `yeni_proje/scratchpad/test_radye_ilave_donati.py` 18/18.
 
