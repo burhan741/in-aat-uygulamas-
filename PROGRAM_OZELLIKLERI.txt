@@ -2,7 +2,18 @@
                     INSAAT METRAJ PRO - TUM OZELLIKLER
 ================================================================================
 
-Son Guncelleme: 27 Eylul 2026 (Döşeme (Plak) Beton+Kalıp — Aşama 2/3: AutoCAD köşe tıklama)
+Son Guncelleme: 27 Eylul 2026 (Akıllı Metraj Analizi sol panel sadeleştirildi)
+
+================================================================================
+Rev-145 (2026-09-27) — Akıllı Metraj Analizi: Kullanılmayan Butonlar Arayüzden Kaldırıldı
+- Kullanıcı isteğiyle sol paneldeki şu öğeler KALDIRILDI: "DXF DOSYASI YUKLE (Mimari)", "DXF dosyasi
+  yuklenmedi" yazısı, "HESAPLA", "Temizle", "DUVAR/KİRİŞ EXCEL'E AKTAR", "METRAJ CETVELİNE AKTAR",
+  "TEDARİKÇİYE TEKLİF İSTE".
+- Sadece arayüzden çıkarıldı; arkadaki metotlar (_load_dxf_file, _calculate_and_visualize, _clear_all,
+  _export_to_excel, _metraj_cetvelne_aktar, _tedarikci_gonder) silinmedi. dxf_status_label ekrana
+  eklenmeden tutuluyor (metotlar ona yazdığı için). Anormallik Uyarıları paneli yerinde.
+- Doğrulama: pencere headless açıldı, 5 buton bulunamadı, _clear_all hatasız; döşeme/perde/temel
+  kirişi/radye testleri PASS.
 
 ================================================================================
 Rev-144 Aşama 2/3 (2026-09-27) — Döşeme: AutoCAD'de Köşe Tıklama

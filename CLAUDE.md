@@ -102,6 +102,9 @@ Her geliştirilen programda **yerleşik kullanım kılavuzu** bulunmalıdır:
 
 # Bilinen Hatalar ve Kesin Kurallar
 
+## Rev-145 (2026-09-27) — Akıllı Metraj Analizi Sol Panel: 7 Öğe Arayüzden Kaldırıldı
+DXF YÜKLE (Mimari) + durum yazısı + HESAPLA + Temizle + DUVAR/KİRİŞ EXCEL + METRAJ CETVELİNE AKTAR + TEDARİKÇİYE TEKLİF İSTE — sadece layout'tan çıkarıldı, metotlar duruyor. `self.dxf_status_label` layout'a eklenmeden oluşturuluyor (`_clear_all`/`_load_dxf_file` yazıyor). **KURAL:** Başka metodların eriştiği bir `self.x` widget'ını arayüzden kaldırırken nesneyi silme — ekrana eklemeden oluştur, yoksa AttributeError. Rev-113'teki "DUVAR/KİRİŞ vs DEMİR Excel karışıklığı" bu butonla birlikte tamamen ortadan kalktı.
+
 ## Rev-144 Aşama 2/3 (2026-09-27) — Döşeme AutoCAD Köşe Tıklama
 Connector: `doseme_toplu_baslat/bitir` (OSMODE sakla→33→finally geri; `_sistem_degiskeni_yaz` VT_I2 yedekli), `doseme_mod_sor`, `doseme_nokta_al`/`doseme_kose_al` → `_kullanici_girdisi`: InitializeUserInput(128) + GetPoint; **ENTER = hata kodu -2145320928 (hresult VEYA excepinfo[5]) + GetInput boş, diğer her hata = ESC** — gerçek AutoCAD'de doğrulanmadı, log'a `kodlar=` yazılıyor. `doseme_poligon_ciz` (VARIANT VT_ARRAY|VT_R8 düz x,y), `obje_sil`. Saf: `doseme_poligon_degerlendir` (temizle→**önce kendini kesme, sonra alan** — papyonun işaretli alanı 0 çıkıp yanlış mesaj veriyordu), shoelace, ray casting, ağırlık merkezi. `DosemeDonguPaneli` pencere kayıtlarının ÇALIŞMA KOPYASI üzerinde çalışır, `reject()` override: X ile kapatma da tüm eylemleri geri alır (sahipsiz poligon kalmasın). **Ortam notu:** PowerShell'e satır içi Python'da `del x[i]` yazınca harness "Remove-Item" sanıp engelliyor → betiği dosyaya yazıp çalıştır. Test: `test_doseme_poligon.py` 51/51. **DURUM:** gerçek AutoCAD testi bekleniyor. Brief'teki `<D>` varsayılanı ile "boş ENTER biter" çelişiyordu → boş ENTER = bitir uygulandı.
 
