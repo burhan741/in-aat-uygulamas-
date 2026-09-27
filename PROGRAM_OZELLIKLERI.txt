@@ -2,7 +2,25 @@
                     INSAAT METRAJ PRO - TUM OZELLIKLER
 ================================================================================
 
-Son Guncelleme: 27 Eylul 2026 (Perde Beton+Kalıp — Aşama 4/4: Excel + kat bazlı + genel tablo)
+Son Guncelleme: 27 Eylul 2026 (Döşeme (Plak) Beton+Kalıp — Aşama 1/3)
+
+================================================================================
+Rev-144 Aşama 1/3 (2026-09-27) — Döşeme (Plak) Beton + Kalıp: Form + Hesap (elle giriş)
+- Akıllı Metraj Analizi > Kaba İnşaat > yeni "Döşeme" alt sekmesi (Perde'nin yanında). Kapsam: kirişli
+  dolu plak (dişli/asmolen/kirişsiz ve döşeme demiri HARİÇ).
+- Hesap: Net = brüt − boşluk; Beton = net × h; Alt kalıp = net; Kenar kalıbı = (serbest kenar + boşluk
+  çevresi) × h; Toplam kalıp = alt + kenar. Kalınlık CM girilir, /100 tek yerde (doseme_hesapla).
+- ALAN KİRİŞ İÇ YÜZLERİ ARASINDA — formda açıkça yazıyor (kiriş betonu tam yükseklikle sayılıyor, akstan
+  ölçmek kesişimi iki kez sayar).
+- Form: Kat/Bölüm (aktif kattan ön-dolu, serbest metin), Varsayılan Kalınlık (cm), satır alanları (Ad —
+  boşsa D1, D2…; Brüt; Boşluk alanı; Boşluk çevresi; Serbest kenar; Kalınlık). Tablo 12 sütun (No … Kaynak,
+  Handle), Kalınlık hücresi satırda düzenlenebilir (virgül kabul, geçersizse eski değer korunur). Altta
+  toplam: net alan, beton, toplam kalıp. Seçili Sil / Temizle.
+- Doğrulama: alan/kalınlık ≤ 0, negatif değer, boşluk ≥ brüt -> reddedilir. Kalınlık 5-50 cm dışı ->
+  eklenir ama "cm girdiğinizden emin misiniz?" uyarısı.
+- Perde sekmesinde bir katta "Net" beton esası seçiliyse döşeme sekmesinde kesişim betonu notu çıkar.
+- Test: scratchpad/test_doseme_hesap.py 13/13 (programsız, T1-T5 birebir), test_doseme_ui.py 28/28,
+  perde/radye/temel kirişi regresyonları PASS.
 
 ================================================================================
 Rev-143 Aşama 4/4 (2026-09-27) — Perde: Excel, Kat Bazlı Kayıt, Genel Beton & Kalıp Tablosu

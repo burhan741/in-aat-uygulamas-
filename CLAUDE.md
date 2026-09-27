@@ -102,6 +102,9 @@ Her geliştirilen programda **yerleşik kullanım kılavuzu** bulunmalıdır:
 
 # Bilinen Hatalar ve Kesin Kurallar
 
+## Rev-144 Aşama 1/3 (2026-09-27) — Döşeme (Plak) Beton+Kalıp: Form + Hesap
+Kaba İnşaat > "Döşeme" sekmesi (`_doseme_sekmesi_olustur`), saf `doseme_hesapla(brut, h_cm, bosluk, bosluk_cevre, serbest)` (autocad_connector.py, perde bloğunun altında). Registry `self.doseme_kayitlari: List[Dict]` HAM girdi tutar, beton/kalıp gösterimde hesaplanır. Kalınlık hücresi `itemChanged` ile düzenlenir (tablo doldururken blockSignals). Perde "Net" notu `kat_yukseklik_ayarlari`'ndan okunur, `_perde_ayar_degisti` sonunda `_doseme_esas_notu_guncelle()` çağrılır. Brief kuralı: alan kiriş iç yüzleri arası. Test: `test_doseme_hesap.py` 13/13 (programsız), `test_doseme_ui.py` 28/28. **DURUM:** Aşama 1 onayı bekleniyor; Aşama 2 = köşe tıklama (GetPoint/GetCorner, OSMODE=33 + finally geri yükleme, METRAJ_DOSEME katmanı, BOUNDARY YOK), Aşama 3 = boşluk.
+
 ## Rev-143 Aşama 4/4 (2026-09-27) — Perde Excel + Kat Bazlı + Genel Tablo
 `perde_kayitlari` anahtarı artık `(kat, poligon_handle)` — **KURAL: AutoCAD handle'ı SADECE bir DWG içinde benzersizdir; kat başına ayrı DWG kullanılan projelerde registry anahtarına kat da girmeli**. Kat ayarı kat başına `kat_yukseklik_ayarlari[kat]` (yukseklik_ayari = aktif katınki); `_perde_aktif_kat_yukle()` `_demir_kat_ekle/_sil/_secildi` içinden çağrılıyor (form sinyalleri blockSignals ile). Genel tablo: `_perde_beton_kalip_senkronla()` "perde" UserRole etiketli satırları silip yeniden kurar (kolon deseni). Excel: `pd.ExcelWriter` + `startrow` ile üstte kat bazlı esas satırları. **Bilinen açık:** Demir Metrajı'nda kat silinince o katın perde kayıtları silinmiyor (kolon registry'si de aynı) — kullanıcıya soruldu. Test: `test_perde_kat_excel.py` 30/30. **Test notu:** 8.25×2.7=22.275 ekranda "22.27" (ikili float) — gösterim testinde tam .5 sınırına denk gelen değer seçme.
 
