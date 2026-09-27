@@ -18,7 +18,7 @@ Rev-143 Aşama 2/4 (2026-09-27) — Perde Kesit Alanı AutoCAD'den Okuma
 - Tek kapalı polyline seçilirse çevresi bilgi olarak gösterilir (Aşama 3 için).
 - Çekirdek: cizim_alani_m2ye_cevir(), perde_alan_secimi_degerlendir() (saf); connector.perde_alan_sec().
 - Test: scratchpad/test_perde_alan.py 45/45 (+ perde 29, radye 23, temel kirişi COM 35, aralıklı
-  ölçü 42, genel demir 16 regresyon PASS). GERÇEK ölçekli çizimle AutoCAD testi bekleniyor.
+  ölçü 42, genel demir 16 regresyon PASS). GERÇEK AutoCAD'de doğrulandı (alan, çevre, hesap doğru).
 
 ================================================================================
 Rev-143 (2026-09-27) — Perde (L/T/U Kesit) Beton + Kalıp — Aşama 1/4 (Form + Hesap)
