@@ -2,7 +2,24 @@
                     INSAAT METRAJ PRO - TUM OZELLIKLER
 ================================================================================
 
-Son Guncelleme: 27 Eylul 2026 (Perde Beton+Kalıp — Aşama 3/4: AutoCAD döngüsü + ayrık yükseklik esası)
+Son Guncelleme: 27 Eylul 2026 (Perde Beton+Kalıp — Aşama 4/4: Excel + kat bazlı + genel tablo)
+
+================================================================================
+Rev-143 Aşama 4/4 (2026-09-27) — Perde: Excel, Kat Bazlı Kayıt, Genel Beton & Kalıp Tablosu
+1) "PERDE EXCEL'E AKTAR": tüm katlar; başlıkta HER KATIN hesap esası ("Zemin: Beton: Tam kat (3.00 m) |
+   Kalıp: net (2.80 m = 3.00 − 0.20)"), sütunlar Kat/Ad/Alan/Çevre/Düşülen/Beton Yük./Kalıp Yük./Beton/
+   Kalıp, her katın sonunda ARA TOPLAM, en altta GENEL TOPLAM.
+2) Kat bazlı: perdeler Demir Metrajı sekmesindeki AKTİF kata yazılır (kat yoksa seçim başlamaz).
+   Anahtar (kat, poligon handle) — farklı DWG'lerde aynı handle ayrı kayıt; aynı katta tekrar seçim
+   günceller. Kat ayarları (yükseklik/döşeme/beton esası) KAT BAŞINA saklanır, kat değişince forma geri
+   yüklenir; yeni kat önceki formu devralır. Perde tablosu aktif katı gösterir, toplam satırında tüm
+   katlar da yazar. Seçili Sil / Temizle sadece aktif kata dokunur.
+3) Genel tablo: perdeler "Beton & Kalıp" tablosuna "Perde <ad>" satırları olarak yazılır (fire ve
+   sipariş dahil), genel toplamlara girer. Her değişiklikte "perde" etiketli satırlar silinip yeniden
+   kurulur — birikme yok, manuel ve kolon satırlarına dokunulmaz.
+- Döşeme aracı için: self.kat_yukseklik_ayarlari[kat].beton_esasi okunarak çift sayım önlenecek.
+- Test: scratchpad/test_perde_kat_excel.py 30/30 (+ perde 52/21/29, radye, temel kirişi, aralıklı,
+  genel demir, kolon aktif kat/mükerrer regresyonları PASS).
 
 ================================================================================
 Rev-143 Aşama 3/4 (2026-09-27) — Perde: AutoCAD Döngüsü, Uç Düşümü, Ayrık Beton/Kalıp Yüksekliği
