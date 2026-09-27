@@ -2,7 +2,33 @@
                     INSAAT METRAJ PRO - TUM OZELLIKLER
 ================================================================================
 
-Son Guncelleme: 27 Eylul 2026 (Perde Beton+Kalıp — Aşama 2/4: alan AutoCAD'den)
+Son Guncelleme: 27 Eylul 2026 (Perde Beton+Kalıp — Aşama 3/4: AutoCAD döngüsü + ayrık yükseklik esası)
+
+================================================================================
+Rev-143 Aşama 3/4 (2026-09-27) — Perde: AutoCAD Döngüsü, Uç Düşümü, Ayrık Beton/Kalıp Yüksekliği
+- "Kat Ayarları": Kat Yüksekliği + Döşeme Kalınlığı (varsayılan 0) + Beton Esası (Tam kat [varsayılan] /
+  Net) + Çizim Birimi + Çizim Ölçeği. Kalıp HER ZAMAN net yükseklikle: (kat − döşeme) × (çevre − düşülen
+  uçlar). Beton = alan × (tam kat veya net). Seçilen esas tablonun üstünde açıkça yazar; esas/döşeme
+  değişince tablo anında yeniden hesaplanır (başlık ile satırlar asla çelişmez).
+- Ortak ayar nesnesi KatYukseklikAyari (autocad_connector.py) pencerede self.yukseklik_ayari olarak
+  tutulur — ileride döşeme aracı beton esasını buradan okuyup çift sayımı önleyecek.
+- "AutoCAD'de Perdeleri Seç": AutoCAD'den çıkmadan döngü. Her perde tek seçim: kesit (kapalı polyline)
+  + kolona / başka perdeye bitişen uç çizgileri (isteğe bağlı) + perde adı yazısı (isteğe bağlı) +
+  ENTER. Boş ENTER biter. Alan ve çevre poligondan otomatik.
+- İlk perdede ve şüpheli alanda (< 0.05 / > 100 m²) teyit AutoCAD komut satırında (Evet/Hayır); ilk
+  teyit reddedilirse döngü durur (birim/ölçek yanlış demektir).
+- Uç düşümü doğrulaması: çizginin iki ucu VE ortası poligon çevresinde olmalı (2 cm tolerans). Değilse
+  (eksen/ölçü çizgisi, kesitin içinden geçen çizgi) DÜŞÜLMEZ + uyarı. Toplam düşüm çevreyi geçemez.
+  Perde-perde birleşim çizgisi iki perdeden de düşülebilir.
+- Reddedilenler: açık polyline kesit ("PEDIT > Kapat"), tek seçimde birden fazla kapalı poligon, sadece
+  tarama. Tarama + sınır çizgisi birlikte seçilirse alan bir kez sayılır.
+- Yeşil boyama, aynı poligon tekrar seçilince satır GÜNCELLENİR, Son Ekleneni Geri Al, İptal (renkler
+  geri), Seçili Sil / Temizle. Ortak birleşim çizgisinin rengi, onu kullanan başka perde varsa korunur.
+- Aşama 2'deki tek seferlik "AutoCAD'den Alan Oku" butonu döngüye taşındı (aynı teyit mantığı).
+  Tek perde elle hesap formu yedek olarak duruyor (Düşülen Uçlar alanı eklendi).
+- Test: scratchpad/test_perde_yukseklik.py 21/21 (programsız: tam/net, döşeme 0, çevre 12 − 1.0 düşüm ×
+  2.8 = 30.8 m²), test_perde_secim.py 52/52, test_perde.py 29/29 + radye/temel kirişi/aralıklı/genel
+  demir regresyonları PASS. GERÇEK AutoCAD testi bekleniyor.
 
 ================================================================================
 Rev-143 Aşama 2/4 (2026-09-27) — Perde Kesit Alanı AutoCAD'den Okuma
