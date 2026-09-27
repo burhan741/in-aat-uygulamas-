@@ -2,7 +2,28 @@
                     INSAAT METRAJ PRO - TUM OZELLIKLER
 ================================================================================
 
-Son Guncelleme: 27 Eylul 2026 (Döşeme poligon rengi macenta)
+Son Guncelleme: 27 Eylul 2026 (COM mesaj filtresi + döşeme COM sağlamlaştırma + OSMODE kuralı)
+
+================================================================================
+Rev-148 (2026-09-27) — AutoCAD "Arama aranan tarafından kabul edilmedi" (RPC_E_CALL_REJECTED) Düzeltmesi
+- Gerçek log (error_log.txt 23:14-23:16): döşeme döngüsü GetPoint/Prompt çağrısında reddedilip çöküyor,
+  OSMODE 33'te kalıyordu.
+- COM MESAJ FİLTRESİ (yeni app/core/com_mesaj_filtresi.py): pywin32 CoRegisterMessageFilter sunmadığı için
+  IMessageFilter ctypes ile ole32'ye kaydediliyor. AutoCAD meşgulken COM çağrıyı 150 ms arayla kendisi
+  tekrarlıyor (30 sn'ye kadar). Kayıt baglan() içinde, AutoCAD nesnesinin alındığı AYNI (Qt ana) thread'de;
+  döşeme döngüsü başında tekrar (zararsız). Her devreye girişte log: "[COM_FILTRE] reddedildi, yeniden
+  deneniyor (tip, geçen ms)"; kayıtta "[COM_FILTRE] kaydedildi (thread ...)".
+- Döşeme döngüsündeki TÜM COM çağrıları zincirin tamamıyla retry içinde (self.aktif_cizim.Utility.GetPoint,
+  Prompt, InitializeUserInput, GetInput, GetKeyword, Get/SetVariable, Layers.Add, ModelSpace.Add…,
+  özellik atamaları, HandleToObject.Delete). Reddedilen çağrı artık ESC SAYILMIYOR (önceden seçim
+  iptal ediliyordu).
+- OSMODE: orijinal değer oturumdaki ilk döngüde bir kez okunup data/autocad_ayarlari.json'a yazılıyor.
+  Okunan 33 ve dosyada farklı değer varsa (önceki oturum geri yükleyemeden kapanmış) kayıtlı değer
+  orijinal sayılıyor. Geri yükleme retry'lı; yine de başarısızsa kullanıcıya "AutoCAD komut satırına
+  OSMODE yazıp <gerçek değer> girin" mesajı gösteriliyor. Log'a döngünün thread adı yazılıyor.
+- Test: scratchpad/test_com_filtre.py 30/30 (programsız; gerçek ole32 kaydı, vtable çağrıları, reddedilen
+  çağrı, ENTER/ESC, OSMODE senaryoları) — hem .venv hem sistem Python 3.11'de. Regresyonlar PASS.
+- ÖNEMLİ: değişiklik öncesi açık olan program eski kodu çalıştırır — test için programı KAPATIP AÇIN.
 
 ================================================================================
 Rev-147 (2026-09-27) — Döşeme Poligonu MACENTA (Yeşil Değil)

@@ -102,6 +102,15 @@ Her geliştirilen programda **yerleşik kullanım kılavuzu** bulunmalıdır:
 
 # Bilinen Hatalar ve Kesin Kurallar
 
+## KRİTİK — Rev-148 (2026-09-27): COM Mesaj Filtresi + Döşeme Retry + OSMODE
+- **Olay:** Gerçek log: döşemede `u.Prompt`/`u.GetPoint` RPC_E_CALL_REJECTED (-2147418111, "Arama aranan tarafından kabul edilmedi") → döngü çöktü, OSMODE 33'te kaldı. Kök nedenler: (1) projede HİÇ mesaj filtresi yoktu, (2) `u = self.aktif_cizim.Utility` alınıp dışarıda çağrılıyordu, `Prompt` hiç korumasızdı, (3) `_kullanici_girdisi` reddi ESC sanıyordu, (4) OSMODE geri yükleme retry'sızdı.
+- **KURAL 1:** pywin32'de `pythoncom.CoRegisterMessageFilter` YOK (iki Python'da da doğrulandı) → `app/core/com_mesaj_filtresi.py` ctypes vtable ile ole32'ye kaydeder. Geri çağrılar/vtable modül seviyesinde tutulur (GC → çökme). Kayıt `baglan()`'da, COM çağrılarıyla AYNI thread (Qt ana thread, STA).
+- **KURAL 2:** Retry lambda'sı zincirin TAMAMINI içermeli: `lambda: self.aktif_cizim.Utility.GetPoint()` — ara nesneyi değişkende tutma. Özellik atamaları `lambda: setattr(pl, "Closed", True)`.
+- **KURAL 3:** Kullanıcı girdisi sınıflandırmasında RPC_E_CALL_REJECTED/AttributeError ASLA ESC/iptal sayılmaz — yeniden dene, tükenirse yükselt.
+- **KURAL 4 (OSMODE / geçici sistem değişkeni):** Orijinal oturumda bir kez okunur, `data/autocad_ayarlari.json`'a yazılır (`autocad_ayari_oku/yaz`); okunan program değeriyse (33) ve dosyada farklısı varsa kayıtlı değer orijinaldir (`osmode_orijinal_belirle`). Geri yükleme başarısızsa kullanıcıya GERÇEK değerle mesaj.
+- **Test ortamı:** Kullanıcı programı `.venv` değil sistem Python 3.11 (WindowsApps) ile çalıştırıyor — COM testlerini ikisinde de koş. Testte `QUANTIX_DATA_DIR` geçici klasöre yönlendir (gerçek ayar dosyası kirlenmesin). Program değişiklikten önce açıksa log'daki satır numaraları koddan farklı olur → her testten önce programı yeniden başlat.
+- Test: `scratchpad/test_com_filtre.py` 30/30. **DURUM:** gerçek AutoCAD testi bekleniyor — log'da `[COM_FILTRE]` satırları aranacak.
+
 ## Rev-147 (2026-09-27) — Döşeme Poligonu MACENTA
 `AutoCADConnector.DOSEME_RENK = MAGENTA (6)`. **KURAL (AutoCAD renk düzeni, tüm araçlar):** YEŞİL = okundu/alındı, KIRMIZI = geçersiz (döşemede boşluk poligonu), SARI = atlandı/kiriş, GRİ = tanımsız, MACENTA = döşeme alanı poligonu. Yeni araç eklerken bu anlamları çakıştırma.
 
