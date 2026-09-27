@@ -102,6 +102,9 @@ Her geliştirilen programda **yerleşik kullanım kılavuzu** bulunmalıdır:
 
 # Bilinen Hatalar ve Kesin Kurallar
 
+## Rev-143 Aşama 1/4 (2026-09-27) — Perde Beton+Kalıp Sekmesi
+Kaba İnşaat > "Perde" alt sekmesi (`_perde_sekmesi_olustur`), saf `perde_hesapla(alan_m2, cevre_m, yukseklik_m)` (autocad_connector.py). Tutarlılık denetimi: eşdeğer kalınlık `t = 2A/Ç`, 0.10-0.80 m dışı → uyarı (ölçek/birim/eksik kenar). **Brief'teki örnek (alan 8.5, çevre 12) fiziksel olarak perde değil (t≈1.42 m)** — hesap doğru ama uyarı verir, test bunu doğruluyor. **Bulunan bug:** `setTabToolTip(count()-1, SBH...)` Radye eklendikten sonra yanlış sekmeye yazıyordu. **KURAL:** sekme ipucunu `addTab`'ın döndürdüğü indeksle ver, `count()-1` ile değil — araya sekme eklenince kayar. Test: `scratchpad/test_perde.py` 28/28. **DURUM:** Aşama 1 onayı bekleniyor.
+
 ## Rev-142 (2026-09-27) — Aralıklı Donatı: Mesafe AutoCAD Ölçüsünden (DIMENSION)
 `AralikliDonatiDonguPaneli` artık iki modlu (`mod_combo`: ölçüden [varsayılan] / elle). Ölçü modu `_demir_sec` içinde boş ENTER'a kadar `_tek_tur(olcu_modu=True)` döngüsü; elle mod tek tur (eski davranış). Connector: `aralikli_donati_olcu_sec()` (hafif öne getirme, `OLCU_UZUNLUK_TIPLERI` = Aligned/Rotated/Arc), saf `olcu_mesafesi_ayikla()`, genel `komut_satiri_mesaj()`. **KURAL (DIMENSION okuma):** `Measurement` ölçekten bağımsız DEĞİL — ham geometrik uzunluktur; ekranda görünen = `Measurement × LinearScaleFactor`. Ayrıca `TextOverride` ("<>" içermiyorsa) görünen sayıyı tamamen değiştirebilir → farklıysa kullanıcıya sor. Açısal ölçünün Measurement'ı RADYANDIR, mesafe olarak kullanma. Ortak ölçü renk geri alma referans sayımlı (`_olcu_rengi_geri_al_kullanilmiyorsa`). Test: `yeni_proje/scratchpad/test_aralikli_olcu.py` 42/42; `test_radye_ilave_donati.py` panel kısmı artık `MOD_ELLE` seçiyor. **DURUM:** Gerçek AutoCAD testi bekleniyor.
 

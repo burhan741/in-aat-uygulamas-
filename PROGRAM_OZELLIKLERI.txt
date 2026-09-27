@@ -2,7 +2,21 @@
                     INSAAT METRAJ PRO - TUM OZELLIKLER
 ================================================================================
 
-Son Guncelleme: 27 Eylul 2026 (Temel Kirişi aracı gerçek AutoCAD'de çalışıyor — teşhis logları temizlendi)
+Son Guncelleme: 27 Eylul 2026 (Perde Beton+Kalıp sekmesi — Aşama 1/4)
+
+================================================================================
+Rev-143 (2026-09-27) — Perde (L/T/U Kesit) Beton + Kalıp — Aşama 1/4 (Form + Hesap)
+- Akıllı Metraj Analizi > Kaba İnşaat > yeni "Perde" alt sekmesi (Radye Temel'in yanında).
+- Girdiler: Yükseklik (kat, bir kez), Kesit Alanı (m², AutoCAD AREA ile ölçülür), Çevre (kalıplanan
+  kenarların toplamı, m). Beton = alan × yükseklik, Kalıp = çevre × yükseklik — canlı hesap.
+- Güvenlik: "Eşdeğer Kalınlık" = 2 × Alan / Çevre gösterilir. 0.10-0.80 m dışındaysa uyarı —
+  1/50 ölçek hatası (alan 2500 kat küçük), birim hatası veya eksik/fazla seçilmiş kenar böylece
+  sessiz kalmaz. Yükseklik > 8 m ise "cm girilmiş olabilir" uyarısı.
+- Çekirdek: autocad_connector.perde_hesapla() (saf, PyQt/AutoCAD bağımsız).
+- Ek düzeltme: Temel Kirişi'nin SBH ipucu yanlışlıkla Radye Temel sekmesine yazılıyordu
+  (count()-1 kullanımı) — artık her sekme kendi ipucunu taşıyor.
+- Test: scratchpad/test_perde.py 28/28, test_radye.py 23/23 PASS.
+- Sıradaki: Aşama 2 — poligon/hatch Area otomatik okuma + ölçek/birim + ilk perde teyidi.
 
 ================================================================================
 Rev-142 (2026-09-27) — Aralıklı Donatı: Dağılım Mesafesi AutoCAD Ölçüsünden (DIMENSION)
