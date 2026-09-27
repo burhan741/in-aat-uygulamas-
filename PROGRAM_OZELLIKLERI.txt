@@ -2,7 +2,29 @@
                     INSAAT METRAJ PRO - TUM OZELLIKLER
 ================================================================================
 
-Son Guncelleme: 27 Eylul 2026 (Döşeme (Plak) Beton+Kalıp — Aşama 1/3)
+Son Guncelleme: 27 Eylul 2026 (Döşeme (Plak) Beton+Kalıp — Aşama 2/3: AutoCAD köşe tıklama)
+
+================================================================================
+Rev-144 Aşama 2/3 (2026-09-27) — Döşeme: AutoCAD'de Köşe Tıklama
+- Döşeme sekmesi Ayarlar: Çizim Birimi + Çizim Ölçeği + "AutoCAD'de Döşeme Seç (köşe tıklama)" butonu.
+- Döngü AutoCAD'de kalır: komut satırı "[D]ikdörtgen / [P]oligon — bitirmek için boş ENTER".
+  D: 1. köşe (GetPoint) + karşı köşe (GetCorner). P: köşeler sırayla, ENTER ile kapanır (en az 3).
+  Köşe alırken ESC = o seçim iptal, döngü devam. BOUNDARY kullanılmaz.
+- OSMODE döngü başında saklanıp 33 (Uç nokta + Kesişim) yapılır; normal/ESC/hata fark etmeksizin finally
+  ile geri yüklenir.
+- Alan shoelace, çevre kenar toplamı; birim/ölçek dönüşümü perde aracının fonksiyonuyla (ölçek KARESİ).
+  Kendini kesen poligon, 3'ten az köşe, sıfır alan -> alınmaz. İlk döşemede ve şüpheli alanda (< 0.5 /
+  > 2000 m²) Evet/Hayır teyidi; ilk teyit reddedilirse döngü durur (birim/ölçeği düzeltip tekrar).
+- Kapalı yeşil LWPolyline METRAJ_DOSEME katmanına çizilir ve TAMAMLANDI'dan sonra da kalır; handle
+  tabloya yazılır, kaynak "Tıklama". Satır silinince poligon da silinir.
+- Mükerrer: yeni poligonun ağırlık merkezi kayıtlı bir döşemenin içindeyse "Bu alan zaten D3 olarak
+  kayıtlı. Güncellensin mi?" — Evet: eski poligon silinir, yenisi çizilir, satırın adı/kalınlığı korunur;
+  Hayır: hiçbir şey çizilmez.
+- Son Ekleneni Geri Al (güncellemeyi geri alınca eski satır ve poligonu geri gelir), İptal ve pencereyi
+  X ile kapatma bu oturumdaki tüm işlemleri geri alır.
+- Test: scratchpad/test_doseme_poligon.py 51/51 (1/50 mm dikdörtgen 6×5 -> 30 m² / 22 m, L poligon, papyon,
+  ENTER/ESC hata kodu ayrımı, OSMODE hata olsa da geri, mükerrer, geri al, iptal) + tüm regresyonlar PASS.
+  GERÇEK AutoCAD testi bekleniyor (özellikle ENTER/ESC kodları sürüme göre değişebilir).
 
 ================================================================================
 Rev-144 Aşama 1/3 (2026-09-27) — Döşeme (Plak) Beton + Kalıp: Form + Hesap (elle giriş)
