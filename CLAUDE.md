@@ -102,6 +102,9 @@ Her geliştirilen programda **yerleşik kullanım kılavuzu** bulunmalıdır:
 
 # Bilinen Hatalar ve Kesin Kurallar
 
+## Rev-146 (2026-09-27) — Döşeme: Mod Sorusu Kaldırıldı, Sadece Köşe Tıklama
+Kullanıcı: "D moduna gerek yok, sadece P". `DosemeDonguPaneli._dongu` artık `doseme_mod_sor` çağırmıyor; `_poligon_al` 1. köşede ENTER/ESC'de `"bitti"` döner. `_dikdortgen_al` silindi (connector'daki `doseme_mod_sor`/`doseme_kose_al`/saf `dikdortgen_koseleri` kullanılmıyor ama duruyor). **Ders:** Kullanıcı "4 noktadan fazla seçebilmeliyim" dediğinde P modu zaten sınırsızdı — iki mod olması kafa karıştırdı; yeni etkileşimli araçta tek, sade akış tercih et.
+
 ## Rev-145 (2026-09-27) — Akıllı Metraj Analizi Sol Panel: 7 Öğe Arayüzden Kaldırıldı
 DXF YÜKLE (Mimari) + durum yazısı + HESAPLA + Temizle + DUVAR/KİRİŞ EXCEL + METRAJ CETVELİNE AKTAR + TEDARİKÇİYE TEKLİF İSTE — sadece layout'tan çıkarıldı, metotlar duruyor. `self.dxf_status_label` layout'a eklenmeden oluşturuluyor (`_clear_all`/`_load_dxf_file` yazıyor). **KURAL:** Başka metodların eriştiği bir `self.x` widget'ını arayüzden kaldırırken nesneyi silme — ekrana eklemeden oluştur, yoksa AttributeError. Rev-113'teki "DUVAR/KİRİŞ vs DEMİR Excel karışıklığı" bu butonla birlikte tamamen ortadan kalktı.
 

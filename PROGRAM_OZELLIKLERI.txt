@@ -2,7 +2,15 @@
                     INSAAT METRAJ PRO - TUM OZELLIKLER
 ================================================================================
 
-Son Guncelleme: 27 Eylul 2026 (Akıllı Metraj Analizi sol panel sadeleştirildi)
+Son Guncelleme: 27 Eylul 2026 (Döşeme: dikdörtgen modu kaldırıldı, sadece sınırsız köşe tıklama)
+
+================================================================================
+Rev-146 (2026-09-27) — Döşeme: [D]ikdörtgen/[P]oligon Sorusu Kaldırıldı
+- Kullanıcı isteği: dikdörtgen modu gereksiz. Artık mod sorusu YOK — her döşemede doğrudan köşeler
+  sırayla tıklanır (nokta sınırı yok, en az 3), ENTER ile kapanır. 1. köşede ENTER (veya ESC) döngüyü
+  bitirir; köşe alırken ESC sadece o döşemeyi iptal eder. Diğer her şey (teyit, yeşil poligon,
+  METRAJ_DOSEME, mükerrer, geri al, iptal, OSMODE geri yükleme) aynı.
+- Test: test_doseme_poligon.py 53/53 (10 köşeli poligon dahil), test_doseme_ui.py 28/28.
 
 ================================================================================
 Rev-145 (2026-09-27) — Akıllı Metraj Analizi: Kullanılmayan Butonlar Arayüzden Kaldırıldı
