@@ -2,7 +2,23 @@
                     INSAAT METRAJ PRO - TUM OZELLIKLER
 ================================================================================
 
-Son Guncelleme: 27 Eylul 2026 (Perde Beton+Kalıp sekmesi — Aşama 1/4)
+Son Guncelleme: 27 Eylul 2026 (Perde Beton+Kalıp — Aşama 2/4: alan AutoCAD'den)
+
+================================================================================
+Rev-143 Aşama 2/4 (2026-09-27) — Perde Kesit Alanı AutoCAD'den Okuma
+- Perde sekmesine "Çizim Birimi" (Otomatik INSUNITS/cm/mm/m) + "Çizim Ölçeği" (1:1/1:20/1:50/1:100)
+  + "AutoCAD'den Alan Oku" butonu. Perde kesiti (kapalı polyline / tarama / region / daire) seçilip
+  ENTER -> alan = çizim alanı × (birim × ölçek)² ile m²'ye çevrilir.
+- Güvenlik: oturumdaki İLK okuma teyit ettirilir ("AREA ile kontrol edin, doğru mu?"), hayır denirse
+  alan yazılmaz. Alan < 0.05 m² veya > 100 m² ise (ölçek/birim şüphesi) teyitli oturumda bile tekrar
+  sorulur. Birim/ölçek değişince teyit sıfırlanır.
+- Tarama + sınır polyline'ı birlikte seçilirse aynı alan İKİ KEZ sayılmaz (eşit alanlı tarama düşülür).
+- Kapalı olmayan polyline atlanır (uçları çakışıyorsa kabul). Birden fazla kapalı parça toplanır +
+  "hepsi aynı perdeye mi ait?" uyarısı. Okunamayan tarama sessiz kalmaz, gerekçesiyle listelenir.
+- Tek kapalı polyline seçilirse çevresi bilgi olarak gösterilir (Aşama 3 için).
+- Çekirdek: cizim_alani_m2ye_cevir(), perde_alan_secimi_degerlendir() (saf); connector.perde_alan_sec().
+- Test: scratchpad/test_perde_alan.py 45/45 (+ perde 29, radye 23, temel kirişi COM 35, aralıklı
+  ölçü 42, genel demir 16 regresyon PASS). GERÇEK ölçekli çizimle AutoCAD testi bekleniyor.
 
 ================================================================================
 Rev-143 (2026-09-27) — Perde (L/T/U Kesit) Beton + Kalıp — Aşama 1/4 (Form + Hesap)
