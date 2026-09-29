@@ -2,7 +2,21 @@
                     INSAAT METRAJ PRO - TUM OZELLIKLER
 ================================================================================
 
-Son Guncelleme: 27 Eylul 2026 (Döşeme Aşama 3/3: boşluk düşme)
+Son Guncelleme: 29 Eylul 2026 (Kiriş Beton+Kalıp Aşama 1/2)
+
+================================================================================
+Rev-150 (2026-09-29) — Kiriş (normal, döşeme altı) Beton + Kalıp — Aşama 1/2: Form + Hesap (elle)
+- Akıllı Metraj Analizi > Kaba İnşaat > yeni "Kiriş" alt sekmesi (Döşeme'nin yanında).
+- Hesap (saf kiris_hesapla, autocad_connector.py; b/h/t cm, L_net m, cm->m tek yerde):
+  Beton = b × h × L_net (h TAM — döşeme alanı kiriş iç yüzlerinden ölçüldüğü için kesişim betonu yalnız
+  kirişte). İç kiriş kalıbı = b·L + 2·(h−t)·L; Kenar kiriş = b·L + (h−t)·L + h·L. t = 0 -> döşemesiz.
+- Form: Kat/Bölüm, varsayılan döşeme kalınlığı t (12 cm), Kiriş adı (boşsa K1, K2…), b, h, L_net, Tip
+  (İç/Kenar), t. Tabloda Tip ve t hücreleri satır bazında düzenlenebilir (geçersiz değer -> eski korunur).
+- Doğrulama: b/h/L ≤ 0 red; h ≤ t red; b > h (yassı) bilgi notu; L > 15 m uyarı (engellemez).
+- Toplam satırı: kiriş sayısı, L_net, beton, kalıp.
+- Test: scratchpad/test_kiris_hesap.py 24/24 (brief T1 0.500/4.04, T2 4.52, T3 5.00, T4 red, T5 0.540/2.88)
+  + scratchpad/test_kiris_ui.py 24/24 (headless) + döşeme regresyonları PASS.
+- Sırada Aşama 2: AutoCAD'den yazı + kenar çizgileri (temel kirişi toplu modu altyapısı).
 
 ================================================================================
 Rev-149 (2026-09-27) — Döşeme Aşama 3/3: Boşluk Düşme (merdiven, şaft, asansör)
