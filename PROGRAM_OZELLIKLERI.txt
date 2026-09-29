@@ -2,7 +2,30 @@
                     INSAAT METRAJ PRO - TUM OZELLIKLER
 ================================================================================
 
-Son Guncelleme: 29 Eylul 2026 (Kiriş Beton+Kalıp Aşama 1/2)
+Son Guncelleme: 29 Eylul 2026 (Kiriş Beton+Kalıp Aşama 2/2: AutoCAD'den okuma)
+
+================================================================================
+Rev-150 Aşama 2/2 (2026-09-29) — Kiriş: AutoCAD'den Okuma (MOD BAZLI)
+- Kiriş sekmesi Ayarlar'a: Çizim Birimi (Otomatik/cm/mm/m), Çizim Ölçeği, "İç Kiriş Seç" (yeşil) ve
+  "Kenar Kiriş Seç" (mavi) butonları.
+- Akış: buton -> AutoCAD'e geçilir, komut satırında ">>> KİRİŞ — İÇ/KENAR KİRİŞ modu". Her kiriş: etiket
+  yazısı + iki kenar çizgisi + ENTER (tip SORULMAZ, modun tipi). Boş ENTER -> panel; diğer modla devam
+  edilebilir, satırlar birikir. TAMAMLANDI -> ana tabloya aktarılır (Kaynak = Çizim, Handle'lar dolu).
+- Etiket: kesit yazıdaki ilk "sayı/sayı" (parantezli/parantezsiz/boşluklu); isim ayrımı yok (ad olduğu gibi).
+  Kesit yoksa b ve h komut satırından sorulur. 0 veya >1 kesitli yazı -> uyarı, seçim alınmaz.
+- Uzunluk: LINE/polyline uzunlukları toplamı / 2 (bölünmüş kenar çizgileri de çalışır), en az 2 çizgi;
+  üst üste çift çizgi tekilleştirilir. Tam 2 çizgi %10+ farklıysa onay sorulur. Birim × ölçek ortak
+  dönüşümle. Oturumdaki İLK kirişte "K101: 25/50, L = X m. Doğru mu?" — Hayır -> döngü durur.
+- Mükerrer (handle bazlı): aynı modda "zaten K101 olarak kayıtlı. Güncellensin mi?", diğer modda
+  "K101 İÇ olarak kayıtlı. KENAR olarak güncellensin mi?" — E: satır güncellenir (tip/kalıp/renk), yeni
+  satır açılmaz; H: hiçbir şey değişmez. Aynı ad farklı handle mükerrer değildir.
+- Son Ekleneni Geri Al (ekleme ve güncelleme ayrı ayrı geri alınır, renk dahil); İptal / X tüm oturumu
+  geri alır. Ana tabloda Tip değişince kalıp + çizim rengi güncellenir; satır silinince / Temizle'de renk
+  eski haline döner.
+- OSMODE'a DOKUNULMAZ (seçim nesne yakalamadan etkilenmez). COM mesaj filtresi + meşgul retry kullanılır.
+- Test: scratchpad/test_kiris_secim.py 51/51 (saf karar + sahte COM kiris_oku + panel + ana tablo) +
+  kiriş/temel kirişi/döşeme/perde regresyonları, .venv ve sistem Python 3.11'de PASS.
+  GERÇEK AutoCAD testi bekleniyor — programı kapatıp yeniden açın.
 
 ================================================================================
 Rev-150 (2026-09-29) — Kiriş (normal, döşeme altı) Beton + Kalıp — Aşama 1/2: Form + Hesap (elle)
