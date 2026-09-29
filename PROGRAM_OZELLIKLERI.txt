@@ -13,9 +13,12 @@ Rev-150 Aşama 2/2 (2026-09-29) — Kiriş: AutoCAD'den Okuma (MOD BAZLI)
   edilebilir, satırlar birikir. TAMAMLANDI -> ana tabloya aktarılır (Kaynak = Çizim, Handle'lar dolu).
 - Etiket: kesit yazıdaki ilk "sayı/sayı" (parantezli/parantezsiz/boşluklu); isim ayrımı yok (ad olduğu gibi).
   Kesit yoksa b ve h komut satırından sorulur. 0 veya >1 kesitli yazı -> uyarı, seçim alınmaz.
-- Uzunluk: LINE/polyline uzunlukları toplamı / 2 (bölünmüş kenar çizgileri de çalışır), en az 2 çizgi;
-  üst üste çift çizgi tekilleştirilir. Tam 2 çizgi %10+ farklıysa onay sorulur. Birim × ölçek ortak
-  dönüşümle. Oturumdaki İLK kirişte "K101: 25/50, L = X m. Doğru mu?" — Hayır -> döngü durur.
+- Uzunluk (brief v3): çizgiler İKİ KENARA ayrılır (doğrultu farkı ≤ 2° ve dik mesafe ≤ 2 cm = aynı kenar;
+  bölünmüş kenarın parçaları toplanır) -> L1 (kısa), L2 (uzun). Soru SORULMAZ (yamuk/köşe kirişte fark
+  normal). İkiden fazla kenar veya iki kenar > 15° açılı (kolon/uç çizgisi seçilmiş) -> uyarı, alınmaz.
+  Beton = b×h×L_ort, alt kalıp = b×L_ort, iç yan = (h−t)(L1+L2), kenar yan = (h−t)L1 + h·L2 (uzun kenar
+  dış yüz). Tabloda L1 ve L2 sütunları (elle girişte L1 = L2). Birim × ölçek ortak dönüşümle. Oturumdaki
+  İLK kirişte "K101: 25/50, L1 = X m, L2 = Y m. Doğru mu?" — Hayır -> döngü durur.
 - Mükerrer (handle bazlı): aynı modda "zaten K101 olarak kayıtlı. Güncellensin mi?", diğer modda
   "K101 İÇ olarak kayıtlı. KENAR olarak güncellensin mi?" — E: satır güncellenir (tip/kalıp/renk), yeni
   satır açılmaz; H: hiçbir şey değişmez. Aynı ad farklı handle mükerrer değildir.
@@ -23,7 +26,8 @@ Rev-150 Aşama 2/2 (2026-09-29) — Kiriş: AutoCAD'den Okuma (MOD BAZLI)
   geri alır. Ana tabloda Tip değişince kalıp + çizim rengi güncellenir; satır silinince / Temizle'de renk
   eski haline döner.
 - OSMODE'a DOKUNULMAZ (seçim nesne yakalamadan etkilenmez). COM mesaj filtresi + meşgul retry kullanılır.
-- Test: scratchpad/test_kiris_secim.py 51/51 (saf karar + sahte COM kiris_oku + panel + ana tablo) +
+- Test: test_kiris_hesap.py 30/30 (U1 4.04, U2 0.156/1.2625, U3 1.4425), test_kiris_ui.py 24/24,
+  test_kiris_secim.py 56/56 (kenar ayırma: düz/yamuk/bölünmüş/3 kenar/dik uç; sahte COM; panel; ana tablo) +
   kiriş/temel kirişi/döşeme/perde regresyonları, .venv ve sistem Python 3.11'de PASS.
   GERÇEK AutoCAD testi bekleniyor — programı kapatıp yeniden açın.
 
