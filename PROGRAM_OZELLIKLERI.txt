@@ -9,6 +9,7 @@ Rev-150 Ek (2026-09-30) — İç Kiriş Rengi: Yeşil → Turuncu
 - AutoCAD'de iç kirişler artık TURUNCU (ACI 30) boyanıyor, kenar kirişler MAVİ kaldı.
   Neden: yeşil tüm araçlarda "okundu" anlamında kullanılıyordu, kiriş tipini ayırt etmeyi zorlaştırıyordu.
 - "İç Kiriş Seç" butonları turuncu (#e67e22), açıklama/ipuçları güncellendi. Test: 30+24+56 PASS.
+- Kozmetik: kiriş mod başlığında ">>> >>> KİRİŞ" çift önek düzeltildi (komut_satiri_mesaj zaten ">>> " ekliyor).
 
 ================================================================================
 Rev-150 Aşama 2/2 (2026-09-29) — Kiriş: AutoCAD'den Okuma (MOD BAZLI)
