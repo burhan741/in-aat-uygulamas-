@@ -2,7 +2,24 @@
                     INSAAT METRAJ PRO - TUM OZELLIKLER
 ================================================================================
 
-Son Guncelleme: 30 Eylul 2026 (Rev-154: Genel Ayarlar kaldırıldı)
+Son Guncelleme: 30 Eylul 2026 (Rev-155: Perde — ideCAD blok + patlatılmış kontur)
+
+================================================================================
+Rev-155 (2026-09-30) — Perde: ideCAD Blok ve Patlatılmış Kontur Desteği
+- KONTUR ZİNCİRLEME: seçimde kapalı polyline yoksa açık polyline + LINE parçaları uç noktalarından
+  (5 mm tolerans) zincirlenip kapalı kontur kurulur; alan shoelace, çevre kenar toplamı.
+  Hatalar açık mesajla: "kontur kapanmıyor: (x, y) noktasında boşluk", "seçimde 2 perde var, tek tek
+  seçin", "kontur dallanıyor", yay (bulge/ARC) -> "yaylı kontur desteklenmiyor". Üst üste kopya
+  kenar bir kez sayılır (uyarı).
+- UÇ DÜŞME (zincir modu): kontur kurulunca AutoCAD'de ikinci istem "Kolona bitişik uç kenarlarını
+  seçin (yoksa ENTER)". Seçilen kenar konturun parçası olmalı (değilse düşülmez + uyarı).
+- BLOK: seçimde blok referansı varsa Explode() ile GEÇİCİ kopya alınır (orijinale dokunulmaz),
+  iç içe bloklar çözülür, içerik aynı kurallarla değerlendirilir, geçici nesneler her turda silinir.
+  Boyama + mükerrer koruma ORİJİNAL blok handle'ı ile. Blok içindeki çizgiler uç sayılmaz.
+- Kapalı polyline yolu (sta4CAD) DEĞİŞMEDİ. Tek açık polyline uçları çakışıksa artık kabul ediliyor.
+- Mükerrer: zincir konturda anahtar = parça handle'larının sıralı birleşimi.
+- Test: test_perde_zincir.py 46/46 (brief testleri + sahte COM iç içe blok + panel), eski perde
+  testleri değişmeden PASS — iki Python.
 
 ================================================================================
 Rev-154 (2026-09-30) — Akıllı Metraj Analizi: "Genel Ayarlar" Bölümü Kaldırıldı
