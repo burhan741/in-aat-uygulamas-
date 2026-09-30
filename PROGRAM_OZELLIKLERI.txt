@@ -2,7 +2,23 @@
                     INSAAT METRAJ PRO - TUM OZELLIKLER
 ================================================================================
 
-Son Guncelleme: 30 Eylul 2026 (Rev-151: Kat Özeti — kat bazlı beton + kalıp)
+Son Guncelleme: 30 Eylul 2026 (Rev-152: Merdiven beton + kalıp)
+
+================================================================================
+Rev-152 (2026-09-30) — Merdiven (Plak Merdiven) Beton + Kalıp
+- Kaba İnşaat > "Merdiven" sekmesi (Kiriş ile Kat Özeti arasında). Elle giriş, AutoCAD okuma yok.
+- KOL: n, rıht h (cm), basamak a (cm), kol eni B (m), plak kalınlığı t (cm, plağa dik), yan taraf 0/1/2.
+  L = n×a, H = n×h otomatik; "L ve H'yi elle düzelt" ile detaydaki değer girilebilir (%25 sapma uyarısı).
+  s = √(L²+H²); profil = s·t + L·H/(2n); beton = B×profil; alt yüz = s×B; rıht = H×B; yan = taraf×profil.
+- ARA SAHANLIK: en×boy×t beton, en×boy alt kalıp, serbest kenar×t kenar kalıbı.
+  Kat sahanlığı SAYILMAZ (Döşeme aracında) — formda kırmızı not.
+- Kalıp kalemleri ayrı sütunlarda (Alt yüz / Rıht / Yan / Kenar). "Rıht kalıbını toplama kat" ve
+  "Yan kalıbı toplama kat" onay kutuları (varsayılan işaretli) data/autocad_ayarlari.json'a kalıcı
+  yazılır; esas metni tabloda, toplam satırında ve Kat Özeti Excel başlığında görünür.
+- Doğrulama: n tam sayı ≥1, h/a/B/t/en/boy > 0, yan 0/1/2 → aksi red; h 12–22, a 22–35, t 8–30 cm
+  dışı → uyarı (engellemez). Tabloda t ve yan taraf hücreleri düzenlenebilir.
+- Kat bazlı (aktif kat); Kat Özeti'nde "Merdiven" satırı. Saf çekirdek: app/core/merdiven_hesap.py.
+- Test: test_merdiven_hesap.py 25/25 (brief M1–M7), test_merdiven_ui.py 32/32, iki Python.
 
 ================================================================================
 Rev-151 (2026-09-30) — Kat Özeti: Kat Bazlı Beton + Kalıp Tablosu
