@@ -2,7 +2,28 @@
                     INSAAT METRAJ PRO - TUM OZELLIKLER
 ================================================================================
 
-Son Guncelleme: 30 Eylul 2026 (Rev-152: Merdiven beton + kalıp)
+Son Guncelleme: 30 Eylul 2026 (Rev-153: Temel kirişi (SBH) demir hesabı)
+
+================================================================================
+Rev-153 (2026-09-30) — Temel Kirişi (SBH) Demir: Filiz + Tevzi
+- SBH sekmesine EKLENTİ (ayrı araç yok): aynı satırdan beton, kalıp ve demir. Beton/kalıp DEĞİŞMEDİ.
+- Tablo +9 sütun: Filiz Adet · Filiz Uzunluk · Filiz kg · Tevzi Çubuk · Tevzi Bindirme (k) · Tevzi Boy ·
+  Tevzi Uzunluk · Tevzi kg · Toplam Demir. Altta demir toplamı + ÇAP BAZLI kg (hakediş için).
+- Filiz: yüz başına ceil(L/aralık)+1 (aralıklı donatı ile AYNI fonksiyon) × yüz × l.
+- Tevzi: sıra = elle veya ceil((y − 2·pas)/aralık)+1; ham boy = L + ek boy; 12 m'yi aşarsa
+  k = ceil((ham − stok)/(stok − bindirme)), çubuk boyu = ham + k·bindirme.
+- TİP BAZLI parametreler (12 alan, varsayılan Ø12/20 l=280, Ø10/20, bindirme 50, stok 12 m, pas 5):
+  yeni SBH tipi seçilince döngü BİTTİKTEN sonra tip başına bir kez pencere açılır; "SBH Demir
+  Parametreleri" ile düzenlenir, o tipin tüm satırları yeniden hesaplanır. data/autocad_ayarlari.json
+  ("sbh_demir_tipleri") içinde kalıcı.
+- "DEMİRİ KESİM LİSTESİNE AKTAR": kesim aracı bindirme EKLEMEDİĞİ için tevzi bindirmeli boyla
+  stok boyuna bölünerek gider (14.5 m -> 12 + 2.5) — bindirme bir kez, 12 m üstü "standart dışı" düşmez.
+  Kesim penceresine ekleme ortak yardımcıya alındı (_kesim_penceresine_ekle).
+- Excel: demir sütunları + "Demir Cap Ozeti" sayfası.
+- BUG FIX (ortak): aralikli_donati_adet_hesapla kayan nokta hatası — 1.10 m / 10 cm -> 13 (doğrusu 12);
+  0.01–50 m × 6 aralık taramasında 84 hatalı durum vardı, 0'a indi. Aralıklı donatı aracı da düzeldi.
+- Test: test_temel_kirisi_demir.py 24/24 (brief S1–S5c, S7), test_temel_kirisi_demir_ui.py 21/21
+  (S6, S7, kesim), eski SBH testleri PASS — iki Python.
 
 ================================================================================
 Rev-152 (2026-09-30) — Merdiven (Plak Merdiven) Beton + Kalıp
