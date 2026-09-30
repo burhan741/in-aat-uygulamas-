@@ -2,7 +2,20 @@
                     INSAAT METRAJ PRO - TUM OZELLIKLER
 ================================================================================
 
-Son Guncelleme: 30 Eylul 2026 (Rev-155: Perde — ideCAD blok + patlatılmış kontur)
+Son Guncelleme: 30 Eylul 2026 (Rev-156: AutoCAD meşgulken bağlanma donması)
+
+================================================================================
+Rev-156 (2026-09-30) — AutoCAD Meşgulken Bağlanma Artık Donmuyor
+- Olay (gerçek log 22:59): "AutoCAD bulundu" sonrası her COM çağrısı reddedildi (tip=2, RETRYLATER)
+  10+ sn boyunca — AutoCAD'de açık iletişim kutusu / yarım komut belirtisi (ideCAD DWG: Proxy,
+  eksik SHX font, kurtarma pencereleri).
+- Kök neden (kod): filtre 30 sn bekliyor; baglan()'daki Visible + ActiveDocument (5 deneme) +
+  ModelSpace (5 deneme) bunu çarpıyordu -> program dakikalarca donmuş görünüyordu, mesaj yoktu.
+- Çözüm: bağlanırken meşgul reddi en fazla 3 sn denenir (kisa_bekleme); filtre vazgeçerse ya da
+  RPC_E_CALL_REJECTED gelirse bağlantı HEMEN durur ve açık mesaj: "AutoCAD şu an komut kabul
+  etmiyor — açık pencereyi kapatın, ESC'ye 2 kez basın, tekrar bağlanın". Bağlantı bitince (her
+  durumda) araç döngülerinin 30 sn beklemesi geri gelir.
+- Test: test_baglan_mesgul.py 19/19, test_com_filtre.py 30/30 — iki Python.
 
 ================================================================================
 Rev-155 (2026-09-30) — Perde: ideCAD Blok ve Patlatılmış Kontur Desteği
