@@ -2,7 +2,22 @@
                     INSAAT METRAJ PRO - TUM OZELLIKLER
 ================================================================================
 
-Son Guncelleme: 30 Eylul 2026 (Kiriş: iç kiriş rengi turuncu)
+Son Guncelleme: 30 Eylul 2026 (Rev-151: Kat Özeti — kat bazlı beton + kalıp)
+
+================================================================================
+Rev-151 (2026-09-30) — Kat Özeti: Kat Bazlı Beton + Kalıp Tablosu
+- Kaba İnşaat > yeni "Kat Özeti" sekmesi: Kolon, Perde, Kiriş, Döşeme kayıtları kat kat;
+  Radye + Temel Kirişi "Temel" satırında (en üstte). Her katta eleman satırları + KAT TOPLAMI,
+  altta eleman bazlı "TÜM KATLAR" toplamları + GENEL TOPLAM. Beton NET (fire hariç).
+- Beton & Kalıp sekmesine elle eklenen satırlar "(elle)" ekiyle ayrıca görünür.
+- Sekme açıldığında + kat değişince otomatik güncellenir; "Yenile" ve "Excel'e Aktar" butonları.
+- Hesap YAPMAZ, her sekmenin kendi formülünü toplar (tek formül kaynağı). Saf çekirdek:
+  app/core/kat_ozeti.py (kat_ozeti_olustur, ozet_tablo_satirlari).
+- KİRİŞ ve DÖŞEME artık KAT BAZLI: kayıtlar Demir Metrajı'ndaki aktif kata yazılır, tablo sadece
+  aktif katı gösterir, Temizle/Sil sadece aktif katı etkiler, mükerrer kontrolü kat içinde.
+  "Kat / Bölüm" serbest metin alanı -> salt okunur "Aktif Kat".
+- Kullanıcı kararı: kolon kalıbı DEĞİŞMEDİ (tam kat yüksekliği, kiriş birleşim düşümü yok).
+- Test: scratchpad/test_kat_ozeti.py 29/29 (iki Python); kiriş/döşeme/perde/radye/kolon regresyonları PASS.
 
 ================================================================================
 Rev-150 Ek (2026-09-30) — İç Kiriş Rengi: Yeşil → Turuncu
