@@ -2,7 +2,15 @@
                     INSAAT METRAJ PRO - TUM OZELLIKLER
 ================================================================================
 
-Son Guncelleme: 30 Eylul 2026 (Rev-153: Temel kirişi (SBH) demir hesabı)
+Son Guncelleme: 30 Eylul 2026 (Rev-154: Genel Ayarlar kaldırıldı)
+
+================================================================================
+Rev-154 (2026-09-30) — Akıllı Metraj Analizi: "Genel Ayarlar" Bölümü Kaldırıldı
+- Sol paneldeki "Genel Ayarlar" kutusu (Kat Yüksekliği, Döşeme Kalınlığı, Net/Brüt Alan) artık görünmüyor.
+- Widget'lar arka planda oluşturulmaya devam ediyor (başka metodlar okuyor): kat yüksekliği 300 cm
+  (Kolon Yazısından Toplu Oku penceresinde varsayılan — orada değiştirilebilir), döşeme 15 cm,
+  alan türü Net (0.88 katsayı — sadece gizli İnce İşler hesabında kullanılıyor).
+- Test: pencere açılışında grup görünmez, değerler okunabiliyor; kolon/kat özeti/merdiven/SBH testleri PASS.
 
 ================================================================================
 Rev-153 (2026-09-30) — Temel Kirişi (SBH) Demir: Filiz + Tevzi

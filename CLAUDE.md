@@ -102,6 +102,9 @@ Her geliştirilen programda **yerleşik kullanım kılavuzu** bulunmalıdır:
 
 # Bilinen Hatalar ve Kesin Kurallar
 
+## Rev-154 (2026-09-30) — "Genel Ayarlar" Arayüzden Kaldırıldı
+`_create_settings_group` grubu oluşturuyor ama layout'a EKLEMİYOR (`setVisible(False)`, parent yok) — Rev-145 kuralı: `kat_yuksekligi_spin` (kolon toplu okuma varsayılanı, 7 yerde okunuyor), `doseme_kalinligi_spin`, `rbtn_net`, `_alan_bilgi_label` başka metodlarca erişiliyor. Varsayılanlar sabit kaldı: 300 cm / 15 cm / Net 0.88. **Not:** `_create_kiris_group` (eski "Kiris Ekle") `self.kiris_table`/`self.kiris_h_spin` adlarını Rev-150 Kiriş sekmesiyle paylaşıyor — şu an HİÇ ÇAĞRILMIYOR (ölü kod); tekrar bağlanırsa isim çakışır.
+
 ## Rev-153 (2026-09-30) — SBH Demir (Filiz + Tevzi) + Ortak Adet Kayan Nokta Bug'ı
 Saf `app/core/temel_kirisi_demir.py` (`temel_kirisi_demir_hesapla`, `temel_kirisi_kesim_parcalari`, `cap_bazli_topla`, `VARSAYILAN_SBH_DEMIR`); birim ağırlık `DEMIR_AGIRLIK_TABLOSU`, filiz adedi `aralikli_donati_adet_hesapla` (aynı kural). SBH tablosu 7→16 sütun — yeni sütunlar SONA eklendi (beton/kalıp/uzunluk indeksleri ve `TOPLAM` satırı eski testler için korundu). Demir kayıtta SAKLANMAZ, gösterimde güncel tip parametresiyle hesaplanır (tip düzenlemesi anında yansır). Tip parametreleri `autocad_ayari_*("sbh_demir_tipleri")`; `SbhDemirTipDialog`. **Karar (brief'ten sapma):** yeni tip penceresi AutoCAD döngüsü İÇİNDE değil, panel kapanınca tip başına bir kez açılır (Rev-137 takılma dersi). Vazgeç -> oturumda varsayılan, kalıcı yazılmaz.
 - **KRİTİK BUG (ortak, düzeltildi):** `aralikli_donati_adet_hesapla` `math.ceil(mesafe_cm/aralik)` — `1.10*100 = 110.00000000000001` → 12 yerine 13 adet. **KURAL: ceil'e giden her oranı önce `round(x, 9)` ile yuvarla** (tam bölünen metre değerlerinde +1 fazla çubuk). Tarama betiği: 0.01–50 m × 6 aralık, 84 hata → 0.
