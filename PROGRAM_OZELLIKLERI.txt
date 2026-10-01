@@ -2,7 +2,28 @@
                     INSAAT METRAJ PRO - TUM OZELLIKLER
 ================================================================================
 
-Son Guncelleme: 30 Eylul 2026 (Rev-156: AutoCAD meşgulken bağlanma donması)
+Son Guncelleme: 01 Ekim 2026 (Rev-157: Radye kayıt listesi + Kat Özeti + Excel Radye sayfası)
+
+================================================================================
+Rev-157 (2026-10-01) — Radye: Adlı Kayıt Listesi, Kat Özeti'ne Otomatik Bağlantı, Formüllü Excel
+- Radye sekmesi tek formdan KAYIT LİSTESİNE çevrildi: Radye adı + Alan (m²) + Kalınlık (CM —
+  önceden metreydi) + Dış çevre + adlı iç boşluklar tablosu (asansör/merdiven kuyusu, her biri
+  ayrı satır). Butonlar: Radye Ekle / Seçiliyi Güncelle / Seçiliyi Sil / Excel'e Aktar. Listeden
+  satıra tıklayınca radye (boşluklarıyla) forma yüklenir.
+- Hesap değişmedi: Beton = Alan × Kalınlık; Kalıp = (Dış çevre + Σ iç boşluk çevreleri) × Kalınlık.
+  Kalınlık 25 cm altında "metre girilmiş olabilir", 300 cm üstünde "mm girilmiş olabilir" uyarısı.
+- Kat Özeti: radyeler "Temel" grubunda (Temel Kirişi ile aynı grup), Temel ara toplamı artık
+  "TEMEL TOPLAMI" etiketiyle; genel toplam radyeyi içerir. Ekle/güncelle/sil anında özet de
+  yenilenir (Yenile'ye basmak gerekmez). 'Radye Ekle'ye basılmamış form özete GİRMEZ.
+- Excel: yeni saf modül app/core/radye_rapor.py. "Radye" sayfası: başlık + Proje adı (aktif
+  projeden, yoksa bir kez sorulur) + tarih + kabuller (kalınlık cm, iç boşluk çevreleri kalıba
+  eklenir, alt yüz yok, beton net). Sütunlar: Radye adı · Alan · Kalınlık (cm) · Beton · Dış çevre ·
+  İç boşluk çevreleri toplamı · Kalıp; boşluklar ana satırın altında ayrı alt satırlar (ad + çevre).
+  Beton/kalıp/iç çevre toplamı/TOPLAM satırı EXCEL FORMÜLÜ (=SUM) — elle düzeltme toplamlara yansır.
+  Kat Özeti Excel'i radye varsa aynı dosyaya "Radye" sayfasını da ekler.
+- Test: test_radye_ozet_excel.py 44/44 (brief: 250 m², 60 cm, 70 + 9 + 6 -> 150.00 m³ / 51.00 m²;
+  formüller test içinde değerlendirildi), test_radye 23/23, test_kat_ozeti 29/29 + temel kirişi,
+  merdiven, döşeme, kiriş, perde regresyonları — iki Python.
 
 ================================================================================
 Rev-156 (2026-09-30) — AutoCAD Meşgulken Bağlanma Artık Donmuyor
