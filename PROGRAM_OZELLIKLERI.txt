@@ -2,7 +2,30 @@
                     INSAAT METRAJ PRO - TUM OZELLIKLER
 ================================================================================
 
-Son Guncelleme: 01 Ekim 2026 (Rev-157: Radye kayıt listesi + Kat Özeti + Excel Radye sayfası)
+Son Guncelleme: 01 Ekim 2026 (Rev-158: SBH + Kiriş — bölünmüş kenar, sınırsız çizgi seçimi)
+
+================================================================================
+Rev-158 (2026-10-01) — SBH ve Kiriş: Kesişen Kirişle Bölünen Kenarın Tüm Parçaları Seçilebiliyor
+- Sorun: SBH aracında etiketten sonra en fazla 2 çizgi kabul ediliyordu; kesişen kirişle bölünen
+  kenarın diğer parçaları seçilemiyor, metraj eksik çıkıyordu.
+- Çözüm (SBH ve K araçlarında AYNI ortak fonksiyon kiris_kenarlari_olc): etiket + istenen kadar
+  çizgi (LINE/LWPOLYLINE) + ENTER. Çizgiler doğrultu ve hatta göre iki kenara ayrılır; ayrılamazsa
+  (dik uç çizgisi, 3. kenar) seçim atlanır ve nedeni komut satırına yazılır. En az 2 çizgi şartı
+  var (SBH'de tek çizgi artık kabul edilmiyor; hiç çizgi yoksa elle uzunluk yolu duruyor).
+- Hesap: KAPSAM = kenarın ilk ve son noktası arası (boşluklar dahil); DOLU = parçaların toplamı.
+  Beton + alt kalıp + SBH demiri (filiz adedi, tevzi boyu): L_beton = (kapsam1 + kapsam2) / 2.
+  Yan kalıp: her yüz kendi dolu uzunluğuyla (boşlukta kesişen kiriş var, kalıp yok).
+- Eksik seçim uyarısı: |kapsam1 − kapsam2| > 2 × b ise "bir kenarın parçası seçilmemiş olabilir"
+  sorusu (AutoCAD komut satırı, varsayılan Hayır). Soru sırasında parçalar zaten boyalı (eksik
+  parça çizimde görünür); Hayır -> seçim alınmaz, renkler geri alınır. (Eski SBH %10 fark uyarısı
+  bu kuralla değiştirildi.)
+- Seçilen tüm parçalar boyanır (SBH yeşil; kiriş iç=turuncu / kenar=mavi — Rev-147 renk düzeni),
+  bütün handle'lar satıra kaydedilir: mükerrer koruma, güncelleme, geri alma tüm parçalar için.
+- SBH tablosunda uzunluk elle düzeltilirse yan dolu bilgisi düşülür, kalıp 2 × y × L olur.
+- Düz kiriş (2 eşit çizgi) ve yamuk kiriş (1.00 / 1.50) sonuçları DEĞİŞMEDİ (testle doğrulandı).
+- Test: test_kiris_kenar_olcum.py 49/49 (üst 12.45, alt 7.75 + 3.80, 0.90 boşluk -> L 12.45, alt
+  dolu 11.55; yalnız 7.75 -> uyarı), test_temel_kirisi 58/58, _ui 49/49, _com 35/35, kiris_secim
+  56/56, kiris_hesap 30/30, kiris_ui 24/24, kat_ozeti 29/29 — iki Python.
 
 ================================================================================
 Rev-157 (2026-10-01) — Radye: Adlı Kayıt Listesi, Kat Özeti'ne Otomatik Bağlantı, Formüllü Excel
