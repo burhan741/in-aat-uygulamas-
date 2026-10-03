@@ -2,7 +2,36 @@
                     INSAAT METRAJ PRO - TUM OZELLIKLER
 ================================================================================
 
-Son Guncelleme: 03 Ekim 2026 (Rev-159: Döşeme — boşluk sorusu kaldırıldı, [B]oşluk + formdan Boşluk Ekle)
+Son Guncelleme: 03 Ekim 2026 (Rev-160: Kolon aracında Kolon/Perde ayrımı + kolon-perde ortak ad havuzu)
+
+================================================================================
+Rev-160 (2026-10-03) — Kolon Aracı: Perde Ayrımı, Okunamayanlar, Ortak Ad Havuzu, Renk Geçmişi
+- Sorun: Kolon aplikasyon paftasında dikdörtgen perdeler de "S259 (210/30)" gibi yazılı, L/T/U
+  perdelerde yalnız ad var ("S260"). Kolon aracı perdeleri kolon sayıyor, adsız boyutsuz yazıları
+  sessizce atlıyordu; aynı eleman kolon ve perde aracında iki kez sayılabiliyordu.
+- Ayrım: okunan her (en/boy) yazısında uzun/kısa kenar >= 6 ise PERDE (TBDY 2018 perde tanımı),
+  değilse KOLON. Hesap ikisinde aynı: beton = en×boy×H, kalıp = 2(en+boy)×H. Örnek: S259 (210/30),
+  H=3.00 -> Perde, 1.890 m³, 14.40 m²; S300 (120/30) oran 4 -> Kolon; SZ07 (50/50) değişmedi.
+- Önizleme tablosunda elle değiştirilebilen "Tip" sütunu (Kolon/Perde); değişince AutoCAD rengi de
+  değişir. Beton & Kalıp tablosu ve Kat Özeti'nde Kolon ve Perde ayrı satır.
+- Donatı yazıları (6Ø16, Etr. Ø10/20/[20] …) hatasız yok sayılır, boyanmaz. Boyutu çözülemeyen S/P
+  yazıları kırmızı boyanır ve "Şu elemanlar okunamadı, perde aracıyla alın: …" diye listelenir.
+- Renkler: Kolon YEŞİL (3), Perde CAMGÖBEĞİ (4), okunamayan KIRMIZI (1).
+- Ortak havuz (kat + ad): kolon aracı ve perde aracı birlikte denetler. Aynı katta aynı ad varsa
+  (farklı pafta/handle olsa bile) "S259 bu katta zaten kayıtlı. Güncellensin mi?" (programda
+  Evet/Hayır/Tümüne Evet/Tümüne Hayır; perde aracında AutoCAD komut satırında). Hayır -> renk
+  değişmez. Evet -> eski kayıt (hangi araçta olursa) yeni kayıtla değiştirilir, çift sayım olmaz.
+- Perde aracı: seçimdeki S/P ad yazısı perde adı olur (donatı yazısı da seçilse doğru yazı seçilir);
+  kesit çizgileri + ad yazısı CAMGÖBEĞİ boyanır. Kolon aracında kırmızı kalan S260 perde aracında
+  alınınca camgöbeğine döner ve okunamayanlar listesinden düşer (liste perde panelinde de görünür).
+- Renk geçmişi: her nesnenin orijinal rengi saklanır; "Son Ekleneni Geri Al", "İptal" ve kolon
+  önizlemesinde "Vazgeç" renkleri BİR ÖNCEKİ hâline döndürür (kırmızıysa kırmızıya, orijinalse
+  orijinale).
+- Değişiklik: kolon aracı kiriş (sarı) / tanımsız (gri) yazıları artık boyamıyor — sadece Kolon,
+  Perde ve okunamayanlar boyanır.
+- Test: test_kolon_perde_ayrim.py 37/37 + kolon/perde/kat özeti/döşeme/kiriş/SBH/radye/merdiven
+  regresyonları PASS (iki Python).
+- DURUM: gerçek AutoCAD (kolon aplikasyon paftası) denemesi bekleniyor.
 
 ================================================================================
 Rev-159 (2026-10-03) — Döşeme: Boşluk Sorusu Kaldırıldı, İki Yoldan Boşluk Ekleme
