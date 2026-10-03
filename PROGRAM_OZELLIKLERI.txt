@@ -2,7 +2,25 @@
                     INSAAT METRAJ PRO - TUM OZELLIKLER
 ================================================================================
 
-Son Guncelleme: 03 Ekim 2026 (Rev-164: Döşeme aracına Saçak modu — Halka / Şerit)
+Son Guncelleme: 03 Ekim 2026 (Rev-165: Beton / kalıp sonuçları tek ondalık)
+
+================================================================================
+Rev-165 (2026-10-03) — Beton / Kalıp Sonuçları Tek Ondalık (Tüm Kaba İnşaat Sekmeleri)
+- İstek: Beton & Kalıp ve diğer sekmelerde sonuçlar virgülden sonra tek hane.
+- Kapsam: beton (m³), sipariş betonu, kalıp (m²) ve kalıp bileşenleri (alt / kenar / rıht / yan) —
+  Beton & Kalıp, Kolon önizlemesi, Perde, Döşeme + Saçak, Kiriş, Temel Kirişi (SBH), Radye, Merdiven,
+  Kat Özeti tabloları, toplam etiketleri ve AutoCAD komut satırı mesajları. Alan, uzunluk, çevre,
+  kalınlık ve yükseklik eski hassasiyette kaldı.
+- Yuvarlama YARIM YUKARI (1.25 -> 1.3); Python'un varsayılanı yarımı çifte yuvarlar (1.25 -> 1.2) —
+  tek fonksiyon tek_hane() kullanılıyor.
+- Sadece GÖRÜNTÜ: hesap ve kayıtlar tam hassasiyette. Toplamlar tam değerden hesaplanır (3 × 0.25 =
+  0.75 -> "0.8"; satırlar "0.3" görünse de toplam 0.9 olmaz). Beton & Kalıp tablosunda tam değer
+  hücrenin arkasında saklanır; toplam ve Excel tam değerden (eskiden yazıdan okunuyordu).
+- Excel dosyalarındaki sayılar tam hassasiyette kaldı (hakediş/kontrol için).
+- Not: Satırlar tek tek yuvarlandığı için gözle toplanan satırlar ile toplam satırı arasında ±0.1
+  fark görülebilir — toplam doğrudur.
+- Test: test_tek_hane_gosterim.py 6/6 + 25 regresyon dosyasının beklentileri tek haneye güncellendi
+  (iki Python). Aynı turda test_perde.py Rev-163 otomatik döşeme için elle moda alındı.
 
 ================================================================================
 Rev-164 (2026-10-03) — Döşeme Aracı: SAÇAK Modu ([H]alka / [Ş]erit)
