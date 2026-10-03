@@ -2,7 +2,21 @@
                     INSAAT METRAJ PRO - TUM OZELLIKLER
 ================================================================================
 
-Son Guncelleme: 03 Ekim 2026 (Rev-161: Kolon aracındaki perdeler net yükseklikle — Perde sekmesiyle aynı)
+Son Guncelleme: 03 Ekim 2026 (Rev-162: Perde paneli Esc / X ile kapanınca perdeler kaybolmuyor)
+
+================================================================================
+Rev-162 (2026-10-03) — Perde Paneli: Esc / X Toplanan Perdeleri Sessizce Atıyordu
+- Şikayet: "Perde sekmesindekiler Kat Özeti'ne eklenmedi." Log: 6 perde toplanmış (21:57:01), ardından
+  ne kayıt ne hata satırı var. Aynı 6 perdeyle test: TAMAMLANDI ile Kat Özeti'ne giriyor (48.06 m³ /
+  309.12 m²); Esc ile kapatılınca HİÇBİRİ kaydedilmiyor ve AutoCAD'de renkler boyalı kalıyor.
+- Kök neden: Perde panelinde kapatma davranışı tanımlı değildi (Döşeme ve Kiriş panellerinde var).
+  Klavyedeki Esc veya pencerenin X'i = iptal, uyarısız.
+- Çözüm: Esc / X artık sorar — Evet: tabloya ekle (Kat Özeti'ne geçer), Hayır: ekleme + renkleri geri
+  al, Vazgeç: pencere açık kalsın. Perdeler kaydedilince Kat Özeti hemen yenilenir ve log'a
+  "[PERDE] N perde 'KAT' katına kaydedildi" yazılır.
+- Test: test_kolon_perde_ayrim.py 48/48 (Esc + Evet / Hayır / Vazgeç), perde/kat özeti
+  regresyonları PASS (iki Python).
+- Not: Kayıtlar program kapanınca silinir (bellekte) — o oturumdaki 6 perde yeniden seçilmeli.
 
 ================================================================================
 Rev-161 (2026-10-03) — Kolon Aracından Gelen Perdeler Perde Sekmesiyle Aynı Hesaplanıyor
