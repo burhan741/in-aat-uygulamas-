@@ -2,7 +2,33 @@
                     INSAAT METRAJ PRO - TUM OZELLIKLER
 ================================================================================
 
-Son Guncelleme: 03 Ekim 2026 (Rev-163: Perde kalıbında döşeme kalınlığı otomatik düşülüyor)
+Son Guncelleme: 03 Ekim 2026 (Rev-164: Döşeme aracına Saçak modu — Halka / Şerit)
+
+================================================================================
+Rev-164 (2026-10-03) — Döşeme Aracı: SAÇAK Modu ([H]alka / [Ş]erit)
+- Saçak = kenar kirişin DIŞ yüzünden taşan, sabit kalınlıklı konsol plak. Döşeme sekmesinde
+  "Saçak Kalınlığı" (varsayılan: o katın döşeme kalınlığı — Döşeme tablosundaki hakim kalınlık,
+  yoksa varsayılan kalınlık; elle değiştirilirse korunur) + "AutoCAD'de Saçak Seç" butonu.
+- AutoCAD'de tip sorulur: SAÇAK tipi [Halka/Serit] (ENTER = bitir).
+  * Halka (binayı tamamen sarar): önce saçak ucunun dış köşeleri, sonra kenar kirişin DIŞ yüz
+    köşeleri. Alan = dış − iç. İç poligon dışın tamamen içinde değilse uyarı, ALINMAZ.
+    Kenar kalıbı = dış çevre × t (iç çevre kirişe bağlı — kalıba girmez).
+  * Şerit (bazı cepheler): kiriş dış yüzü boyunca noktalar + ENTER (kiriş hattı), saçak ucu boyunca
+    noktalar + ENTER (uç hattı). İki hat uçlarından birleştirilir; tıklama yönü ters olsa da doğru
+    birleşir. Kenar kalıbı = (poligon çevresi − kiriş hattı) × t (uç hattı + iki yan uç). L biçimli
+    (iki cepheli) şerit de olur.
+  * İkisinde de beton = alan × t, alt kalıp = alan.
+- Çizim: saçak poligonları KEHRİBAR (ACI 40), METRAJ_DOSEME katmanında. Brief'teki turuncu (ACI 30)
+  iç kiriş rengi olduğu için kullanılmadı (renk kuralı çakışması).
+- Döşeme tablosunda saçak satırları "SÇ1, SÇ2…" adıyla, sonda "Tip" sütunu ("Saçak (Halka)") ve koyu
+  sarı zeminle; toplam etiketinde ayrı SAÇAK satırı. Kat Özeti'nde ayrı "Saçak" satırı (Döşeme'den sonra).
+- Mükerrer koruma (sadece saçaklar arasında — halka saçak binayı kapsadığı için döşemelerle
+  karıştırılmaz), Son Ekleneni Geri Al, İptal, satır silme (dış + iç poligon) döşemedeki gibi.
+  Saçağa boşluk eklenmez. Perde için otomatik döşeme kalınlığı saçak satırlarını saymaz.
+- Programsız: Halka 13.6×11.6 / 12×10, t=16 -> 37.76 m², 6.042 m³, 45.82 m²; Şerit 12 m × 0.80, t=16
+  -> 9.60 m², 1.536 m³, 11.78 m² (uç ters tıklansa da aynı); iç taşınca uyarı.
+- Test: test_sacak.py 34/34 + döşeme/kat özeti/perde/kiriş/merdiven/radye/SBH regresyonları (iki Python).
+- DURUM: gerçek AutoCAD denemesi bekleniyor.
 
 ================================================================================
 Rev-163 (2026-10-03) — Perde Kalıbı: Döşeme Kalınlığı Döşeme Sekmesinden Otomatik
