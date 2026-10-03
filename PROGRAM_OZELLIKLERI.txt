@@ -2,7 +2,20 @@
                     INSAAT METRAJ PRO - TUM OZELLIKLER
 ================================================================================
 
-Son Guncelleme: 03 Ekim 2026 (Rev-165: Beton / kalıp sonuçları tek ondalık)
+Son Guncelleme: 03 Ekim 2026 (Rev-166: Excel'de tek ondalık + Temel Kirişi / Aralıklı Donatı Esc-X koruması)
+
+================================================================================
+Rev-166 (2026-10-03) — Excel'de Beton/Kalıp Tek Ondalık + Esc/X Koruması (2 panel)
+- Excel: Beton & Kalıp, Kat Özeti, Perde, Temel Kirişi ve Radye çıktılarında beton / sipariş /
+  kalıp sütunları "#,##0.0" sayı biçimiyle TEK HANE görünür. Hücredeki sayı TAM kalır — Excel'de
+  yapılan toplama / formüller yuvarlanmamış değerden hesaplanır (radye formüllü sayfa dahil).
+  Yükseklik ("Beton Yük. (m)"), alan, çevre, kalınlık, fire, demir sütunları değişmedi.
+  Ortak yardımcı: app/core/excel_bicim.py (başlık satırını kendisi bulur).
+- Esc / X: Temel Kirişi (SBH) ve Aralıklı Donatı panelleri, toplanmış veri varken Esc veya pencere X'i
+  ile kapatılınca artık sorar — Evet: ekle, Hayır: ekleme + AutoCAD renklerini geri al, Vazgeç: pencere
+  açık kalsın (Rev-162'de Perde için yapılanın aynısı). Boş panel sormadan kapanır.
+- Test: test_esc_excel_tek_hane.py 14/14 + SBH / aralıklı donatı / radye / perde / kat özeti /
+  döşeme / kiriş / merdiven regresyonları (iki Python).
 
 ================================================================================
 Rev-165 (2026-10-03) — Beton / Kalıp Sonuçları Tek Ondalık (Tüm Kaba İnşaat Sekmeleri)
