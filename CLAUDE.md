@@ -102,6 +102,9 @@ Her geliştirilen programda **yerleşik kullanım kılavuzu** bulunmalıdır:
 
 # Bilinen Hatalar ve Kesin Kurallar
 
+## DURUM GÜNCELLEMESİ (2026-10-03, kullanıcı onayı)
+Gerçekte denendi ve TAMAM: Rev-164 Saçak, Rev-160..163 Kolon/Perde ayrımı + ortak havuz + perde net yükseklik + Esc/X + otomatik döşeme, Rev-159 Döşeme [B]oşluk, Rev-158 K bölünmüş kenar, Rev-157 Radye Excel, Rev-152 Merdiven, Rev-151 Kat Özeti, Rev-143 Aşama 4 Perde Excel, Puantaj Rev-125/126 deploy. Aşağıdaki bu Rev'lerin "DURUM: ... bekleniyor" satırları artık geçersiz. **Hâlâ açık:** Rev-155 perde ideCAD (gerçek ideCAD çizimi), Rev-142 aralıklı donatı DIMENSION tıklama, demir kesim 5 dosya birleştirme, TemelKirisi/AralikliDonati panellerinde Esc/X koruması, Excel'de tek hane kararı.
+
 ## Rev-165 (2026-10-03) — Beton / Kalıp Sonuçları Tek Ondalık
 metraj_analiz_window.py modül fonksiyonu `tek_hane(deger, binlik=False)` (Decimal ROUND_HALF_UP) — beton/kalıp/sipariş/kalıp bileşeni gösteren TÜM f-string'ler bunu kullanır (betikle 105 yer; alan/uzunluk/çevre/kalınlık/fire DOKUNULMADI). Kat Özeti tablosu float hücreleri de. **KURAL 1:** gösterimi yuvarlarken, değeri tablodan `float(item.text())` ile GERİ OKUYAN kod varsa (Beton & Kalıp toplamı + Excel) tam değeri `UserRole`'de sakla (`_bk_tam_deger` / `_bk_hucre_degeri`, sütun 6/8/9) — yoksa toplam yuvarlanmış sayılardan çıkar. **KURAL 2:** Python `format(x, ".1f")` YARIMI ÇİFTE yuvarlar (1.25→1.2) — kullanıcıya gösterilen metraj için `tek_hane` (yarım yukarı) kullan. **Test notu:** beklenen gösterim literallerini değiştirmek için `scratchpad/test_tek_hane.py` betiği (dosya:satır:literal) kullanıldı; `test_perde.py` Rev-163'te çalıştırılmamıştı → otomatik döşeme yüzünden düşmüştü, elle moda + döşeme 0 yapıldı. **DERS:** her Rev'de etkilenen sekmenin TÜM test dosyalarını koş (test_perde.py atlanmıştı). Test: `test_tek_hane_gosterim.py` 6/6.
 
