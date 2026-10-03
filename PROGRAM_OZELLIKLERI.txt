@@ -2,7 +2,24 @@
                     INSAAT METRAJ PRO - TUM OZELLIKLER
 ================================================================================
 
-Son Guncelleme: 03 Ekim 2026 (Rev-160: Kolon aracında Kolon/Perde ayrımı + kolon-perde ortak ad havuzu)
+Son Guncelleme: 03 Ekim 2026 (Rev-161: Kolon aracındaki perdeler net yükseklikle — Perde sekmesiyle aynı)
+
+================================================================================
+Rev-161 (2026-10-03) — Kolon Aracından Gelen Perdeler Perde Sekmesiyle Aynı Hesaplanıyor
+- Sorun: Aynı perde kolon aracında tam kat (kalıp 2(en+boy)×H), Perde sekmesinde net yükseklikle
+  hesaplanıyordu. S259 (210/30), kat 3.00, döşeme 0.20: 14.40 m² ↔ 13.44 m² (~%7 fark).
+- Karar (kullanıcı): perdeler NET yükseklikle, kolonlar TAM KAT kalır.
+- Kolon aracında Perde tipi eleman artık Perde sekmesinin o kata ait ayarıyla hesaplanır:
+  beton = en×boy×(tam kat / net — beton esası ayarı), kalıp = 2(en+boy) × (kat − döşeme).
+  Kolonlar değişmedi: beton = en×boy×H, kalıp = 2(en+boy)×H (tam kat).
+- Örnek: S259 (210/30), kat 3.00, döşeme 0.20, beton tam kat -> 1.890 m³, 13.44 m² (Perde sekmesiyle
+  birebir aynı).
+- Perde sekmesinde kat yüksekliği / döşeme / esas değiştirilince kolon aracından gelen perdeler de
+  (Beton & Kalıp tablosu + Kat Özeti) anında güncellenir.
+- Önizleme penceresinde "Kolon Kat Yüksekliği" sadece kolonlar için; perde esası ayrı satırda yazılı.
+- Sınır: yazıdan perdenin kolona bitişik ucu bilinemez -> uç düşümü yok. Bitişik ucu düşmek
+  gerekiyorsa o perde Perde sekmesinden alınmalı (ortak ad havuzu sayesinde çift sayılmaz).
+- Test: test_kolon_perde_ayrim.py 44/44 + kolon/perde/kat özeti/döşeme regresyonları (iki Python).
 
 ================================================================================
 Rev-160 (2026-10-03) — Kolon Aracı: Perde Ayrımı, Okunamayanlar, Ortak Ad Havuzu, Renk Geçmişi
