@@ -41,10 +41,10 @@
         "hooks": [
           {
             "type": "command",
-            "command": "Set-Location 'E:\\İNŞAAT METRAJ PRO'; git add -A; git diff --staged --quiet; if ($LASTEXITCODE -ne 0) { $ts = Get-Date -Format 'yyyy-MM-dd HH:mm'; git commit -m \"auto-backup: $ts\"; git push origin master }",
+            "command": "& powershell -NoProfile -ExecutionPolicy Bypass -File 'E:\\İNŞAAT METRAJ PRO\\yedekle.ps1'",
             "shell": "powershell",
-            "timeout": 30,
-            "statusMessage": "Git yedekleme yapiliyor..."
+            "timeout": 120,
+            "statusMessage": "Tam yedek: kod GitHub'a, veri OneDrive'a..."
           }
         ]
       }

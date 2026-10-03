@@ -1,0 +1,4 @@
+[submodule "yeni_proje"]
+	path = yeni_proje
+	url = https://github.com/burhan741/InsaatMetrajPro.git
+	branch = main
