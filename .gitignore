@@ -45,3 +45,6 @@ syntax_check_result.txt
 main_check_result.txt
 olustur_tanitim_pdf.py
 font_utils.py
+
+# Rev-167 yedek betigi logu
+yedek_log.txt
