@@ -2,7 +2,22 @@
                     INSAAT METRAJ PRO - TUM OZELLIKLER
 ================================================================================
 
-Son Guncelleme: 03 Ekim 2026 (Rev-166: Excel'de tek ondalık + Temel Kirişi / Aralıklı Donatı Esc-X koruması)
+Son Guncelleme: 03 Ekim 2026 (Rev-167: Tam yedek — kod GitHub, veri OneDrive, geri yükleme kılavuzu)
+
+================================================================================
+Rev-167 (2026-10-03) — PC Çökmesine Karşı Tam Yedek + Geri Yükleme
+- Sorun: Otomatik yedek sadece üst klasörü alıyordu; program kodu (yeni_proje, ayrı git deposu) en son
+  2026-07-06'da yedeklenmişti. Veritabanı / API anahtarı / ayarlar / puantaj / Claude hafızası hiç
+  yedeklenmiyordu. Üst depoda .gitmodules yoktu -> yeni PC'de klonlanınca yeni_proje BOŞ gelirdi.
+- yedekle.ps1 (üst klasör): her Claude yanıtından sonra (Stop kancası) 1) yeni_proje commit + push,
+  2) üst klasör commit + push, 3) git'e girmeyen veriler OneDrive\QuantixPro_Yedek\veri_TARİH.zip
+  (sadece değişiklik varsa; son 30 sürüm). Log: yedek_log.txt.
+- requirements-lock.txt: kullanılan Python 3.11.9'un tam paket listesi (123 satır; pywin32, PyMuPDF
+  dahil — eski requirements.txt'de yoktu).
+- .gitmodules eklendi; GERI_YUKLEME.md: yeni PC'de adım adım kurulum.
+- Doğrulama: GitHub'dan sıfırdan klon (-b master) + OneDrive zip'i -> program açıldı, DB bütünlük ok
+  (50 tablo), API anahtarı geldi, metraj_analiz_window.py yereldekiyle birebir aynı.
+- Veriler bilerek GitHub'a konmadı: InsaatMetrajPro deposu HERKESE AÇIK.
 
 ================================================================================
 Rev-166 (2026-10-03) — Excel'de Beton/Kalıp Tek Ondalık + Esc/X Koruması (2 panel)

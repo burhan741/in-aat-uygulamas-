@@ -102,6 +102,13 @@ Her geliştirilen programda **yerleşik kullanım kılavuzu** bulunmalıdır:
 
 # Bilinen Hatalar ve Kesin Kurallar
 
+## Rev-167 (2026-10-03) — Tam Yedek (KRİTİK: yeni_proje ayrı git deposu)
+- **Yapı:** `E:\İNŞAAT METRAJ PRO` = üst depo (`burhan741/in-aat-uygulamas-`, ÖZEL, dal **master**; varsayılan `main` dalı eski elle yükleme — klonlarken `-b master`). `yeni_proje` = ALT MODÜL, kendi deposu (`burhan741/InsaatMetrajPro`, dal main, **HERKESE AÇIK**). Üst depodaki `git add -A` alt modülün DOSYALARINI yedeklemez, sadece işaretçiyi — eski Stop kancası bu yüzden kodu 3 ay yedeklemedi.
+- **Yedek:** `.claude/settings.local.json` Stop kancası → `yedekle.ps1` (önce yeni_proje commit+push, sonra üst, sonra veri zip → OneDrive\QuantixPro_Yedek, hash ile tekrar önleme). `.gitmodules` eklendi. `requirements-lock.txt` (pip freeze). Kılavuz: `GERI_YUKLEME.md`. Uçtan uca klon + zip ile geri yükleme denendi, çalıştı.
+- **KURAL 1:** API anahtarı (`data/claude_config.json`), DB'ler, müşteri verisi ASLA `yeni_proje`'ye commit'lenmez (açık depo) — sadece OneDrive zip.
+- **KURAL 2:** Harness `Remove-Item ... "data\*"` desenini engelliyor — geçici klasör temizliğinde bu yolu kullanma.
+- **AÇIK RİSK:** Kaba İnşaat metraj kayıtları (kolon/perde/döşeme/kiriş/saçak/merdiven/radye/SBH registry'leri) SADECE BELLEKTE — program kapanınca kaybolur, yedeğe de girmez (diske yazılmıyor). Kullanıcıya proje kaydet/aç önerildi.
+
 ## Rev-166 (2026-10-03) — Excel Tek Ondalık (Biçim) + Temel Kirişi / Aralıklı Donatı Esc-X Koruması
 `app/core/excel_bicim.py` `beton_kalip_sutunlari_tek_hane(ws)`: en az 2 beton/kalıp/sipariş başlığı olan ilk satırı başlık sayar (tek hücreli başlık metinleri elenir), "yük/fire/esas/kalınlık" içeren başlıklar HARİÇ, sayısal hücrelere `#,##0.0`. **KURAL:** Excel'de tek hane = SAYI BİÇİMİ, değeri yuvarlama — kullanıcının Excel'deki SUM'ı tam değerden çalışsın. `_beton_kalip_excel` artık ExcelWriter (sayfaya erişim için). radye_rapor bicim D/G → `#,##0.0`. Modül-seviyesi `_kapatma_sorusu(parent, adet, birim, hedef)` → "evet/hayir/vazgec"; TemelKirisiDonguPaneli + AralikliDonatiDonguPaneli `reject()` override + `_renkleri_geri_al_ve_kapat()` (`_iptal` / `_bitti`-boş dalı `super().reject()`). Artık TÜM döngü panelleri (Perde, Döşeme, Kiriş, SBH, Aralıklı) Esc/X'e karşı korumalı. Test: `test_esc_excel_tek_hane.py` 14/14.
 

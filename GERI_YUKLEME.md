@@ -16,11 +16,14 @@ Her şey iki yerde duruyor. **İkisi birlikte** programı eksiksiz geri getirir.
 2. **Kodu indir** (PowerShell):
    ```powershell
    cd E:\
-   git clone --recurse-submodules https://github.com/burhan741/in-aat-uygulamas-.git "İNŞAAT METRAJ PRO"
+   git clone -b master --recurse-submodules https://github.com/burhan741/in-aat-uygulamas-.git "İNŞAAT METRAJ PRO"
    cd "E:\İNŞAAT METRAJ PRO\yeni_proje"
    git checkout main
    ```
+   `-b master` ŞART: o depodaki varsayılan `main` dalı eski bir elle yükleme (sadece veri dosyaları).
    `yeni_proje` klasörü boş gelirse: `git submodule update --init` (üst klasörde).
+   (2026-10-03 denendi: sıfırdan klon + OneDrive zip'i -> program açıldı, DB sağlam, API anahtarı geldi,
+   kod yereldekiyle birebir aynı.)
 3. **Kütüphaneleri birebir aynı sürümlerle kur:**
    ```powershell
    cd "E:\İNŞAAT METRAJ PRO\yeni_proje"
