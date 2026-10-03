@@ -2,7 +2,24 @@
                     INSAAT METRAJ PRO - TUM OZELLIKLER
 ================================================================================
 
-Son Guncelleme: 01 Ekim 2026 (Rev-158: SBH + Kiriş — bölünmüş kenar, sınırsız çizgi seçimi)
+Son Guncelleme: 03 Ekim 2026 (Rev-159: Döşeme — boşluk sorusu kaldırıldı, [B]oşluk + formdan Boşluk Ekle)
+
+================================================================================
+Rev-159 (2026-10-03) — Döşeme: Boşluk Sorusu Kaldırıldı, İki Yoldan Boşluk Ekleme
+- Sorun: Her döşemeden sonra "Boşluk ekle? [E/H]" soruluyordu — boşluksuz döşemelerde gereksiz
+  tıklama, sonradan fark edilen boşluk için de yol yoktu.
+- AutoCAD'den: köşe istemi artık "DÖŞEME 1. köşe veya [Bosluk] (son döşemeye)". B yazılınca
+  boşluk köşeleri tıklanır, SON eklenen/güncellenen döşemeye bağlanır, döngü normal köşe
+  istemine döner. Arka arkaya B ile birden fazla boşluk eklenir. Döşeme yokken B -> uyarı.
+- Formdan: Döşeme tablosunda AutoCAD'den tıklanmış bir satır seçip "Boşluk Ekle (AutoCAD)" ->
+  AutoCAD'e geçer, o döşemeye arka arkaya boşluk tıklatılır (1. köşede ENTER biter);
+  TAMAMLANDI ile tabloya yazılır, İptal'de çizilen boşluklar silinir. Elle girilen satırda
+  (poligonu yok) uyarı verir.
+- Kontroller aynen: boşluk döşeme içinde, toplam boşluk < brüt, çakışma yok, çevresi kenar
+  kalıbına eklenir, KIRMIZI çizim, her boşluk ayrı geri alma adımı.
+- Test: test_doseme_bosluk.py 46/46 (T3: 6×5 + 2×2.5 -> net 25, beton 3.75, kalıp 26.35 — iki
+  yoldan aynı), test_doseme_poligon.py 53/53, test_doseme_ui 30/30, kat_ozeti 29/29 (iki Python).
+- DURUM: gerçek AutoCAD'de B anahtar kelimesinin denenmesi bekleniyor.
 
 ================================================================================
 Rev-158 (2026-10-01) — SBH ve Kiriş: Kesişen Kirişle Bölünen Kenarın Tüm Parçaları Seçilebiliyor
