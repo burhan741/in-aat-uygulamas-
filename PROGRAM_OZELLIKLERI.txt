@@ -2,7 +2,24 @@
                     INSAAT METRAJ PRO - TUM OZELLIKLER
 ================================================================================
 
-Son Guncelleme: 03 Ekim 2026 (Rev-162: Perde paneli Esc / X ile kapanınca perdeler kaybolmuyor)
+Son Guncelleme: 03 Ekim 2026 (Rev-163: Perde kalıbında döşeme kalınlığı otomatik düşülüyor)
+
+================================================================================
+Rev-163 (2026-10-03) — Perde Kalıbı: Döşeme Kalınlığı Döşeme Sekmesinden Otomatik
+- Sorun: Perde kalıbı (kat − döşeme) × çevre ile hesaplanıyordu ama döşeme kalınlığı Perde
+  sekmesine ELLE girilmeliydi; girilmezse 0 kalıyor, döşeme bandı kalıba dahil ediliyordu (fazla kalıp).
+- Çözüm: Perde sekmesi > Kat Ayarları'nda "Döşeme sekmesinden otomatik" (varsayılan AÇIK). Döşeme
+  kalınlığı o katın Döşeme sekmesindeki döşemelerinden alınır: kalınlık başına brüt alan toplanır,
+  EN BÜYÜK alanlı (hakim) kalınlık seçilir; eşitlikte ince olan (güvenli taraf — fazla kalıp). Katta
+  henüz döşeme yoksa Döşeme sekmesinin "Varsayılan Kalınlık"ı kullanılır. Kaynağı form altında yazılır
+  ("Döşeme sekmesi: 2 döşeme, 20 cm (katta 12, 20 cm var — en büyük alanlı alındı)").
+- Beton DEĞİŞMEDİ: Beton Esası "Tam kat" iken perde betonu kat yüksekliğiyle (döşeme düşülmez).
+- Döşeme eklenince / kalınlığı değişince / varsayılan değişince Perde tablosu, kolon aracından gelen
+  perdeler, Beton & Kalıp tablosu ve Kat Özeti kendiliğinden güncellenir. Her kat kendi döşemesiyle.
+- Örnek: perde alan 1.0 m², çevre 8.5 m, kat 3.00, döşeme 20 cm -> beton 3.00 m³, kalıp 8.5×2.80 = 23.80 m²
+  (eskiden döşeme girilmemişse 25.50 m²).
+- Otomatik kapatılırsa eski davranış: döşeme kalınlığı elle.
+- Test: test_perde_doseme_otomatik.py 14/14 + 15 regresyon (iki Python).
 
 ================================================================================
 Rev-162 (2026-10-03) — Perde Paneli: Esc / X Toplanan Perdeleri Sessizce Atıyordu
