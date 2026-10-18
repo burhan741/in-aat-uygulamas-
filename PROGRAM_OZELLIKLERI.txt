@@ -2,7 +2,25 @@
                     INSAAT METRAJ PRO - TUM OZELLIKLER
 ================================================================================
 
-Son Guncelleme: 03 Ekim 2026 (Rev-167: Tam yedek — kod GitHub, veri OneDrive, geri yükleme kılavuzu)
+Son Guncelleme: 18 Ekim 2026 (Rev-168: Akıllı Metraj Analizi — Proje Kaydet / Aç + otomatik kayıt)
+
+================================================================================
+Rev-168 (2026-10-03 kodlandı, 2026-10-18 kayda geçirildi) — Metraj Projesi Kaydet / Aç + Otomatik Kayıt
+- Sorun: Kaba İnşaat ve demir metrajı kayıtları sadece bellekteydi; program kapanınca / PC çökünce
+  kayboluyor, yedeğe de girmiyordu (Rev-167'deki açık risk).
+- Akıllı Metraj Analizi penceresinde araç çubuğu: "Kaydet", "Farklı Kaydet…", "Proje Aç…" + kayıt
+  durumu yazısı. Kaydedilenler: kat listesi, demirler, aralıklı donatı, kolon, perde, döşeme + saçak,
+  kiriş, merdiven, SBH, radye, elle Beton & Kalıp satırları, kat ayarları.
+- Otomatik kayıt: her 60 saniyede bir ve pencere kapanırken; değişiklik yoksa yazmaz. Dosya aktif
+  projenin adıyla data/metraj_projeleri/ altında (EXE'de %APPDATA%\QuantixPro\data) — pencere
+  açılınca o projenin kaydı kendiliğinden yüklenir. Bu klasör yedekle.ps1 ile OneDrive zip'ine girer.
+- Yazma atomik (geçici dosya + değiştirme): yazarken elektrik kesilse eski dosya bozulmaz; bir önceki
+  sürüm ".onceki.json" olarak tutulur. Proje Aç'ta kaydedilmemiş değişiklik varsa önce sorar.
+- Ana penceredeki "Akıllı Metraj Analizi" artık tek pencere (singleton): ikinci tıklamada yeni boş
+  pencere açılmaz, açık olan öne gelir (eskiden önceki penceredeki kayıtlar kayboluyordu).
+- Çekirdek: app/core/metraj_proje_kayit.py (JSON; tuple anahtarlı sözlük, dataclass kayıpsız çevrilir).
+- Test: scratchpad/test_metraj_proje_kayit.py 37/37 (iki Python, 2026-10-18 tekrar koşuldu).
+- DURUM: gerçek kullanımda deneme bekleniyor.
 
 ================================================================================
 Rev-167 (2026-10-03) — PC Çökmesine Karşı Tam Yedek + Geri Yükleme
