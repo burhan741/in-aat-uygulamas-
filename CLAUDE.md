@@ -115,6 +115,7 @@
 - Geometriden ölçü: `Length`/`Area` çizim biriminde; birim kullanıcıya seçtirilir, ilk okuma teyit edilir; alan çarpanının KARESİ. 1/50 + mm çizimde geometriden boyut çıkarma — yazı etiketini oku.
 - DIMENSION: görünen = `Measurement × LinearScaleFactor`; `TextOverride` farklıysa sor; açısal ölçü radyandır.
 - Kapalı eğri alanı: `vlax-curve-getArea` başarısızsa `vla-get-Area`; ikisi de başarısızsa sessizce atlama, bildir.
+- Eleman adlandırması projeye göre değişir (SBH/TK/TB...) → kullanıcının tek tek seçtiği yazıda ad SERBEST olsun, sabit ön eke bağlama; gevşetirken donatı (Ø/%%c) ve komşu eleman (kolon) yazılarını ayıkla (Rev-169).
 - Kutu seçimli araçlarda ilgisiz objeleri sessizce atla (boyama/log yok); regex sıkı olsun (ör. kolon boyutu zorunlu parantez). Tek harf ön ek kuralları uzun ön ekleri yutmasın (S→kolon, SBH hariç).
 - Kullanıcı tek ENTER'da birden fazla öğe seçebilir / birden fazla tabloyu kutulayabilir → geometriyle ayır veya sıralı seçim; ayıramazsan açık hata.
 - Elle girilen sayıda çizim birimi ≠ alan birimi ise büyük değer teyidi (cm/m 100 kat hatası).
@@ -155,7 +156,7 @@
 ---
 
 ## 6. Açık İşler (2026-11-03)
-- **Kullanıcı denemesi bekliyor:** Rev-168 proje Kaydet/Aç + otomatik kayıt · Rev-166 Excel tek hane + SBH/Aralıklı Esc-X · Rev-164 Saçak (gerçek AutoCAD) · Rev-155 perde ideCAD · Rev-142 aralıklı donatı DIMENSION · demir kesim 5 dosya birleştirme.
+- **Kullanıcı denemesi bekliyor:** Rev-169 temel kirişi serbest ad (TK/TB... projede) · Rev-168 proje Kaydet/Aç + otomatik kayıt · Rev-166 Excel tek hane + SBH/Aralıklı Esc-X · Rev-164 Saçak (gerçek AutoCAD) · Rev-155 perde ideCAD · Rev-142 aralıklı donatı DIMENSION · demir kesim 5 dosya birleştirme.
 - **Karar bekliyor:** CŞB Poz + Malzeme Formül (Seçenek B) · İnce İşler Hızlı Hesap paneli (mevcut üzerine mi, sıfırdan mı).
 - **Bilinen açık:** Demir Metrajı'nda kat silinince o katın perde/kolon kayıtları silinmiyor. Eski `_create_kiris_group` ölü kod — bağlanırsa `kiris_table`/`kiris_h_spin` adı çakışır.
 - **Güvenlik:** `InsaatMetrajPro` deposunu özel yap; `in-aat-uygulamas-` `main` dalında eski API anahtarı var.

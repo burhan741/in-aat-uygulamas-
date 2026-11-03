@@ -2,7 +2,23 @@
                     INSAAT METRAJ PRO - TUM OZELLIKLER
 ================================================================================
 
-Son Guncelleme: 18 Ekim 2026 (Rev-168: Akıllı Metraj Analizi — Proje Kaydet / Aç + otomatik kayıt)
+Son Guncelleme: 3 Kasım 2026 (Rev-169: Temel Kirişi — ad serbest, SBH zorunluluğu kalktı)
+
+================================================================================
+Rev-169 (2026-11-03) — Temel Kirişi: Adlandırma Serbest (SBH Zorunluluğu Kaldırıldı)
+- Sorun: Temel kirişi aracı sadece "SBH-1 (20/165)" biçimini okuyordu; temel kirişleri TK / TB / BK /
+  "TEMEL KİRİŞİ 1" gibi farklı adlandırılan projelerde yazı "ilgisiz" sayılıyor, kiriş alınamıyordu.
+- Artık ad SERBEST: kesitten önceki, en az bir harf içeren metin. Kesit "b/h", "bxh", "b×h", "b*h";
+  parantez isteğe bağlı; ondalık virgül kabul ("30,5/100"). Örn. "TK1 30/100", "TB-2 (40x120)",
+  "T.K.3 (35/90) L=650", "TEMEL KİRİŞİ 1 (50/120)".
+- Güvenlik: donatı yazıları (Ø / %%c), adsız "30/80" ölçü yazıları ilgisiz sayılır. Seçimde başka bir
+  aday yazı varsa kolon etiketi (S/P + "(b/h)", ör. "SZ07 (50/50)") atlanır — kiriş ucundaki kolon
+  yazısı yanlışlıkla kirişe karışmaz. Tek aday kolon-benzeriyse alınır (adı komut satırında görünür).
+- Kolon aracının "SBH = kolon değil" kuralı değişmedi. Hata/ipucu metinleri "SBH yazısı" yerine
+  "temel kirişi yazısı (ad serbest)".
+- Kod: autocad_connector.py temel_kirisi_ayristir (yeniden), temel_kirisi_kolon_yazilarini_ayikla (yeni).
+- Test: test_temel_kirisi.py 75/75 + temel kirişi COM/UI/demir, kiriş kenar, kolon/perde, proje kayıt
+  regresyonları PASS (iki Python). DURUM: farklı adlandırmalı gerçek projede deneme bekleniyor.
 
 ================================================================================
 Rev-168 (2026-10-03 kodlandı, 2026-10-18 kayda geçirildi) — Metraj Projesi Kaydet / Aç + Otomatik Kayıt
