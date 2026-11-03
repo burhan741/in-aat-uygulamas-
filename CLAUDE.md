@@ -106,6 +106,7 @@
 - Retry'da `com_error` + `AttributeError` ikisini yakala (dinamik dispatch meşgulken `AttributeError("Add.SelectOnScreen")` fırlatır — nesne yanlış değil, AutoCAD meşgul). `_mesgul_retry`'i sadece var olduğu kesin özelliklerde kullan.
 - Retry lambda'sı zincirin tamamını içersin: `lambda: self.aktif_cizim.Utility.GetPoint()`.
 - RPC_E_CALL_REJECTED / AttributeError asla ESC/iptal sayılmaz.
+- COM referansını (aktif_cizim/model_space) bir kez alıp sonsuza dek kullanma: DWG kapanınca RPC_E_DISCONNECTED (-2147417848). Her araç başında `cizim_baglantisini_tazele()` (öne getirme içinde) — yeni araç öne getirme yapmıyorsa bunu açıkça çağır (Rev-170).
 - OSMODE gibi geçici sistem değişkeni: orijinali dosyaya yaz, `finally`'de geri yükle; context manager'ı elle açtıysan geri almayı en dış `finally`'ye koy.
 - SendCommand/seçim içeren her metod AutoCAD'i öne getirsin; etkileşimli döngülerde öne getirme oturumda bir kez (`_autocad_one_getir_hafif`), geri bildirim komut satırına (`Prompt`), sayı `GetReal`, tam Regen yok. `komut_satiri_mesaj` metne ">>>" kendisi ekler.
 - Bağımlı LISP ifadelerini tek `SendCommand` + `(progn (load ...) (c:komut))` ile gönder (iki komut + sleep güvenilmez). Sayısal LISP değişkeni tırnaksız (`sayisal_degisken_set`).
@@ -156,7 +157,7 @@
 ---
 
 ## 6. Açık İşler (2026-11-03)
-- **Kullanıcı denemesi bekliyor:** Rev-169 temel kirişi serbest ad (TK/TB... projede) · Rev-168 proje Kaydet/Aç + otomatik kayıt · Rev-166 Excel tek hane + SBH/Aralıklı Esc-X · Rev-164 Saçak (gerçek AutoCAD) · Rev-155 perde ideCAD · Rev-142 aralıklı donatı DIMENSION · demir kesim 5 dosya birleştirme.
+- **Kullanıcı denemesi bekliyor:** Rev-170 DWG değişince otomatik bağlantı tazeleme · Rev-169 temel kirişi serbest ad (TK/TB... projede) · Rev-168 proje Kaydet/Aç + otomatik kayıt · Rev-166 Excel tek hane + SBH/Aralıklı Esc-X · Rev-164 Saçak (gerçek AutoCAD) · Rev-155 perde ideCAD · Rev-142 aralıklı donatı DIMENSION · demir kesim 5 dosya birleştirme.
 - **Karar bekliyor:** CŞB Poz + Malzeme Formül (Seçenek B) · İnce İşler Hızlı Hesap paneli (mevcut üzerine mi, sıfırdan mı).
 - **Bilinen açık:** Demir Metrajı'nda kat silinince o katın perde/kolon kayıtları silinmiyor. Eski `_create_kiris_group` ölü kod — bağlanırsa `kiris_table`/`kiris_h_spin` adı çakışır.
 - **Güvenlik:** `InsaatMetrajPro` deposunu özel yap; `in-aat-uygulamas-` `main` dalında eski API anahtarı var.

@@ -2,7 +2,21 @@
                     INSAAT METRAJ PRO - TUM OZELLIKLER
 ================================================================================
 
-Son Guncelleme: 3 Kasım 2026 (Rev-169: Temel Kirişi — ad serbest, SBH zorunluluğu kalktı)
+Son Guncelleme: 3 Kasım 2026 (Rev-170: AutoCAD bağlantısı kopunca otomatik yeniden bağlanma)
+
+================================================================================
+Rev-170 (2026-11-03) — AutoCAD Çizim Bağlantısı Koptuğunda Otomatik Tazeleme
+- Sorun (gerçek log, temel kirişi): 'çağrılan nesne istemcilerinden ayrılmış' (RPC_E_DISCONNECTED,
+  -2147417848). Program çizim referansını bağlanırken bir kez alıyordu; DWG kapatılıp başka proje
+  açılınca (veya AutoCAD yeniden başlayınca) referans ölüyor, her araç bu hatayla düşüyordu. Başka
+  açık DWG'ye geçildiğinde de araç eski çizimde seçim bekliyordu.
+- Çözüm: AutoCADConnector.cizim_baglantisini_tazele() — her araç başlangıcında (AutoCAD'i öne
+  getirme adımında, tüm araçlar ortak) AutoCAD'in şu anki aktif çizimi okunur: eski referans ölü ya da
+  farklı DWG ise yeni çizim + ModelSpace alınır; AutoCAD uygulaması da kopmuşsa otomatik yeniden
+  bağlanır; kurtarılamazsa anlaşılır mesaj ('AutoCAD bağlantısı koptu ... DWG'yi açıp tekrar deneyin').
+  AutoCAD meşgulse dokunulmaz. Kullanıcının programı kapatıp açması gerekmez.
+- Test: test_com_kopuk.py 12/12 + scratchpad'deki 45 test dosyasının tamamı PASS. DURUM: gerçek
+  AutoCAD'de (DWG kapat → başka DWG aç → aracı çalıştır) deneme bekleniyor.
 
 ================================================================================
 Rev-169 (2026-11-03) — Temel Kirişi: Adlandırma Serbest (SBH Zorunluluğu Kaldırıldı)
