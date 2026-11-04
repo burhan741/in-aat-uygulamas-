@@ -2,7 +2,21 @@
                     INSAAT METRAJ PRO - TUM OZELLIKLER
 ================================================================================
 
-Son Guncelleme: 3 Kasım 2026 (Rev-170: AutoCAD bağlantısı kopunca otomatik yeniden bağlanma)
+Son Guncelleme: 4 Kasım 2026 (Rev-171: Şantiye ana programı 1. adım — modüler yapı + ana menü)
+
+================================================================================
+Rev-171 (2026-11-04) — PythonAnywhere: Şantiye Ana Programı 1. Adım (Modüler Yapı + Ana Menü)
+- Plan: yeni_proje/pythonanywhere/ANA_PROGRAM_PLANI.md (Müteahhit / Demirci / Puantaj / Mobil Vinç).
+- Tek dosyalık app.py bölündü: ortak.py (DB yolu, günlük yedek, ₺/tarih biçimi, PDF yardımcıları),
+  puantaj.py (Blueprint, AYNEN), vinc.py (vinc_defter + /api/vinc/* taşındı), app.py (ana menü /).
+- Puantaj adresi / → /puantaj (?v= cache-bust korunur), üstte "‹ Ana Menü". Mobil Vinç sekmesi
+  puantajdan çıktı (/vinc sayfası 2. adımda). Müteahhit/Demirci/Vinç kartları "Hazırlanıyor".
+- puantaj.py eski dosyadan mekanik dönüşüm betiğiyle üretildi; fark = sadece izinli 4 değişiklik.
+- Eski sürüm eski/app_tek_dosya.py (geri dönüş için); app_test.py, fix*.py, kopya eski/'ye taşındı.
+- Para biçimi ₺1.284.500 Decimal yarım-yukarı (round() 0,125→0,12 hatası testte yakalandı).
+- Test: 25 pytest PASS — eski/yeni app aynı DB'de aynı işlem sırası → tüm GET cevapları birebir,
+  vinç API birebir, HTML farkı sadece Ana Menü bağlantısı, node --check. Gerçek sunucu DB'si
+  kopyasıyla regresyon (GERCEK_DB=...) bekleniyor; yerel puantaj.db boş.
 
 ================================================================================
 Rev-170 (2026-11-03) — AutoCAD Çizim Bağlantısı Koptuğunda Otomatik Tazeleme

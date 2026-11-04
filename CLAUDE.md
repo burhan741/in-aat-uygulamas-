@@ -144,20 +144,24 @@
 ### Claude API
 - Tool `input_schema` property key'leri ASCII (`^[a-zA-Z0-9_.-]{1,64}$`); açıklamalar Türkçe olabilir.
 
-### Puantaj Flask (`yeni_proje/pythonanywhere/`)
-- Önce `app_test.py`'de dene → `app.py`'ye taşı → kullanıcı `/home/burhan852/app.py`'ye yükleyip Reload eder.
-- `app_test.py` HTML_TEMPLATE `r'''` (JS'te tek ters bölü); `app.py` normal string (JS'te `\\n`, `\\'`). Taşırken farkı unutma. Inline onclick'te string argüman yerine sıfır argümanlı fonksiyon. Deploy öncesi gömülü JS'i `node --check` ile doğrula.
+### Puantaj Flask (`yeni_proje/pythonanywhere/`) — Şantiye ana programı (Rev-171+)
+- Plan ve onaylı kararlar: `pythonanywhere/ANA_PROGRAM_PLANI.md` (tekrar sorma). Modüler: `app.py` (ana menü `/` + Blueprint kaydı) · `ortak.py` · `puantaj.py` (DEĞİŞMEZ, `/puantaj`) · `vinc.py` · `cari.py`. Tek DB `puantaj.db`, yeni tablolar `CREATE TABLE IF NOT EXISTS`.
+- Kullanıcı tüm `.py` dosyalarını `/home/burhan852/` altına elle yükler + Reload; her teslimde dosya listesi ver. Geri dönüş: `eski/app_tek_dosya.py` → `app.py` olarak yükle.
+- Test: `.venv_test\Scripts\python -m pytest` (conftest DB'yi geçici dosyaya yönlendirir). Puantaj regresyonu eski/yeni uygulamayı aynı DB'de birebir karşılaştırır; gerçek veri için `GERCEK_DB=<indirilen puantaj.db>`.
+- HTML şablonları `r'''`. Inline onclick'te string argüman yerine sıfır argümanlı fonksiyon. Gömülü JS testte `node --check`.
+- Yeni modüllerin para/miktar gösterimi `ortak.para_tl/miktar_tr` (Decimal yarım-yukarı). Kalan eksiyse "Fazla ödeme" (sıfırlama yok) — puantajda eski davranış kalır.
 - Opsiyonel kütüphaneler (openpyxl, reportlab…) route İÇİNDE `try/except ImportError` → 503; dosya tepesinde değil (tüm site çöker).
 - İşlem anındaki oran (ücret, birim fiyat) satıra kilitlenir; hesap `SUM(miktar * COALESCE(satir.oran, parent.oran))`.
 - Hızlı aksiyon butonları göndermediği alanları sıfırla ezmesin (`COALESCE(?, kolon)`).
 - Mesai = `(gunluk_ucret/8) × saat` (çarpansız). Bakiye/kalan alanları tüm zamanlar kümülatif, sadece ödemeyle düşer. "Yevmiye" = `kalan_gun`, "Ödenecek Para" = `kalan`. Haftalık görünüm rolling son 7 gün. Bu Haftaki Toplam'da çivi `civi_toplam`.
 - `prompt()/confirm()` öncesi scroll konumunu yakala.
-- Test: izole `.venv_test`, `app_test.py`'yi temp klasöre kopyalayıp import et (gerçek `puantaj.db`'ye dokunma).
+- Test: izole `.venv_test`; gerçek `puantaj.db`'ye asla dokunma (sadece kopyası).
 
 ---
 
 ## 6. Açık İşler (2026-11-03)
 - **Kullanıcı denemesi bekliyor:** Rev-170 DWG değişince otomatik bağlantı tazeleme · Rev-169 temel kirişi serbest ad (TK/TB... projede) · Rev-168 proje Kaydet/Aç + otomatik kayıt · Rev-166 Excel tek hane + SBH/Aralıklı Esc-X · Rev-164 Saçak (gerçek AutoCAD) · Rev-155 perde ideCAD · Rev-142 aralıklı donatı DIMENSION · demir kesim 5 dosya birleştirme.
+- **Şantiye ana programı (PythonAnywhere):** ANA_PROGRAM_PLANI.md 1. adım bitti (Rev-171), 2. adım (Vinç) kullanıcı onayı bekliyor. Canlıya almadan önce sunucu `puantaj.db` kopyasıyla regresyon.
 - **Karar bekliyor:** CŞB Poz + Malzeme Formül (Seçenek B) · İnce İşler Hızlı Hesap paneli (mevcut üzerine mi, sıfırdan mı).
 - **Bilinen açık:** Demir Metrajı'nda kat silinince o katın perde/kolon kayıtları silinmiyor. Eski `_create_kiris_group` ölü kod — bağlanırsa `kiris_table`/`kiris_h_spin` adı çakışır.
 - **Güvenlik:** `InsaatMetrajPro` deposunu özel yap; `in-aat-uygulamas-` `main` dalında eski API anahtarı var.
