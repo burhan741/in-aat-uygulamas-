@@ -2,7 +2,21 @@
                     INSAAT METRAJ PRO - TUM OZELLIKLER
 ================================================================================
 
-Son Guncelleme: 4 Kasım 2026 (Rev-171: Şantiye ana programı 1. adım — modüler yapı + ana menü)
+Son Guncelleme: 4 Kasım 2026 (Rev-172: Şantiye ana programı 2. adım — Mobil Vinç sayfası + düzenleme)
+
+================================================================================
+Rev-172 (2026-11-04) — PythonAnywhere: Mobil Vinç Sayfası (/vinc) + Kayıt Düzenleme
+- Ayrı sayfa: Gelir / Gider kutuları + tam genişlikte Net; kayıtlar aylara gruplu (ay neti),
+  en yeni üstte. + Gelir / + Gider Ekle → alttan açılan form (Gelir/Gider seçimi, tarih seçici,
+  açıklama, tutar 1.500 / 1500,50). Kayda dokun veya sola kaydır → Düzenle / Sil (onaylı).
+  "?" Yardım kılavuzu. Ana menüde Vinç kartı açıldı.
+- Yeni API: PUT /api/vinc/<id> (düzenleme). Ekle ve düzenle aynı doğrulama: tip, tutar > 0,
+  geçerli ISO tarih (bozuk tarih sıralamayı bozuyordu). Eski ekle/liste/sil adresleri aynen.
+- ortak.py'ye ortak arayüz (ORTAK_HEAD/CSS/JS): açık tema, sola kaydır Düzenle/Sil, ₺ biçimi
+  (JS fmtTL = Python para_tl, node ile karşılaştırma testi), confirm() sonrası kaydırma korunur.
+  3./4. adımda Müteahhit/Demirci aynısını kullanacak.
+- Görsel kontrolde düzeltilen: uzun tutar özet kutusunda bölünüyordu → 2 sütun + geniş Net satırı.
+- Test: 40 pytest PASS (vinç düzenleme, doğrulama, 404, sayfa, JS/Python ₺ eşliği + 1. adım).
 
 ================================================================================
 Rev-171 (2026-11-04) — PythonAnywhere: Şantiye Ana Programı 1. Adım (Modüler Yapı + Ana Menü)
