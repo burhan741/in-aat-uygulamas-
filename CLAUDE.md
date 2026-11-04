@@ -164,7 +164,7 @@
 
 ## 6. Açık İşler (2026-11-03)
 - **Kullanıcı denemesi bekliyor:** Rev-170 DWG değişince otomatik bağlantı tazeleme · Rev-169 temel kirişi serbest ad (TK/TB... projede) · Rev-168 proje Kaydet/Aç + otomatik kayıt · Rev-166 Excel tek hane + SBH/Aralıklı Esc-X · Rev-164 Saçak (gerçek AutoCAD) · Rev-155 perde ideCAD · Rev-142 aralıklı donatı DIMENSION · demir kesim 5 dosya birleştirme.
-- **Şantiye ana programı (PythonAnywhere):** ANA_PROGRAM_PLANI.md 1-3. adım bitti (Rev-171..173), 4. adım (Demirciler) onay bekliyor. Test sitesi: yeni hesap `burhan741.pythonanywhere.com` (canlı puantaj hâlâ `burhan852`'de). Son geçişte güncel `puantaj.db` tekrar kopyalanmalı.
+- **Şantiye ana programı (PythonAnywhere):** ANA_PROGRAM_PLANI.md 6 adımın hepsi bitti (Rev-171..176), kullanıcının sunucuda uçtan uca denemesi bekleniyor. Test sitesi: yeni hesap `burhan741.pythonanywhere.com` (canlı puantaj hâlâ `burhan852`'de). Son geçişte güncel `puantaj.db` tekrar kopyalanmalı.
 - **Karar bekliyor:** CŞB Poz + Malzeme Formül (Seçenek B) · İnce İşler Hızlı Hesap paneli (mevcut üzerine mi, sıfırdan mı).
 - **Bilinen açık:** Demir Metrajı'nda kat silinince o katın perde/kolon kayıtları silinmiyor. Eski `_create_kiris_group` ölü kod — bağlanırsa `kiris_table`/`kiris_h_spin` adı çakışır.
 - **Güvenlik:** `InsaatMetrajPro` deposunu özel yap; `in-aat-uygulamas-` `main` dalında eski API anahtarı var.

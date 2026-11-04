@@ -2,7 +2,38 @@
                     INSAAT METRAJ PRO - TUM OZELLIKLER
 ================================================================================
 
-Son Guncelleme: 4 Kasım 2026 (Rev-173: Şantiye ana programı 3. adım — Cari motoru + Müteahhitler)
+Son Guncelleme: 4 Kasım 2026 (Rev-174..176: Şantiye ana programı tamamlandı — Demirciler, Gün Sonu, PWA)
+
+================================================================================
+Rev-176 (2026-11-04) — PythonAnywhere: Yardım, PWA İkonu, Ayarlar, Teslim
+- Her yeni ekranda "?" kılavuz (ana menü, vinç, müteahhit/demirci liste-firma-gün sonu; testle
+  zorunlu). Puantaj plan gereği değişmedi.
+- PWA: /apple-touch-icon.png (180), /ikon-512.png, /manifest.webmanifest; ikon (koyu zemin, sarı
+  baret, ŞANTİYE) ortak.py'ye base64 gömülü → ek dosya yok. iOS kökteki ikonu puantajdan
+  eklenince de bulur.
+- Ana menü Ayarlar: rapor başlığı (firma adınız) + "Tüm Verileri İndir" (.db, her şey dahil;
+  puantajın JSON yedeği eski kod olduğu için cari tablolarını içermez).
+- KURULUM.txt baştan yazıldı (5 dosya aynı klasör, WSGI, reportlab, eski siteden geçiş, geri dönüş).
+
+Rev-175 (2026-11-04) — PythonAnywhere: Gün Sonu Raporu + A4 PDF
+- /muteahhit/gun-sonu, /demirci/gun-sonu (liste sağ üstünde "Gün Sonu"): tarih (bugün) + kapsam
+  (Tümü / tek firma); özet: toplam miktar, günün hakedişi, tahsilat/ödeme, hareketli firma,
+  gün sonu toplam alacak/borç; o gün hareketli firmalar (gün sonu kalanıyla) + günün hareketleri.
+- Kalan = o GÜNÜN SONUNDAKİ bakiye (geçmiş günün raporu tekrar alınınca aynı); toplam kalan
+  kapsamdaki TÜM firmaları içerir (o gün hareketsiz olanlar dahil).
+- A4 PDF: başlıkta rapor başlığı (Ayarlar, varsayılan "[FİRMA ADI]"; yeni cari_ayar tablosu —
+  puantaj ayarlar tablosuna dokunulmadı), özet kutuları, firma özeti + toplam, hareketler,
+  imza alanı (Hazırlayan / Kontrol eden), oluşturma saati (TR).
+- PDF kenar hizası düzeltildi (reportlab çerçeve iç boşluğu 6 pt).
+
+Rev-174 (2026-11-04) — PythonAnywhere: Demirciler
+- Aynı cari motoru; AKTIF_TURLER'e demirci eklendi. Etiketler TURLER'den: İş, ton, Ödenen para,
+  Kalan borcum, Toplam borç. Müteahhide özgü kalmış 2 metin (gider örneği, gider yardımı)
+  TURLER'e taşındı. Ana menü Demirciler kartı: borç kırmızı, fazla ödeme yeşil.
+- Test: türler birbirine karışmaz (aynı ad iki türde serbest, sayfa adresi türle uyuşmalı),
+  demirci sayfasında "Beton/m³/Alınan" yok, ton 3 ondalık, PDF etiketleri.
+- Toplam test: 100 pytest PASS (puantaj regresyonu dahil). Ekranlar 390 px, PDF'ler görüntüye
+  çevrilerek kontrol edildi.
 
 ================================================================================
 Rev-173 (2026-11-04) — PythonAnywhere: Cari Motoru + Müteahhitler (cari.py)
