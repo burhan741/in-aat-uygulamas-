@@ -2,7 +2,30 @@
                     INSAAT METRAJ PRO - TUM OZELLIKLER
 ================================================================================
 
-Son Guncelleme: 4 Kasım 2026 (Rev-172: Şantiye ana programı 2. adım — Mobil Vinç sayfası + düzenleme)
+Son Guncelleme: 4 Kasım 2026 (Rev-173: Şantiye ana programı 3. adım — Cari motoru + Müteahhitler)
+
+================================================================================
+Rev-173 (2026-11-04) — PythonAnywhere: Cari Motoru + Müteahhitler (cari.py)
+- Tablolar cari_firma / cari_fiyat_kalemi / cari_hareket (aynı puantaj.db, IF NOT EXISTS).
+- Motor tur parametreli (muteahhit/demirci ortak kod; TURLER sözlüğü = tüm etiketler).
+  firma_bakiye() tek hesap: hakediş = iş + gider, ödenen = ödeme, kalan = fark (eksi →
+  "Fazla ödeme", sıfırlanmaz). Liste, firma sayfası, ana menü, PDF hepsi bunu çağırır.
+- Fiyat kilidi SUNUCUDA: yeni iş satırı kalemin o anki fiyatını alır (istemci fiyatı yok
+  sayılır); kalem fiyatı/adı değişse ya da kalem silinse geçmiş satır aynen kalır. Satır
+  düzenlenirken fiyat bilerek değiştirilebilir, sadece o satır değişir.
+- Ekranlar: /muteahhit liste (arama, son hareket, kalan, sola kaydır Düzenle/Sil, alt sabit
+  "+ Müteahhit Ekle", toplam alacak), firma ekle/düzenle (ad + kalem/fiyat satırları),
+  /muteahhit/<id> (siyah üst alan: kalan + Düzenle/PDF/?, Beton/Gider/Alınan para giriş formu,
+  canlı hakediş önizleme, defter: son 8 satır açık, öncekiler "Önceki kayıtlar" satırında,
+  Toplam + KALAN). Ana menüde Müteahhitler kartı açık (toplam alacak).
+- PDF hesap dökümü: tarih aralığı seçilirse öncesi "Devreden bakiye", KALAN = bitiş tarihindeki
+  gerçek bakiye. Safari'de satır içi açılır (Paylaş → WhatsApp/Mail). Oluşturma saati TR (UTC+3).
+- Firma silme: hareket + kalem + firma tek transaction. Aynı adlı firma/kalem Türkçe kurallı
+  denetlenir (YILMAZ = Yılmaz; SQLite lower/casefold I→i hatası yakalandı → ortak.tr_kucuk).
+- Yerel Windows'ta PDF yedek fontu Arial (Türkçe karakter testi için; sunucuda DejaVu).
+- Test: 74 pytest PASS (bakiye, kuruş yuvarlama, fiyat kilidi, kalem silme, kaskad, fazla ödeme,
+  doğrulamalar, devirli döküm, PDF, sayfalar, node --check, demirci kapalı). Ekranlar 390 px ve
+  PDF görüntüye çevrilerek kontrol edildi.
 
 ================================================================================
 Rev-172 (2026-11-04) — PythonAnywhere: Mobil Vinç Sayfası (/vinc) + Kayıt Düzenleme

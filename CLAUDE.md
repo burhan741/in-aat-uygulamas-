@@ -150,6 +150,8 @@
 - Test: `.venv_test\Scripts\python -m pytest` (conftest DB'yi geçici dosyaya yönlendirir). Puantaj regresyonu eski/yeni uygulamayı aynı DB'de birebir karşılaştırır; gerçek veri için `GERCEK_DB=<indirilen puantaj.db>`.
 - HTML şablonları `r'''`. Inline onclick'te string argüman yerine sıfır argümanlı fonksiyon. Gömülü JS testte `node --check`.
 - Yeni modül sayfaları `ortak.ORTAK_HEAD/CSS/JS`'i kullanır (açık tema, `satirHtml`+`kaydirmaKur` sola kaydır Düzenle/Sil, `onayla()`, `fmtTL`); stil/davranış tek yerde değişir.
+- Cari: etiket/birim sadece `cari.TURLER`'de; açık türler `AKTIF_TURLER`. Fiyat kilidi sunucuda (yeni satırda istemci fiyatı yok sayılır). Ad tekrar denetimi `ortak.tr_kucuk` (SQLite lower/casefold Türkçe I'yi bozar).
+- Sunucu saati UTC → kullanıcıya görünen saat/varsayılan gün `ortak.simdi_tr()/bugun_tr()`.
 - Yeni modüllerin para/miktar gösterimi `ortak.para_tl/miktar_tr` (Decimal yarım-yukarı). Kalan eksiyse "Fazla ödeme" (sıfırlama yok) — puantajda eski davranış kalır.
 - Opsiyonel kütüphaneler (openpyxl, reportlab…) route İÇİNDE `try/except ImportError` → 503; dosya tepesinde değil (tüm site çöker).
 - İşlem anındaki oran (ücret, birim fiyat) satıra kilitlenir; hesap `SUM(miktar * COALESCE(satir.oran, parent.oran))`.
@@ -162,7 +164,7 @@
 
 ## 6. Açık İşler (2026-11-03)
 - **Kullanıcı denemesi bekliyor:** Rev-170 DWG değişince otomatik bağlantı tazeleme · Rev-169 temel kirişi serbest ad (TK/TB... projede) · Rev-168 proje Kaydet/Aç + otomatik kayıt · Rev-166 Excel tek hane + SBH/Aralıklı Esc-X · Rev-164 Saçak (gerçek AutoCAD) · Rev-155 perde ideCAD · Rev-142 aralıklı donatı DIMENSION · demir kesim 5 dosya birleştirme.
-- **Şantiye ana programı (PythonAnywhere):** ANA_PROGRAM_PLANI.md 1-2. adım bitti (Rev-171/172), 3. adım (Müteahhitler) onay bekliyor. Test sitesi: yeni hesap `burhan741.pythonanywhere.com` (canlı puantaj hâlâ `burhan852`'de). Son geçişte güncel `puantaj.db` tekrar kopyalanmalı.
+- **Şantiye ana programı (PythonAnywhere):** ANA_PROGRAM_PLANI.md 1-3. adım bitti (Rev-171..173), 4. adım (Demirciler) onay bekliyor. Test sitesi: yeni hesap `burhan741.pythonanywhere.com` (canlı puantaj hâlâ `burhan852`'de). Son geçişte güncel `puantaj.db` tekrar kopyalanmalı.
 - **Karar bekliyor:** CŞB Poz + Malzeme Formül (Seçenek B) · İnce İşler Hızlı Hesap paneli (mevcut üzerine mi, sıfırdan mı).
 - **Bilinen açık:** Demir Metrajı'nda kat silinince o katın perde/kolon kayıtları silinmiyor. Eski `_create_kiris_group` ölü kod — bağlanırsa `kiris_table`/`kiris_h_spin` adı çakışır.
 - **Güvenlik:** `InsaatMetrajPro` deposunu özel yap; `in-aat-uygulamas-` `main` dalında eski API anahtarı var.
