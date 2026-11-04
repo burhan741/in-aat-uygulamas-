@@ -146,7 +146,7 @@
 
 ### Puantaj Flask (`yeni_proje/pythonanywhere/`) — Şantiye ana programı (Rev-171+)
 - Plan ve onaylı kararlar: `pythonanywhere/ANA_PROGRAM_PLANI.md` (tekrar sorma). Modüler: `app.py` (ana menü `/` + Blueprint kaydı) · `ortak.py` · `puantaj.py` (DEĞİŞMEZ, `/puantaj`) · `vinc.py` · `cari.py`. Tek DB `puantaj.db`, yeni tablolar `CREATE TABLE IF NOT EXISTS`.
-- Kullanıcı tüm `.py` dosyalarını `/home/burhan852/` altına elle yükler + Reload; her teslimde dosya listesi ver. Geri dönüş: `eski/app_tek_dosya.py` → `app.py` olarak yükle.
+- Kullanıcı tüm `.py` dosyalarını `/home/burhan852/` altına elle yükler + Reload; her teslimde dosya listesi ver. YENİ dosya eklenen adımda bunu ⚠️ ile vurgula: `app.py` yüklenip yeni modül yüklenmezse tüm site (puantaj dahil) "Unhandled Exception" ile çöker (Rev-173'te yaşandı). Geri dönüş: `eski/app_tek_dosya.py` → `app.py` olarak yükle.
 - Test: `.venv_test\Scripts\python -m pytest` (conftest DB'yi geçici dosyaya yönlendirir). Puantaj regresyonu eski/yeni uygulamayı aynı DB'de birebir karşılaştırır; gerçek veri için `GERCEK_DB=<indirilen puantaj.db>`.
 - HTML şablonları `r'''`. Inline onclick'te string argüman yerine sıfır argümanlı fonksiyon. Gömülü JS testte `node --check`.
 - Yeni modül sayfaları `ortak.ORTAK_HEAD/CSS/JS`'i kullanır (açık tema, `satirHtml`+`kaydirmaKur` sola kaydır Düzenle/Sil, `onayla()`, `fmtTL`); stil/davranış tek yerde değişir.
