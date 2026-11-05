@@ -2,7 +2,20 @@
                     INSAAT METRAJ PRO - TUM OZELLIKLER
 ================================================================================
 
-Son Guncelleme: 5 Kasım 2026 (Rev-177: Şantiye Defteri "Kurumsal" tema — beyaz + lacivert)
+Son Guncelleme: 5 Kasım 2026 (Rev-178: Puantaj renk uyumu — Kurumsal tema)
+
+================================================================================
+Rev-178 (2026-11-05) — PythonAnywhere: Puantaj Renk Uyumu (TASARIM_KURALLARI 9, kullanıcı istedi)
+- SADECE <head> içindeki <style> + Manrope bağlantısı değişti. Puantaj değişkenleri temaya bağlandı
+  (--pr→lacivert, --bg→zemin-2, --card/--inp→beyaz, --ok/--wr/--er→alacak/uyarı/borç, 1½ mavisi→
+  ödeme); renk kökü ortak.KOK_CSS (yeni modüllerle tek kaynak). Lacivert üst bant, kartlara ince
+  çerçeve, beyaz zeminde beyaz yazı kalan düğmeler beyaz yazılı.
+- JS'in ürettiği satır içi renkler (#a0a0a0 gri, beyazımsı ayırıcılar, #3498db, #ff9800, #000) JS'e
+  dokunmadan CSS [style*=...] eşlemesiyle açık temaya uyarlandı.
+- Kanıt: puantaj JS'inin ve görünür gövdesinin SHA-256 parmak izi değişiklik öncesi alındı, sonrası
+  birebir aynı; test_puantaj_js_ve_govde_kilitli kalıcı kilit. Önce/sonra ekran görüntüleri 4 sekmede
+  aynı düzen, metin ve rakamları gösterdi. Aylık ay seçicisi görünmüyordu → giriş zemini beyaz + çerçeve.
+- Puantaj PDF'leri (eski pembe başlık) bu kapsamda DEĞİŞMEDİ. 120 pytest PASS.
 
 ================================================================================
 Rev-177 (2026-11-05) — PythonAnywhere: "Kurumsal" Tema (TASARIM_KURALLARI.md)
