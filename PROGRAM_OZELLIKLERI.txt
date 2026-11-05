@@ -2,7 +2,27 @@
                     INSAAT METRAJ PRO - TUM OZELLIKLER
 ================================================================================
 
-Son Guncelleme: 4 Kasım 2026 (Rev-174..176: Şantiye ana programı tamamlandı — Demirciler, Gün Sonu, PWA)
+Son Guncelleme: 5 Kasım 2026 (Rev-177: Şantiye Defteri "Kurumsal" tema — beyaz + lacivert)
+
+================================================================================
+Rev-177 (2026-11-05) — PythonAnywhere: "Kurumsal" Tema (TASARIM_KURALLARI.md)
+- Kullanıcının seçtiği tema uygulandı (yalnız görünüm; iş mantığı, API, puantaj değişmedi).
+- Tek nokta: ortak.TEMA (14 renk) → CSS :root değişkenleri + PDF renkleri; ortak.IKONLAR (çizgi SVG,
+  stroke 1.9); Manrope (Google Fonts) + tabular-nums; 12px altı yazı yok; 44px dokunma, 52px buton.
+- Bileşenler: lacivert başlık bandı + -44px yüzen özet kartı, ikon daireli liste satırları,
+  Düzenle (lacivert) / Sil (kırmızı) kaydırma, segment sekmeler, 48px form alanları, lacivert-açık
+  "Hakediş" hesap kutusu, defter (açık lacivert başlık, zemin-2 toplam, lacivert KALAN bandı),
+  tam ekran formlar ("Vazgeç" bantlı), tarayıcı confirm() yerine kendi "Silinsin mi?" penceresi.
+- Renk anlamı: müteahhit kalanı yeşil "alacak", demirci kalanı kırmızı "borç", sıfır soluk, eksi
+  turuncu "fazla ödeme" (ortak.kalan_sunum = JS kalanSunum, node ile eşlik testi).
+- Ana menü: saate göre selam (Günaydın/İyi günler/İyi akşamlar) + tarih, yüzen Toplam alacak |
+  Toplam borç, 4 satır (firma sayıları, vinç net kâr/zarar), Ayarlar ikonlu düğme.
+- PDF: üstte lacivert bant, lacivert başlık, #EEF2FF tablo başlığı, #F8FAFC toplam, lacivert KALAN,
+  kalan sütunu yeşil/kırmızı, ödeme sütunu mavi. İkon: lacivert zemin + beyaz bina. theme-color
+  #1E3A8A, status bar black-translucent, ad "Şantiye Defteri".
+- test_tema.py: palet birebir, sayfalarda sabit renk kodu yok (CSS'te kalmış #fff yakalandı →
+  var(--zemin)), font, ölçüler, PWA meta, ikon rengi, onay penceresi. Görselde bant içi etiket
+  rengi düzeltildi. 118 pytest PASS.
 
 ================================================================================
 Rev-176 (2026-11-04) — PythonAnywhere: Yardım, PWA İkonu, Ayarlar, Teslim
